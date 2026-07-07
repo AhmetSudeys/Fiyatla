@@ -1,0 +1,192 @@
+<resources>
+    <string name="app_name">Fiyatla!</string>
+
+    <string name="nav_home">Anasayfa</string>
+    <string name="nav_materials">Malzemeler</string>
+    <string name="nav_quotes">Tekliflerim</string>
+    <string name="nav_customers">Müşteriler</string>
+
+    <string name="company_setup_title">Firma bilgilerini giriniz</string>
+    <string name="company_name_hint">Firma adı</string>
+    <string name="company_logo_pick_hint">Logo yüklemek için tıklayınız.</string>
+    <string name="save">Kaydet</string>
+    <string name="login">Giriş Yap</string>
+    <string name="logo">Logo</string>
+    <string name="welcome_with_company">Hoşgeldiniz, %1$s</string>
+    <string name="edit_company_info">Firma bilgilerini değiştirmek için tıkla..</string>
+    <string name="error_company_name_required">Firma adı zorunludur</string>
+    <string name="error_company_logo_required">Logo zorunludur</string>
+    <string name="new_quote">Yeni Teklif Oluştur</string>
+    <string name="home_greeting">Bol kazançlar, %1$s</string>
+
+    <string name="last_5_quotes">Son 5 Teklif</string>
+    <string name="materials_placeholder">Malzeme Listesi (iskelet)</string>
+    <string name="quotes_title">Tekliflerim</string>
+    <string name="view_all">Tümünü gör</string>
+    <string name="no_quotes_yet">Henüz teklifiniz yok, şimdilik...</string>
+    <string name="quote_detail_title">Teklif Detayı</string>
+    <string name="edit_quote">Teklifi Düzenle</string>
+    <string name="update_quote">Teklifi Güncelle</string>
+    <string name="quote_updated">Teklif başarıyla güncellendi</string>
+    <string name="cancel_quote">Vazgeç</string>
+    <string name="discard_quote_title">Çıkılsın mı?</string>
+    <string name="discard_quote_message">Bu teklif taslağı silinecek.</string>
+    <string name="keep_editing">Devam Et</string>
+    <string name="press_back_again_to_exit">Çıkmak için tekrar basın</string>
+
+    <string name="customers_title">Müşteriler</string>
+    <string name="no_customers_yet">Henüz müşteri eklenmemiş.</string>
+    <string name="add_customer">Müşteri Ekle</string>
+    <string name="edit_customer">Müşteriyi Düzenle</string>
+    <string name="delete_customer">Sil</string>
+    <string name="delete_customer_title">Müşteri silinsin mi?</string>
+    <string name="delete_customer_message">Emin misin? Bu işlem geri alınamaz.</string>
+    <string name="filter_all">Tümü</string>
+    <string name="filter_painted">Boyalı</string>
+    <string name="filter_not_painted">Boyasız</string>
+    <string name="filter_pending">Beklemede</string>
+    <string name="filter_approved">Onay</string>
+    <string name="filter_rejected">Red</string>
+
+    <string name="customer_name">Müşteri Adı</string>
+    <string name="customer_phone">Telefon</string>
+    <string name="customer_building_code">Bina Kodu</string>
+    <string name="customer_installation_no">Tesisat No</string>
+
+    <string name="address_section">Adres</string>
+    <string name="address_city">İl</string>
+    <string name="address_district">İlçe</string>
+    <string name="address_neighborhood">Mahalle</string>
+    <string name="address_street">Sokak / Cadde</string>
+    <string name="address_building_no">Bina No</string>
+    <string name="address_apartment_no">Daire No</string>
+    <string name="address_preview">Adres Önizleme</string>
+
+    <string name="paint_tracking">Boya Takibi</string>
+    <string name="column_pipe_paint">Kolon boya durumu</string>
+    <string name="painted">Boyalı</string>
+    <string name="not_painted">Boyasız</string>
+    <string name="updated">Güncellendi</string>
+
+    <string name="error_customer_required">Müşteri adı zorunludur</string>
+
+    <string name="continue_text">Devam Et</string>
+    <string name="quote_customer_title">Müşteri Bilgileri</string>
+    <string name="customer_name_hint">Müşteri Ad Soyad</string>
+    <string name="customer_note_hint">Not (adres, telefon vb.)</string>
+    <string name="error_customer_name_required">Müşteri adı zorunludur</string>
+    <string name="quote_operation_select_title">İşlem Türü Seçimi</string>
+    <string name="quote_operation_select_subtitle">İşlem türlerini seçiniz</string>
+    <string name="error_select_at_least_one_operation">Devam etmek için en az 1 işlem türü seçiniz.</string>
+    <string name="quote_materials_title">Malzemeler</string>
+    <string name="quote_materials_placeholder">Buraya seçilen işlem türlerine göre malzemeler eklenecek (iskelet).</string>
+    <string name="change_selection">Seçimi Değiştir</string>
+    <string name="materials_page_placeholder">Bu işlem türünün malzemeleri burada listelenecek (iskelet).</string>
+    <string name="col_material">Malzeme</string>
+    <string name="col_qty">Miktar</string>
+    <string name="col_price">Fiyat</string>
+    <string name="col_total">Tutar</string>
+    <string name="total">Toplam</string>
+    <string name="total_hint">Bu sayfanın toplamı</string>
+    <string name="search_material">Malzeme ara...</string>
+    <string name="search_customer">Müşteri ara...</string>
+    <string name="search_quote">Teklif ara...</string>
+    <string name="use_current_location">Şu anki konumu kullan..</string>
+    <string name="get_directions">Yol tarifi al</string>
+    <string name="error_directions_no_address">Adres bilgisi boş, yol tarifi alınamaz.</string>
+    <string name="edit_material_title">Malzeme Düzenle</string>
+    <string name="add_material_title">Malzeme Ekle</string>
+    <string name="add_material">Malzeme Ekle</string>
+    <string name="delete">Sil</string>
+    <string name="save_changes">Kaydet</string>
+    <string name="cancel">İptal</string>
+
+    <!-- Custom material lists -->
+    <string name="add_list">Liste Ekle</string>
+    <string name="new_list_title">Yeni Liste</string>
+    <string name="rename_list_title">Listeyi Yeniden Adlandır</string>
+    <string name="list_name_hint">Liste adı</string>
+    <string name="list_options">Liste seçenekleri</string>
+    <string name="rename_list">Listeyi Yeniden Adlandır</string>
+    <string name="delete_list">Listeyi Sil</string>
+    <string name="delete_list_title">Liste silinsin mi?</string>
+    <string name="delete_list_message">\"%1$s\" listesi ve içindeki tüm malzemeler silinecek. Bu işlem geri alınamaz.</string>
+    <string name="delete_material_title">Malzeme silinsin mi?</string>
+    <string name="delete_material_message">\"%1$s\" listeden silinecek.</string>
+    <string name="error_list_name_required">Liste adı zorunludur</string>
+    <string name="error_list_name_exists">Bu isimde bir liste zaten var</string>
+    <string name="error_material_name_required">Malzeme adı zorunludur</string>
+    <string name="list_created">Liste oluşturuldu</string>
+    <string name="list_deleted">Liste silindi</string>
+    <string name="quote_extras_title">Ek Bilgiler</string>
+    <string name="extras_hint">Yoksa boş bırakınız (0 kabul edilir).</string>
+    <string name="pipe_meters">Boru (m)</string>
+    <string name="radiator_meters">Petek (m)</string>
+    <string name="boiler_price">Kombi Fiyatı</string>
+    <string name="boiler_question">Kombi var mı?</string>
+    <string name="yes">Evet</string>
+    <string name="no">Hayır</string>
+    <string name="boiler_brand">Kombi Markası</string>
+    <string name="boiler_model">Kombi Modeli</string>
+    <string name="labor_rate">Usta Birim Fiyat</string>
+    <string name="labor_total">Ustanın Alacağı</string>
+    <string name="per_meter_suffix">₺/m</string>
+    <string name="recalculate">Yeniden Hesapla</string>
+    <string name="profit">Kâr</string>
+
+    <string name="radiator_rate">Petek Birim Fiyat</string>
+    <string name="radiator_total">Petek Tutarı</string>
+    <string name="project_total">Proje Çizim Tutarı</string>
+    <string name="quote_summary_title">Özet</string>
+    <string name="quote_summary_placeholder">Genel toplam + indirim + tamamla burada olacak (iskelet).</string>
+    <string name="materials_total">Malzemeler Toplamı</string>
+    <string name="grand_total">Genel Toplam</string>
+    <string name="discount">İndirim</string>
+    <string name="apply_discount">İndirim Yap</string>
+    <string name="complete_quote">Teklifi Tamamla</string>
+    <string name="quote_completed">Teklif başarıyla tamamlandı</string>
+
+    <string name="send_output">Çıktı Gönder</string>
+    <string name="quote_output_title">Fiyat Teklifi</string>
+    <string name="workmanship">İşçilik</string>
+    <string name="project">Proje</string>
+    <string name="other_expenses">Diğer Giderler</string>
+    <string name="boiler">Kombi</string>
+    <string name="radiator">Petek</string>
+    <string name="take_output">Çıktı Al</string>
+    <string name="take_output_hint">Ekran görüntüsü alıp müşteriye gönderebilirsiniz.</string>
+
+    <string name="customer_tc_no">TC Kimlik No</string>
+
+    <!-- Quote status (editable dropdown) -->
+    <string name="status_pending">Beklemede</string>
+    <string name="status_approved">Onaylandı</string>
+    <string name="status_rejected">Reddedildi</string>
+    <string name="status_change_title">Teklif Durumu</string>
+    <string name="status_hint">Durumu değiştirmek için dokunun</string>
+
+    <!-- Approve -> add customer flow -->
+    <string name="approve_add_customer_title">Müşterilere eklensin mi?</string>
+    <string name="approve_add_customer_review_message">\"%1$s\" teklifi onaylandı. Bu müşteriyi Müşterilerim\'e ekleyelim. Bilgileri kontrol etmek ister misiniz?</string>
+    <string name="approve_add_customer_fill_message">\"%1$s\" teklifi onaylandı. Müşteri bilgilerini tamamlayıp Müşterilerim\'e ekleyin.</string>
+    <string name="approve_review">Kontrol Et</string>
+    <string name="approve_direct_add">Direkt Ekle</string>
+    <string name="approve_later">Şimdi Değil</string>
+    <string name="customer_added">Müşteri Müşterilerim\'e eklendi</string>
+    <string name="customer_info_title">Müşteri Bilgileri</string>
+    <string name="note_hint">Not</string>
+    <string name="default_city">ISPARTA</string>
+    <string name="add_as_customer">Müşteri Olarak Ekle</string>
+    <string name="delete_quote">Teklifi Sil</string>
+    <string name="delete_quote_confirm_title">Teklif silinsin mi?</string>
+    <string name="delete_quote_confirm_message">Bu teklif kalıcı olarak silinecek. Bu işlem geri alınamaz.</string>
+    <string name="leave_blank">Boş Bırak</string>
+    <string name="location_permission_hint">Konum izni verdikten sonra tekrar dokunun</string>
+
+    <!-- Optional detail hints on quote creation -->
+    <string name="optional_hint">İsteğe bağlı</string>
+    <string name="quote_customer_details_note">Bu bilgiler isteğe bağlıdır. Teklif onaylanırsa müşteri kaydı için kullanılır.</string>
+
+
+    <string name="copyright_footer">Tüm hakları Ahmet Sudeys Soylu\u0027ya aittir</string>
+</resources>

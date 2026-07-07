@@ -1,0 +1,29 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.RotaUygulama" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Reference-based colors -->
+        <item name="colorPrimary">@color/brand_red</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSurface">@color/surface_white</item>
+        <item name="colorOnSurface">@color/black</item>
+        <item name="colorOutline">@color/outline_light</item>
+
+        <item name="android:colorBackground">@color/bg_light</item>
+        <item name="android:statusBarColor">@color/bg_light</item>
+        <item name="android:navigationBarColor">@color/bg_light</item>
+        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
+
+        <!-- Default widgets -->
+        <item name="materialButtonStyle">@style/Widget.Rota.Button.Primary</item>
+    </style>
+
+    <style name="Theme.RotaUygulama" parent="Base.Theme.RotaUygulama" />
+
+    <!-- System splash (Android 12+). Removes the "double splash" by using only the OS splash + exit animation. -->
+    <style name="Theme.RotaUygulama.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/bg_light</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="windowSplashScreenIconBackgroundColor">@color/bg_light</item>
+        <item name="postSplashScreenTheme">@style/Theme.RotaUygulama</item>
+    </style>
+</resources>

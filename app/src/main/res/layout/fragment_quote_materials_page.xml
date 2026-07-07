@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_light"
+    android:padding="@dimen/space_m"
+    tools:context="com.ahmetsudeys.rotauygulama.ui.quote.QuoteMaterialsPageFragment">
+
+    <TextView
+        android:id="@+id/text_page_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?attr/textAppearanceTitleMedium"
+        android:includeFontPadding="false"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:autoSizeTextType="uniform"
+        android:autoSizeMinTextSize="10sp"
+        android:autoSizeMaxTextSize="16sp"
+        android:autoSizeStepGranularity="1sp"
+        app:layout_constraintEnd_toStartOf="@id/card_search"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Gaz Tesisatı" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_search"
+        style="@style/Widget.Rota.Card"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="@dimen/space_s"
+        app:layout_constraintStart_toEndOf="@id/text_page_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_max="200dp"
+        app:layout_constraintWidth_min="120dp">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/input_search"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingStart="@dimen/space_s"
+            android:paddingEnd="@dimen/space_s"
+            app:hintEnabled="false"
+            app:startIconDrawable="@drawable/ic_search"
+            app:startIconTint="@color/brand_red">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_search"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/transparent"
+                android:hint="@string/search_material"
+                android:ellipsize="end"
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:maxLines="1"
+                android:scrollHorizontally="true"
+                android:singleLine="true"
+                android:padding="0dp"
+                android:textSize="9sp" />
+        </com.google.android.material.textfield.TextInputLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/top_row_barrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="text_page_title,card_search" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_header"
+        style="@style/Widget.Rota.Card"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_s"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/top_row_barrier">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/space_m">
+
+            <TextView
+                android:id="@+id/text_h_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="@string/col_material"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@id/text_h_qty"
+                app:layout_constraintHorizontal_weight="0.45"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/text_h_qty"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:gravity="end"
+                android:maxLines="1"
+                android:text="@string/col_qty"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@id/text_h_price"
+                app:layout_constraintHorizontal_weight="0.21"
+                app:layout_constraintStart_toEndOf="@id/text_h_name"
+                app:layout_constraintTop_toTopOf="@id/text_h_name" />
+
+            <TextView
+                android:id="@+id/text_h_price"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:gravity="end"
+                android:maxLines="1"
+                android:text="@string/col_price"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@id/text_h_total"
+                app:layout_constraintHorizontal_weight="0.17"
+                app:layout_constraintStart_toEndOf="@id/text_h_qty"
+                app:layout_constraintTop_toTopOf="@id/text_h_name" />
+
+            <TextView
+                android:id="@+id/text_h_total"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:gravity="end"
+                android:maxLines="1"
+                android:text="@string/col_total"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_weight="0.17"
+                app:layout_constraintStart_toEndOf="@id/text_h_price"
+                app:layout_constraintTop_toTopOf="@id/text_h_name" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_materials"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/space_s"
+        android:overScrollMode="never"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/card_header"
+        tools:listitem="@layout/item_material_row" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+

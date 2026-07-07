@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_root"
+    style="@style/Widget.Rota.Card"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/space_xs">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/space_s">
+
+        <View
+            android:id="@+id/view_accent"
+            android:layout_width="4dp"
+            android:layout_height="0dp"
+            android:background="@color/brand_blue_soft"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/text_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@id/image_delete"
+            app:layout_constraintStart_toEndOf="@id/view_accent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginStart="@dimen/space_s"
+            tools:text="Ahmet Soylu" />
+
+        <ImageView
+            android:id="@+id/image_delete"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:contentDescription="@null"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_trash" />
+
+        <ImageView
+            android:id="@+id/icon_address"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_marginTop="6dp"
+            app:layout_constraintStart_toStartOf="@id/text_name"
+            app:layout_constraintTop_toBottomOf="@id/text_name"
+            app:srcCompat="@drawable/ic_location"
+            app:tint="@color/brand_blue"
+            android:contentDescription="@null" />
+
+        <TextView
+            android:id="@+id/text_address"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:layout_marginTop="6dp"
+            android:alpha="0.9"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/icon_address"
+            app:layout_constraintTop_toBottomOf="@id/text_name"
+            tools:text="İstanbul, Kadıköy, Acıbadem Mah., Bağdat Cad., No: 5, Daire: 3" />
+
+        <ImageView
+            android:id="@+id/icon_phone"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_marginTop="6dp"
+            app:layout_constraintStart_toStartOf="@id/text_name"
+            app:layout_constraintTop_toBottomOf="@id/text_address"
+            app:srcCompat="@drawable/ic_phone"
+            app:tint="@color/brand_blue"
+            android:contentDescription="@null" />
+
+        <TextView
+            android:id="@+id/text_phone"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:layout_marginTop="6dp"
+            android:alpha="0.8"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="?attr/textAppearanceBodySmall"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/icon_phone"
+            app:layout_constraintTop_toBottomOf="@id/text_address"
+            tools:text="05xx xxx xx xx" />
+
+        <LinearLayout
+            android:id="@+id/layout_paint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_s"
+            android:background="@drawable/bg_status_pill"
+            android:backgroundTint="@color/brand_red_soft"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="12dp"
+            android:paddingEnd="8dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            app:layout_constraintStart_toStartOf="@id/text_name"
+            app:layout_constraintTop_toBottomOf="@id/text_phone"
+            app:layout_constraintBottom_toTopOf="@id/button_directions">
+
+            <TextView
+                android:id="@+id/text_paint_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/brand_red"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                tools:text="Kolon boya durumu: Boyasız" />
+
+            <ImageView
+                android:id="@+id/image_paint_caret"
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:layout_marginStart="4dp"
+                android:contentDescription="@null"
+                app:srcCompat="@drawable/ic_caret_down"
+                app:tint="@color/brand_red" />
+        </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_directions"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:layout_marginTop="@dimen/space_s"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:text="@string/get_directions"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="11sp"
+            app:backgroundTint="@color/brand_blue"
+            app:cornerRadius="@dimen/radius_pill"
+            app:iconPadding="0dp"
+            app:layout_constraintStart_toStartOf="@id/layout_paint"
+            app:layout_constraintTop_toBottomOf="@id/layout_paint"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>
+
+

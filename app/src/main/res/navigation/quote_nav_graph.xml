@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/quote_nav_graph"
+    app:startDestination="@id/quoteCustomerFragment">
+
+    <fragment
+        android:id="@+id/quoteCustomerFragment"
+        android:name="com.ahmetsudeys.rotauygulama.ui.quote.QuoteCustomerFragment"
+        android:label="Müşteri">
+        <action
+            android:id="@+id/action_quoteCustomerFragment_to_quoteOperationSelectFragment"
+            app:destination="@id/quoteOperationSelectFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/quoteOperationSelectFragment"
+        android:name="com.ahmetsudeys.rotauygulama.ui.quote.QuoteOperationSelectFragment"
+        android:label="İşlem Türü">
+        <action
+            android:id="@+id/action_quoteOperationSelectFragment_to_quoteMaterialsFragment"
+            app:destination="@id/quoteMaterialsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/quoteMaterialsFragment"
+        android:name="com.ahmetsudeys.rotauygulama.ui.quote.QuoteMaterialsFragment"
+        android:label="Malzemeler">
+        <argument
+            android:name="selectedOperations"
+            app:argType="string[]" />
+        <action
+            android:id="@+id/action_quoteMaterialsFragment_to_quoteExtrasFragment"
+            app:destination="@id/quoteExtrasFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/quoteExtrasFragment"
+        android:name="com.ahmetsudeys.rotauygulama.ui.quote.QuoteExtrasFragment"
+        android:label="Ek Bilgiler">
+        <action
+            android:id="@+id/action_quoteExtrasFragment_to_quoteSummaryFragment"
+            app:destination="@id/quoteSummaryFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/quoteSummaryFragment"
+        android:name="com.ahmetsudeys.rotauygulama.ui.quote.QuoteSummaryFragment"
+        android:label="Özet">
+        <argument
+            android:name="pipeMeters"
+            app:argType="string"
+            android:defaultValue="0" />
+        <argument
+            android:name="radiatorMeters"
+            app:argType="string"
+            android:defaultValue="0" />
+        <argument
+            android:name="boilerPrice"
+            app:argType="string"
+            android:defaultValue="0" />
+        <argument
+            android:name="laborCost"
+            app:argType="string"
+            android:defaultValue="0" />
+        <argument
+            android:name="profit"
+            app:argType="string"
+            android:defaultValue="0" />
+        <argument
+            android:name="radiatorTotal"
+            app:argType="string"
+            android:defaultValue="0" />
+
+        <action
+            android:id="@+id/action_quoteSummaryFragment_to_quoteOutputFragment"
+            app:destination="@id/quoteOutputFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/quoteOutputFragment"
+        android:name="com.ahmetsudeys.rotauygulama.ui.quote.QuoteOutputFragment"
+        android:label="Çıktı" />
+
+</navigation>
+
+

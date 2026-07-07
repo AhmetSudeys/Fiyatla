@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- Brand / UI palette (reference-based) -->
+    <color name="brand_red">#FFC62828</color>
+    <color name="brand_blue">#FF1976D2</color>
+    <color name="brand_red_soft">#26C62828</color>
+    <color name="brand_blue_soft">#261976D2</color>
+    <color name="bottom_nav_bg">#FFFFF4F4</color>
+    <color name="bg_light">#FFF5F6FA</color>
+    <color name="surface_white">#FFFFFFFF</color>
+    <color name="outline_light">#FFE3E6EA</color>
+
+    <!-- Common semantic colors (used across layouts) -->
+    <color name="divider">@color/outline_light</color>
+    <color name="text_secondary">#FF666666</color>
+
+    <color name="success_green">#FF2E7D32</color>
+    <color name="warning_amber">#FFF9A825</color>
+    <color name="error_red">#FFD32F2F</color>
+
+    <!-- Soft status backgrounds (used by the editable status chip) -->
+    <color name="success_green_soft">#1F2E7D32</color>
+    <color name="warning_amber_soft">#26F9A825</color>
+    <color name="error_red_soft">#1FD32F2F</color>
+</resources>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_nav_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.ahmetsudeys.rotauygulama.ui.home.HomeFragment"
+        android:label="Anasayfa">
+        <action
+            android:id="@+id/action_homeFragment_to_quote_nav_graph"
+            app:destination="@id/quote_nav_graph" />
+
+        <action
+            android:id="@+id/action_homeFragment_to_quoteDetailFragment"
+            app:destination="@id/quoteDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/materialsFragment"
+        android:name="com.ahmetsudeys.rotauygulama.ui.materials.MaterialsFragment"
+        android:label="Malzeme Listesi" />
+
+    <fragment
+        android:id="@+id/quotesFragment"
+        android:name="com.ahmetsudeys.rotauygulama.ui.quotes.QuotesFragment"
+        android:label="Tekliflerim">
+        <action
+            android:id="@+id/action_quotesFragment_to_quoteDetailFragment"
+            app:destination="@id/quoteDetailFragment" />
+        <action
+            android:id="@+id/action_quotesFragment_to_quote_nav_graph"
+            app:destination="@id/quote_nav_graph" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/customersFragment"
+        android:name="com.ahmetsudeys.rotauygulama.ui.customers.CustomersFragment"
+        android:label="Müşteriler" />
+
+    <fragment
+        android:id="@+id/quoteDetailFragment"
+        android:name="com.ahmetsudeys.rotauygulama.ui.quotes.QuoteDetailFragment"
+        android:label="Teklif Detayı">
+        <argument
+            android:name="createdAtMillis"
+            app:argType="long" />
+        <action
+            android:id="@+id/action_quoteDetailFragment_to_quote_nav_graph"
+            app:destination="@id/quote_nav_graph" />
+    </fragment>
+
+    <include app:graph="@navigation/quote_nav_graph" />
+
+</navigation>
+

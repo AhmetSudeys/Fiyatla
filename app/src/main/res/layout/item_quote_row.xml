@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_root"
+    style="@style/Widget.Rota.Card"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/space_xs">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/space_s">
+
+        <View
+            android:id="@+id/view_status_bar"
+            android:layout_width="4dp"
+            android:layout_height="0dp"
+            android:background="@color/warning_amber"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/image_eye"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:contentDescription="@null"
+            app:layout_constraintStart_toEndOf="@id/view_status_bar"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginStart="@dimen/space_s"
+            app:srcCompat="@drawable/ic_eye" />
+
+        <!-- Editable status chip (tap to change) -->
+        <LinearLayout
+            android:id="@+id/layout_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_status_pill"
+            android:backgroundTint="@color/warning_amber_soft"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="10dp"
+            android:paddingEnd="6dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/image_status"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:contentDescription="@null"
+                app:srcCompat="@drawable/ic_status_pending"
+                app:tint="@color/warning_amber" />
+
+            <TextView
+                android:id="@+id/text_status_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:text="@string/status_pending"
+                android:textColor="@color/warning_amber"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/image_caret"
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:layout_marginStart="2dp"
+                android:contentDescription="@null"
+                app:srcCompat="@drawable/ic_caret_down"
+                app:tint="@color/warning_amber" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/image_delete"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:contentDescription="@null"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/layout_status"
+            android:layout_marginTop="10dp"
+            app:srcCompat="@drawable/ic_trash" />
+
+        <TextView
+            android:id="@+id/text_customer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@id/layout_status"
+            app:layout_constraintStart_toEndOf="@id/image_eye"
+            app:layout_constraintTop_toTopOf="@id/image_eye"
+            android:layout_marginEnd="@dimen/space_s"
+            android:layout_marginStart="@dimen/space_s"
+            android:maxLines="1"
+            android:ellipsize="end" />
+
+        <TextView
+            android:id="@+id/text_operations"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:alpha="0.75"
+            app:layout_constraintEnd_toStartOf="@id/layout_status"
+            app:layout_constraintStart_toStartOf="@id/text_customer"
+            app:layout_constraintTop_toBottomOf="@id/text_customer"
+            android:layout_marginEnd="@dimen/space_s"
+            android:maxLines="2"
+            android:ellipsize="end" />
+
+        <TextView
+            android:id="@+id/text_note"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:alpha="0.8"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textAppearance="?attr/textAppearanceBodySmall"
+            android:textColor="@color/brand_blue"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/text_operations"
+            app:layout_constraintTop_toBottomOf="@id/text_operations"
+            android:layout_marginEnd="@dimen/space_s" />
+
+        <TextView
+            android:id="@+id/text_total"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textStyle="bold"
+            android:textColor="@color/brand_red"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/text_operations"
+            app:layout_constraintTop_toBottomOf="@id/text_note" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

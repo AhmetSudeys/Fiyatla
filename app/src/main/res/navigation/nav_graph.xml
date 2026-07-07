@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/launchFragment">
+
+    <!-- App entry: decides first-run vs normal. Minimal logic. -->
+    <fragment
+        android:id="@+id/launchFragment"
+        android:name="com.ahmetsudeys.rotauygulama.ui.launch.LaunchFragment"
+        android:label="Launch">
+        <action
+            android:id="@+id/action_launchFragment_to_companySetupFragment"
+            app:destination="@id/companySetupFragment"
+            app:popUpTo="@id/launchFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_launchFragment_to_welcomeFragment"
+            app:destination="@id/welcomeFragment"
+            app:popUpTo="@id/launchFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/companySetupFragment"
+        android:name="com.ahmetsudeys.rotauygulama.ui.onboarding.CompanySetupFragment"
+        android:label="Firma Adı">
+        <action
+            android:id="@+id/action_companySetupFragment_to_welcomeFragment"
+            app:destination="@id/welcomeFragment"
+            app:popUpTo="@id/companySetupFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/welcomeFragment"
+        android:name="com.ahmetsudeys.rotauygulama.ui.onboarding.WelcomeFragment"
+        android:label="Hoşgeldiniz">
+        <action
+            android:id="@+id/action_welcomeFragment_to_companySetupFragment"
+            app:destination="@id/companySetupFragment"
+            app:popUpTo="@id/welcomeFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_welcomeFragment_to_mainShellFragment"
+            app:destination="@id/mainShellFragment"
+            app:popUpTo="@id/welcomeFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/mainShellFragment"
+        android:name="com.ahmetsudeys.rotauygulama.ui.shell.MainShellFragment"
+        android:label="Main">
+        <argument
+            android:name="companyName"
+            app:argType="string"
+            android:defaultValue="" />
+    </fragment>
+
+</navigation>

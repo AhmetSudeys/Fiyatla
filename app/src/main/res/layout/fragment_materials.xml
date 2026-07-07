@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/surface_white"
+    android:padding="@dimen/space_m"
+    tools:context="com.ahmetsudeys.rotauygulama.ui.materials.MaterialsFragment">
+
+    <TextView
+        android:id="@+id/text_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/nav_materials"
+        android:textAppearance="?attr/textAppearanceTitleLarge"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/button_add_list"
+        app:layout_constraintEnd_toStartOf="@id/button_add_list"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/button_add_list" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_add_list"
+        style="@style/Widget.Material3.Button.TonalButton.Icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="0dp"
+        android:paddingStart="@dimen/space_s"
+        android:paddingEnd="@dimen/space_m"
+        android:text="@string/add_list"
+        android:textColor="@color/brand_red"
+        app:backgroundTint="@color/brand_red_soft"
+        app:cornerRadius="@dimen/radius_pill"
+        app:icon="@drawable/ic_plus"
+        app:iconTint="@color/brand_red"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab_layout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_s"
+        app:tabIndicatorColor="@color/brand_red"
+        app:tabMode="scrollable"
+        app:tabRippleColor="@color/outline_light"
+        app:tabTextAppearance="@style/TextAppearance.Rota.Tab.Small"
+        app:tabPaddingStart="@dimen/space_xs"
+        app:tabPaddingEnd="@dimen/space_xs"
+        app:tabMinWidth="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/button_add_list" />
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/view_pager"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/space_s"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tab_layout" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
