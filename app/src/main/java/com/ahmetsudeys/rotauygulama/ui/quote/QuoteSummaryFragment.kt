@@ -1,6 +1,8 @@
 package com.ahmetsudeys.rotauygulama.ui.quote
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,12 +23,18 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.text.NumberFormat
 import java.util.Currency
 import java.util.Locale
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 class QuoteSummaryFragment : Fragment() {
 
     private var _binding: FragmentQuoteSummaryBinding? = null
     private val binding: FragmentQuoteSummaryBinding
         get() = requireNotNull(_binding)
+
+    private val ioExecutor: ExecutorService = Executors.newSingleThreadExecutor()
+    private val mainHandler = Handler(Looper.getMainLooper())
+    private var sharing = false
 
     private val money: NumberFormat = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("tr-TR")).apply {
         currency = Currency.getInstance("TRY")
@@ -60,10 +68,28 @@ class QuoteSummaryFragment : Fragment() {
 
         binding.buttonDiscount.setOnSingleClickListener { showDiscountSheet() }
         binding.buttonOutput.setOnSingleClickListener {
-            try {
-                QuoteShareHelper.shareCurrentDraftAsPdf(requireContext())
-            } catch (t: Throwable) {
-                Toast.makeText(requireContext(), "Paylaşım açılamadı", Toast.LENGTH_SHORT).show()
+            if (sharing) return@setOnSingleClickListener
+            sharing = true
+            val appCtx = requireContext().applicationContext
+            ioExecutor.execute {
+                val uri = try {
+                    QuoteShareHelper.buildDraftPdf(appCtx)
+                } catch (t: Throwable) {
+                    null
+                }
+                mainHandler.post {
+                    sharing = false
+                    if (_binding == null || !isAdded) return@post
+                    if (uri == null) {
+                        Toast.makeText(requireContext(), "Paylaşım açılamadı", Toast.LENGTH_SHORT).show()
+                    } else {
+                        try {
+                            QuoteShareHelper.startShare(requireContext(), uri)
+                        } catch (t: Throwable) {
+                            Toast.makeText(requireContext(), "Paylaşım açılamadı", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
             }
         }
         binding.buttonComplete.setText(
@@ -260,6 +286,11 @@ class QuoteSummaryFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        ioExecutor.shutdownNow()
     }
 }
 

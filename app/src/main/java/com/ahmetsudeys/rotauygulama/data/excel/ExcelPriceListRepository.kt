@@ -9,9 +9,6 @@ import java.util.Locale
 class ExcelPriceListRepository(
     private val appContext: Context
 ) {
-    private val lock = Any()
-    private var cached: WorkbookCache? = null
-
     fun getMaterials(operationName: String): List<MaterialItem> {
         // User-managed lists (custom lists + edited Excel lists) win over the built-in workbook.
         MaterialListStore.getStoredList(appContext, operationName)?.let { return it.items }
@@ -62,8 +59,11 @@ class ExcelPriceListRepository(
     }
 
     private fun getOrLoadWorkbook(): WorkbookCache {
-        synchronized(lock) {
-            cached?.let { return it }
+        // Parsed once per process and shared across all repository instances (each screen creates
+        // its own repo). Avoids re-reading/parsing the .xlsx on every screen — a big jank source.
+        cachedWorkbook?.let { return it }
+        synchronized(workbookLock) {
+            cachedWorkbook?.let { return it }
 
             val entries = XlsxZipReader.readEntries(appContext.assets, ASSET_FILE_NAME)
             val sharedStrings = XlsxXmlParser.parseSharedStrings(entries.getValue("xl/sharedStrings.xml"))
@@ -86,7 +86,7 @@ class ExcelPriceListRepository(
             return WorkbookCache(
                 sheetNames = materialsBySheet.keys.toList(),
                 materialsBySheet = materialsBySheet
-            ).also { cached = it }
+            ).also { cachedWorkbook = it }
         }
     }
 
@@ -216,6 +216,11 @@ class ExcelPriceListRepository(
 
     private companion object {
         const val ASSET_FILE_NAME = "FiyatListesi.xlsx"
+
+        // Process-wide workbook cache: the .xlsx is parsed only once, then reused everywhere.
+        private val workbookLock = Any()
+        @Volatile
+        private var cachedWorkbook: WorkbookCache? = null
 
         val NAME_KEYWORDS = listOf("malzeme", "aciklama", "urun")
         val QTY_KEYWORDS = listOf("miktar", "adet")

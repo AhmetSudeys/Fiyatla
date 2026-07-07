@@ -23,7 +23,13 @@ import java.util.Locale
 
 object QuoteShareHelper {
 
+    /** Convenience: build + share on the caller thread (kept for compatibility). */
     fun shareCurrentDraftAsPdf(context: Context) {
+        startShare(context, buildDraftPdf(context))
+    }
+
+    /** Heavy work (draw + write PDF). Safe to call off the main thread. Returns the shareable Uri. */
+    fun buildDraftPdf(context: Context): Uri {
         val money: NumberFormat = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("tr-TR")).apply {
             currency = Currency.getInstance("TRY")
             maximumFractionDigits = 2
@@ -265,13 +271,16 @@ object QuoteShareHelper {
         FileOutputStream(outFile).use { fos -> pdf.writeTo(fos) }
         pdf.close()
 
-        val uri: Uri = FileProvider.getUriForFile(context, context.packageName + ".fileprovider", outFile)
+        return FileProvider.getUriForFile(context, context.packageName + ".fileprovider", outFile)
+    }
+
+    /** Opens the system share sheet for [uri]. Must be called on the main thread. */
+    fun startShare(context: Context, uri: Uri) {
         val shareIntent = Intent(Intent.ACTION_SEND).apply {
             type = "application/pdf"
             putExtra(Intent.EXTRA_STREAM, uri)
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
-
         context.startActivity(Intent.createChooser(shareIntent, context.getString(R.string.send_output)))
     }
 

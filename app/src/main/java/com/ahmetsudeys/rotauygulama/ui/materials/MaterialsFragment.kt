@@ -1,6 +1,8 @@
 package com.ahmetsudeys.rotauygulama.ui.materials
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +14,8 @@ import com.ahmetsudeys.rotauygulama.databinding.FragmentMaterialsBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayoutMediator
 import java.util.Locale
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 class MaterialsFragment : Fragment() {
 
@@ -22,6 +26,8 @@ class MaterialsFragment : Fragment() {
     private lateinit var repo: ExcelPriceListRepository
     private var mediator: TabLayoutMediator? = null
     private var sheets: List<String> = emptyList()
+    private val ioExecutor: ExecutorService = Executors.newSingleThreadExecutor()
+    private val mainHandler = Handler(Looper.getMainLooper())
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,7 +51,19 @@ class MaterialsFragment : Fragment() {
     }
 
     private fun buildTabs(selectName: String?) {
-        sheets = repo.getAllSheetNames()
+        // Reading sheet names may parse the .xlsx on first use — do it off the main thread so the
+        // Materials tab opens without a freeze.
+        ioExecutor.execute {
+            val names = repo.getAllSheetNames()
+            mainHandler.post {
+                if (_binding == null) return@post
+                applyTabs(names, selectName)
+            }
+        }
+    }
+
+    private fun applyTabs(names: List<String>, selectName: String?) {
+        sheets = names
 
         mediator?.detach()
         val pagerAdapter = MaterialsPagerAdapter(this, sheets)
@@ -97,6 +115,11 @@ class MaterialsFragment : Fragment() {
         mediator?.detach()
         mediator = null
         _binding = null
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        ioExecutor.shutdownNow()
     }
 
     companion object {
