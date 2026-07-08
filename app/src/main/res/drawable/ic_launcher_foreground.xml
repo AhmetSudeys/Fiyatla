@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- The full logo artwork, drawn edge-to-edge. The artwork sits within a circular safe area, so
-     launcher masks (circle, squircle, rounded square) never clip it, and the transparent rounded
-     corners reveal the red gradient background for a seamless icon. -->
+<!-- Just the artwork (gas meter + flame + calculator) on transparency, pre-sized with a comfortable
+     margin so it sits nicely inside the icon and is never clipped by launcher masks. The red field
+     comes from ic_launcher_background, so there is no seam. -->
 <inset xmlns:android="http://schemas.android.com/apk/res/android"
-    android:drawable="@drawable/logo"
+    android:drawable="@drawable/ic_launcher_fg"
     android:inset="0dp" />
