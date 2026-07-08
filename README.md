@@ -1,4 +1,4 @@
-# 🚀 DOĞALGAZ USTA
+# 🚀 DOĞALGAZ USTA (Yeni adıyla yakında YAYINDA!)
 
 ## Doğalgaz Saha ve Teklif Yönetimi Sistemi
 
