@@ -185,8 +185,8 @@
                     android:id="@+id/edit_district"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="none"
-                    android:cursorVisible="false" />
+                    android:inputType="textCapWords"
+                    android:cursorVisible="true" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
