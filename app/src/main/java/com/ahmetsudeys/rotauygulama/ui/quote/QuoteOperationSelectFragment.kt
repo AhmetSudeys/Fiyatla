@@ -1,6 +1,8 @@
 package com.ahmetsudeys.rotauygulama.ui.quote
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,17 +11,23 @@ import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ahmetsudeys.rotauygulama.R
-import com.ahmetsudeys.rotauygulama.data.materials.MaterialListStore
+import com.ahmetsudeys.rotauygulama.data.excel.ExcelPriceListRepository
 import com.ahmetsudeys.rotauygulama.data.quote.QuoteDraftStore
 import com.ahmetsudeys.rotauygulama.databinding.FragmentQuoteOperationSelectBinding
 import com.ahmetsudeys.rotauygulama.ui.util.setOnSingleClickListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 class QuoteOperationSelectFragment : Fragment() {
 
     private var _binding: FragmentQuoteOperationSelectBinding? = null
     private val binding: FragmentQuoteOperationSelectBinding
         get() = requireNotNull(_binding)
+
+    private lateinit var repo: ExcelPriceListRepository
+    private val ioExecutor: ExecutorService = Executors.newSingleThreadExecutor()
+    private val mainHandler = Handler(Looper.getMainLooper())
 
     private val selectedOperations = linkedSetOf<String>()
 
@@ -33,6 +41,7 @@ class QuoteOperationSelectFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        repo = ExcelPriceListRepository(requireContext().applicationContext)
         binding.toolbar.setNavigationOnClickListener { findNavController().navigateUp() }
         binding.toolbar.menu.clear()
         binding.toolbar.inflateMenu(R.menu.menu_quote_flow)
@@ -45,22 +54,14 @@ class QuoteOperationSelectFragment : Fragment() {
                 else -> false
             }
         }
-        // Built-in operation types plus any user-created custom lists.
-        val customLists = MaterialListStore.getCustomListNames(requireContext().applicationContext)
-        val operations = resources.getStringArray(R.array.operation_types).toList() + customLists
 
         // Prefill when editing an existing quote
         if (selectedOperations.isEmpty() && QuoteDraftStore.selectedOperations.isNotEmpty()) {
             selectedOperations.addAll(QuoteDraftStore.selectedOperations)
         }
 
-        val adapter = OperationSelectAdapter(
-            items = operations,
-            selected = selectedOperations,
-            onSelectionChanged = { binding.textError.visibility = View.GONE }
-        )
         binding.recyclerOperations.layoutManager = LinearLayoutManager(requireContext())
-        binding.recyclerOperations.adapter = adapter
+        loadOperations()
 
         binding.buttonContinue.setOnSingleClickListener {
             if (selectedOperations.isEmpty()) {
@@ -83,6 +84,27 @@ class QuoteOperationSelectFragment : Fragment() {
                 R.id.action_quoteOperationSelectFragment_to_quoteMaterialsFragment,
                 bundleOf(ARG_SELECTED_OPERATIONS to selectedOperations.toTypedArray())
             )
+        }
+    }
+
+    /**
+     * The selectable operation types are exactly the material lists from the Materials screen
+     * (built-in Excel lists that haven't been deleted, plus user-created custom lists). This keeps
+     * the quote flow perfectly in sync with whatever the user has added/renamed/deleted there.
+     * Reading the list may parse the .xlsx on first use, so it runs off the main thread.
+     */
+    private fun loadOperations() {
+        ioExecutor.execute {
+            val operations = repo.getAllSheetNames()
+            mainHandler.post {
+                if (_binding == null) return@post
+                val adapter = OperationSelectAdapter(
+                    items = operations,
+                    selected = selectedOperations,
+                    onSelectionChanged = { binding.textError.visibility = View.GONE }
+                )
+                binding.recyclerOperations.adapter = adapter
+            }
         }
     }
 
@@ -110,6 +132,11 @@ class QuoteOperationSelectFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        ioExecutor.shutdownNow()
     }
 
     private companion object {

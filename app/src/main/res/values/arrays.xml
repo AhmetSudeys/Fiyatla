@@ -1,17 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="operation_types">
-        <item>Gaz Tesisatı</item>
-        <item>Kısa Kolon</item>
-        <item>Kolon</item>
-        <item>Full</item>
-        <item>Hat Kaydırma + Kombi Montaj</item>
-        <item>Altı Hazır Kombi Montaj</item>
-        <item>Kazan Full</item>
-        <item>Shut off</item>
-        <item>Dükkan Kaynaklı</item>
-    </string-array>
-
     <string-array name="isparta_districts">
         <item>Merkez</item>
         <item>Aksu</item>
