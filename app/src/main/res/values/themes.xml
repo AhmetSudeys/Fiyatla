@@ -22,8 +22,10 @@
     <!-- System splash (Android 12+). Removes the "double splash" by using only the OS splash + exit animation. -->
     <style name="Theme.RotaUygulama.Splash" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/bg_light</item>
-        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
-        <item name="windowSplashScreenIconBackgroundColor">@color/bg_light</item>
+        <!-- Use the logo bitmap directly (not the adaptive icon) so the OS does not crop the
+             artwork to the adaptive-icon safe zone; it sits on a branded red icon circle. -->
+        <item name="windowSplashScreenAnimatedIcon">@drawable/logo</item>
+        <item name="windowSplashScreenIconBackgroundColor">@color/logo_red</item>
         <item name="postSplashScreenTheme">@style/Theme.RotaUygulama</item>
     </style>
 </resources>

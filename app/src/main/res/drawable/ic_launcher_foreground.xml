@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- The full logo artwork, drawn edge-to-edge. The artwork sits within a circular safe area, so
+     launcher masks (circle, squircle, rounded square) never clip it, and the transparent rounded
+     corners reveal the red gradient background for a seamless icon. -->
 <inset xmlns:android="http://schemas.android.com/apk/res/android"
     android:drawable="@drawable/logo"
-    android:inset="10dp" />
+    android:inset="0dp" />

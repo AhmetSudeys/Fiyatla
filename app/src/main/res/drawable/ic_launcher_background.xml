@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="@color/surface_white" />
+<!-- Red field behind the launcher foreground. A subtle top-to-bottom gradient matches the
+     logo artwork so the foreground's transparent rounded corners blend in seamlessly. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <gradient
+        android:angle="270"
+        android:startColor="@color/logo_red"
+        android:endColor="@color/logo_red_dark"
+        android:type="linear" />
 </shape>

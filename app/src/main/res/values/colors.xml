@@ -3,6 +3,10 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
+    <!-- App logo reds (match the new launcher icon's red field) -->
+    <color name="logo_red">#FFF4141F</color>
+    <color name="logo_red_dark">#FFD0111C</color>
+
     <!-- Brand / UI palette (reference-based) -->
     <color name="brand_red">#FFC62828</color>
     <color name="brand_blue">#FF1976D2</color>
