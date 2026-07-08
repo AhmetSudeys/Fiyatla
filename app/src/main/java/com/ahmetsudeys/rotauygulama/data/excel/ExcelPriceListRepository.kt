@@ -19,9 +19,17 @@ class ExcelPriceListRepository(
         return applyOverrides(sheetName, base)
     }
 
-    /** Built-in Excel sheets first, then user-created custom lists. */
+    /** Built-in Excel sheets first, then user-created custom lists. Deleted built-ins are hidden. */
     fun getAllSheetNames(): List<String> {
-        return getOrLoadWorkbook().sheetNames + MaterialListStore.getCustomListNames(appContext)
+        val builtIns = getOrLoadWorkbook().sheetNames
+            .filterNot { MaterialListStore.isBuiltInHidden(appContext, it) }
+        return builtIns + MaterialListStore.getCustomListNames(appContext)
+    }
+
+    /** True if [listName] matches a built-in Excel sheet (as opposed to a user-created custom list). */
+    fun isBuiltInList(listName: String): Boolean {
+        val wanted = listName.normalizeForMatch()
+        return getOrLoadWorkbook().sheetNames.any { it.normalizeForMatch() == wanted }
     }
 
     /** Only the built-in Excel sheet names (used to reject custom-list name clashes). */
@@ -37,12 +45,34 @@ class ExcelPriceListRepository(
         return MaterialListStore.createCustomList(appContext, displayName, getBuiltInSheetNames())
     }
 
-    fun renameCustomList(oldName: String, newName: String): Boolean {
+    /**
+     * Renames any list. Custom lists are renamed in place. A built-in Excel list is snapshotted
+     * into a new custom list under [newName] and the original built-in is tombstoned, so from then
+     * on it behaves like a fully editable custom list. Returns false on a name clash.
+     */
+    fun renameList(oldName: String, newName: String): Boolean {
+        if (isBuiltInList(oldName)) {
+            // No-op rename (same normalized name) keeps the built-in as-is.
+            if (oldName.normalizeForMatch() == newName.normalizeForMatch()) return true
+            val items = getMaterials(oldName)
+            val created = MaterialListStore.createCustomListWithItems(
+                appContext, newName, items, getBuiltInSheetNames()
+            )
+            if (!created) return false
+            MaterialListStore.deleteList(appContext, oldName)
+            MaterialListStore.hideBuiltIn(appContext, oldName)
+            return true
+        }
         return MaterialListStore.renameCustomList(appContext, oldName, newName, getBuiltInSheetNames())
     }
 
     fun deleteList(listName: String) {
+        // Remove any custom/materialized entry, and tombstone the name if it is a built-in sheet so
+        // it does not reappear on the next tab rebuild.
         MaterialListStore.deleteList(appContext, listName)
+        if (isBuiltInList(listName)) {
+            MaterialListStore.hideBuiltIn(appContext, listName)
+        }
     }
 
     /** Persists the full item list, materializing a built-in Excel list on first structural edit. */

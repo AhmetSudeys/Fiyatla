@@ -92,6 +92,65 @@ object MaterialListStore {
         return true
     }
 
+    /**
+     * Creates a new custom list pre-seeded with [items]. Used when the user renames a built-in
+     * Excel list: we snapshot its rows into a fresh custom list under the new name and then hide
+     * the original built-in. Returns false on blank name or a name clash.
+     */
+    fun createCustomListWithItems(
+        context: Context,
+        displayName: String,
+        items: List<MaterialItem>,
+        reservedNames: List<String>
+    ): Boolean {
+        val name = displayName.trim()
+        if (name.isBlank()) return false
+        val key = name.keyNorm()
+        val root = readJson(context)
+        val lists = root.optJSONObject("lists") ?: JSONObject().also { root.put("lists", it) }
+        if (lists.has(key)) return false
+        if (reservedNames.any { it.keyNorm() == key }) return false
+
+        val obj = JSONObject().apply {
+            put("name", name)
+            put("custom", true)
+            put("items", items.toJsonArray())
+        }
+        lists.put(key, obj)
+
+        val order = root.optJSONArray("order") ?: JSONArray().also { root.put("order", it) }
+        order.put(key)
+
+        writeJson(context, root)
+        return true
+    }
+
+    /** Normalized keys of built-in Excel lists the user has deleted (tombstoned). */
+    fun getHiddenBuiltInKeys(context: Context): Set<String> {
+        val hidden = readJson(context).optJSONArray("hidden") ?: return emptySet()
+        val out = HashSet<String>(hidden.length())
+        for (i in 0 until hidden.length()) {
+            out.add(hidden.optString(i))
+        }
+        return out
+    }
+
+    fun isBuiltInHidden(context: Context, listName: String): Boolean {
+        return getHiddenBuiltInKeys(context).contains(listName.keyNorm())
+    }
+
+    /** Tombstones a built-in Excel list so it no longer shows up as a tab. */
+    fun hideBuiltIn(context: Context, listName: String) {
+        val key = listName.keyNorm()
+        val root = readJson(context)
+        val hidden = root.optJSONArray("hidden") ?: JSONArray().also { root.put("hidden", it) }
+        for (i in 0 until hidden.length()) {
+            if (hidden.optString(i) == key) return
+        }
+        hidden.put(key)
+        writeJson(context, root)
+    }
+
     /** Renames a custom list. Returns false on blank name or a name clash. */
     fun renameCustomList(
         context: Context,

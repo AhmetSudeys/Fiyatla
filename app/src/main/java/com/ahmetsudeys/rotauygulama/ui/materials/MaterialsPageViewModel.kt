@@ -68,7 +68,7 @@ class MaterialsPageViewModel(app: Application) : AndroidViewModel(app) {
 
     fun renameList(newName: String) {
         executor.execute {
-            val ok = repo.renameCustomList(currentSheet, newName)
+            val ok = repo.renameList(currentSheet, newName)
             if (ok) {
                 currentSheet = newName.trim()
                 _listEvent.postValue(ListEvent.Renamed(currentSheet))

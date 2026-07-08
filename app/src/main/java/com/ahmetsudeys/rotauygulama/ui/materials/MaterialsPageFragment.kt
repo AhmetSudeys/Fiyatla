@@ -77,7 +77,8 @@ class MaterialsPageFragment : Fragment() {
                 is MaterialsPageViewModel.UiState.Content -> {
                     fullList = state.items
                     isCustom = state.isCustom
-                    binding.buttonListMenu.visibility = if (isCustom) View.VISIBLE else View.GONE
+                    // Both built-in ("hazır") and custom lists can be renamed/deleted.
+                    binding.buttonListMenu.visibility = View.VISIBLE
                     adapter.setTotal(fullList.sumOf { it.total })
                     scheduleFilter(binding.editSearch.text?.toString().orEmpty())
                 }
