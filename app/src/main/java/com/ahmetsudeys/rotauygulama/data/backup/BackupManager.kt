@@ -2,15 +2,18 @@ package com.ahmetsudeys.rotauygulama.data.backup
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.LabeledIntent
 import android.net.Uri
 import android.util.Base64
 import androidx.core.content.FileProvider
+import com.ahmetsudeys.rotauygulama.R
 import com.ahmetsudeys.rotauygulama.data.CompanyBrandingStore
 import com.ahmetsudeys.rotauygulama.data.Prefs
 import com.ahmetsudeys.rotauygulama.data.customer.CustomerStorage
 import com.ahmetsudeys.rotauygulama.data.ledger.LedgerStorage
 import com.ahmetsudeys.rotauygulama.data.quote.QuoteStatus
 import com.ahmetsudeys.rotauygulama.data.quote.QuoteStorage
+import com.ahmetsudeys.rotauygulama.ui.onboarding.BackupDownloadActivity
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
@@ -43,6 +46,13 @@ object BackupManager {
     private const val BACKUP_VERSION = "1"
     private const val LOGO_ROW_KEY = "__LOGO__"
     private const val LOGO_FILE_NAME = "company_logo.png"
+
+    /**
+     * Excel caps a single cell at 32,767 characters; a value longer than that makes the whole file
+     * open as "corrupt / needs repair". So long backup values are split across consecutive columns
+     * (col C, D, E, ...) and stitched back together on restore.
+     */
+    private const val CELL_CHUNK = 30_000
 
     private val trLocale: Locale = Locale.forLanguageTag("tr-TR")
 
@@ -79,7 +89,11 @@ object BackupManager {
         return FileProvider.getUriForFile(context, context.packageName + ".fileprovider", outFile)
     }
 
-    /** Opens the system share sheet so the user can send the backup to Drive / WhatsApp / etc. */
+    /**
+     * Opens the system share sheet so the user can send the backup to Drive / WhatsApp / Gmail / etc.
+     * A "Telefona İndir" target is injected right into that same sheet so the user can also save the
+     * .xlsx straight onto the phone (Downloads / Documents) without leaving the chooser.
+     */
     fun startShare(context: Context, uri: Uri, chooserTitle: String) {
         val shareIntent = Intent(Intent.ACTION_SEND).apply {
             type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -87,7 +101,18 @@ object BackupManager {
             putExtra(Intent.EXTRA_SUBJECT, "Doğalgaz Usta - Veri Yedeği")
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
-        context.startActivity(Intent.createChooser(shareIntent, chooserTitle))
+        val chooser = Intent.createChooser(shareIntent, chooserTitle)
+
+        // Custom "save to this phone" entry, shown alongside WhatsApp/Gmail/etc.
+        val saveToPhone = LabeledIntent(
+            Intent(context, BackupDownloadActivity::class.java),
+            context.packageName,
+            R.string.backup_download,
+            R.drawable.ic_download
+        )
+        chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf<Intent>(saveToPhone))
+
+        context.startActivity(chooser)
     }
 
     private fun summarySheet(context: Context): XlsxWriter.Sheet {
@@ -212,13 +237,7 @@ object BackupManager {
             val prefs = context.getSharedPreferences(store, Context.MODE_PRIVATE)
             for ((key, value) in prefs.all) {
                 if (value is String) {
-                    rows.add(
-                        listOf(
-                            XlsxWriter.text(store),
-                            XlsxWriter.text(key),
-                            XlsxWriter.text(encode(value.toByteArray(Charsets.UTF_8)))
-                        )
-                    )
+                    rows.add(machineRow(store, key, encode(value.toByteArray(Charsets.UTF_8))))
                 }
             }
         }
@@ -226,17 +245,22 @@ object BackupManager {
         // Company logo (binary) as its own Base64 row.
         Prefs.getCompanyLogoFile(context)?.let { file ->
             runCatching { file.readBytes() }.getOrNull()?.let { bytes ->
-                rows.add(
-                    listOf(
-                        XlsxWriter.text(LOGO_ROW_KEY),
-                        XlsxWriter.text(LOGO_FILE_NAME),
-                        XlsxWriter.text(encode(bytes))
-                    )
-                )
+                rows.add(machineRow(LOGO_ROW_KEY, LOGO_FILE_NAME, encode(bytes)))
             }
         }
 
         return XlsxWriter.Sheet(MACHINE_SHEET, rows)
+    }
+
+    /** Builds one machine row: [store/marker, key, chunk1, chunk2, ...] respecting Excel's cell cap. */
+    private fun machineRow(col0: String, col1: String, value: String): List<XlsxWriter.Cell> {
+        val cells = ArrayList<XlsxWriter.Cell>()
+        cells.add(XlsxWriter.text(col0))
+        cells.add(XlsxWriter.text(col1))
+        // chunked() keeps order, so concatenating the chunks on restore reproduces the value exactly.
+        val chunks = if (value.isEmpty()) listOf("") else value.chunked(CELL_CHUNK)
+        for (chunk in chunks) cells.add(XlsxWriter.text(chunk))
+        return cells
     }
 
     private fun statusLabel(status: QuoteStatus): String = when (status) {
@@ -279,15 +303,18 @@ object BackupManager {
                 val row = rows[i]
                 val col0 = row.getOrNull(0).orEmpty()
                 val col1 = row.getOrNull(1).orEmpty()
-                val col2 = row.getOrNull(2).orEmpty()
                 if (col0.isBlank()) continue
+                // Value may be split across columns C, D, E, ... — stitch them back in order.
+                val encoded = buildString {
+                    for (c in 2 until row.size) append(row.getOrNull(c).orEmpty())
+                }
 
                 if (col0 == LOGO_ROW_KEY) {
-                    logoBytes = runCatching { decode(col2) }.getOrNull()
+                    logoBytes = runCatching { decode(encoded) }.getOrNull()
                     continue
                 }
                 if (col0 in DATA_STORES) {
-                    val value = String(decode(col2), Charsets.UTF_8)
+                    val value = String(decode(encoded), Charsets.UTF_8)
                     byStore.getOrPut(col0) { mutableListOf() }.add(col1 to value)
                 }
             }

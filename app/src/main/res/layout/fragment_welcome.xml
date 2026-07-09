@@ -65,21 +65,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/button_login"
-        app:layout_constraintBottom_toTopOf="@id/button_download" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/button_download"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/space_xs"
-        android:text="@string/backup_download"
-        style="@style/Widget.Rota.Button.Outlined"
-        app:icon="@drawable/ic_download"
-        app:iconGravity="textStart"
-        app:iconPadding="@dimen/space_s"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/button_backup"
         app:layout_constraintBottom_toTopOf="@id/button_restore" />
 
     <com.google.android.material.button.MaterialButton
@@ -94,7 +79,7 @@
         app:iconPadding="@dimen/space_s"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/button_download"
+        app:layout_constraintTop_toBottomOf="@id/button_backup"
         app:layout_constraintBottom_toTopOf="@id/text_edit_company" />
 
     <TextView

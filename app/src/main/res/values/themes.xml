@@ -19,6 +19,15 @@
 
     <style name="Theme.RotaUygulama" parent="Base.Theme.RotaUygulama" />
 
+    <!-- Invisible host for the "Telefona İndir" backup target: no window chrome, just the SAF picker. -->
+    <style name="Theme.RotaUygulama.Invisible" parent="Base.Theme.RotaUygulama">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowAnimationStyle">@null</item>
+    </style>
+
     <!-- System splash (Android 12+). Removes the "double splash" by using only the OS splash + exit animation. -->
     <style name="Theme.RotaUygulama.Splash" parent="Theme.SplashScreen">
         <!-- Full red splash matching the logo, with the larger artwork centered on it. No icon

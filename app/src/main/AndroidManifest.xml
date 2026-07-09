@@ -26,6 +26,13 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".ui.onboarding.BackupDownloadActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:theme="@style/Theme.RotaUygulama.Invisible" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
