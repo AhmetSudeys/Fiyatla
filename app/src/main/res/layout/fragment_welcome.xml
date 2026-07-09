@@ -97,7 +97,7 @@
         android:textColor="@color/brand_blue"
         android:textSize="12sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@id/text_footer"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/button_restore" />
@@ -106,16 +106,16 @@
         android:id="@+id/text_footer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/space_xs"
-        android:alpha="0.65"
+        android:layout_marginBottom="@dimen/space_xs"
+        android:alpha="0.4"
+        android:fontFamily="sans-serif-light"
+        android:letterSpacing="0.08"
         android:text="@string/copyright_footer"
         android:textAlignment="center"
-        android:textSize="12sp"
-        android:textStyle="bold"
+        android:textSize="9sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_edit_company" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

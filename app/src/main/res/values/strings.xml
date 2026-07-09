@@ -9,6 +9,10 @@
     <string name="company_setup_title">Firma bilgilerini giriniz</string>
     <string name="company_name_hint">Firma adı</string>
     <string name="company_logo_pick_hint">Logo yüklemek için tıklayınız.</string>
+    <string name="logo_crop_title">Logoyu daire içine sığdır</string>
+    <string name="logo_crop_hint">Parmakla kaydır, iki parmakla küçültüp büyült</string>
+    <string name="logo_crop_apply">Uygula</string>
+    <string name="logo_load_failed">Görsel yüklenemedi</string>
     <string name="save">Kaydet</string>
     <string name="login">Giriş Yap</string>
     <string name="logo">Logo</string>

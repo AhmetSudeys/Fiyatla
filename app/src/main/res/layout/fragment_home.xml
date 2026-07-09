@@ -32,13 +32,13 @@
         android:focusable="true"
         android:contentDescription="@string/profile"
         android:scaleType="centerCrop"
-        android:src="@drawable/ic_profile_placeholder"
+        android:src="@drawable/ic_door"
         android:background="?attr/selectableItemBackgroundBorderless"
         app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Rota.Circle"
         app:strokeColor="@color/outline_light"
         app:strokeWidth="1dp"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/button_new_quote"

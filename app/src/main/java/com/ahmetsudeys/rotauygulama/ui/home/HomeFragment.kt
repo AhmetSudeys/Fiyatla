@@ -1,6 +1,5 @@
 package com.ahmetsudeys.rotauygulama.ui.home
 
-import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -53,10 +52,7 @@ class HomeFragment : Fragment() {
         // Greeting removed from UI by request (kept company value for future use if needed)
         binding.textGreeting.text = ""
 
-        // Profile avatar (company logo). Tapping it returns to the login screen.
-        Prefs.getCompanyLogoFile(requireContext())?.let { file ->
-            binding.imageProfile.setImageURI(Uri.fromFile(file))
-        }
+        // Top-left door badge. Tapping it returns to the login (welcome) screen.
         binding.imageProfile.setOnSingleClickListener {
             // Home lives inside the child NavHost; navigate the root controller back to login.
             requireActivity().findNavController(R.id.nav_host_fragment)
