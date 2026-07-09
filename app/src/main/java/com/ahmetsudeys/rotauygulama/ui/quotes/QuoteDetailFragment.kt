@@ -76,7 +76,10 @@ class QuoteDetailFragment : Fragment() {
 
                 binding.buttonAddCustomer.setOnClickListener {
                     val current = currentRecord ?: return@setOnClickListener
-                    QuoteApproval.promoteToCustomer(this, ioExecutor, mainHandler, current)
+                    // Adding the customer from the detail screen also approves the quote.
+                    QuoteApproval.promoteToCustomer(this, ioExecutor, mainHandler, current) {
+                        markApproved()
+                    }
                 }
 
                 binding.buttonDeleteQuote.setOnClickListener {
@@ -115,6 +118,21 @@ class QuoteDetailFragment : Fragment() {
                 }
             }
             .show()
+    }
+
+    /** Sets the quote to APPROVED and refreshes the UI, without re-offering the add-customer flow. */
+    private fun markApproved() {
+        val current = currentRecord ?: return
+        if (current.status == QuoteStatus.APPROVED) return
+        ioExecutor.execute {
+            QuoteStorage.updateStatus(requireContext(), current.createdAtMillis, QuoteStatus.APPROVED)
+            mainHandler.post {
+                if (_binding == null) return@post
+                val updated = current.copy(status = QuoteStatus.APPROVED)
+                currentRecord = updated
+                bindRecord(updated)
+            }
+        }
     }
 
     private fun bindRecord(record: QuoteStorage.QuoteRecord) {

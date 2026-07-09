@@ -44,12 +44,17 @@ object QuoteApproval {
         }
     }
 
-    /** Offers to add this quote's customer to Müşterilerim (also usable as a manual action). */
+    /**
+     * Offers to add this quote's customer to Müşterilerim (also usable as a manual action).
+     * [onCustomerSaved] fires (on the main thread) only when the customer is actually persisted —
+     * used by the detail screen to auto-approve the quote once its customer is added.
+     */
     fun promoteToCustomer(
         fragment: Fragment,
         io: ExecutorService,
         main: Handler,
-        record: QuoteStorage.QuoteRecord
+        record: QuoteStorage.QuoteRecord,
+        onCustomerSaved: (() -> Unit)? = null
     ) {
         val ctx = fragment.requireContext()
         val candidate = record.buildCustomerCandidate()
@@ -69,10 +74,10 @@ object QuoteApproval {
                 .setMessage(ctx.getString(R.string.approve_add_customer_review_message, name))
                 .setNeutralButton(R.string.approve_later, null)
                 .setNegativeButton(R.string.approve_review) { _, _ ->
-                    CustomerFormSheet.show(fragment, candidate) { saved -> saveCustomer(fragment, io, main, saved, quoteTotal) }
+                    CustomerFormSheet.show(fragment, candidate) { saved -> saveCustomer(fragment, io, main, saved, quoteTotal, onCustomerSaved) }
                 }
                 .setPositiveButton(R.string.approve_direct_add) { _, _ ->
-                    saveCustomer(fragment, io, main, candidate, quoteTotal)
+                    saveCustomer(fragment, io, main, candidate, quoteTotal, onCustomerSaved)
                 }
                 .show()
         } else {
@@ -82,7 +87,7 @@ object QuoteApproval {
                 .setMessage(ctx.getString(R.string.approve_add_customer_fill_message, name))
                 .setNegativeButton(R.string.approve_later, null)
                 .setPositiveButton(R.string.approve_review) { _, _ ->
-                    CustomerFormSheet.show(fragment, candidate) { saved -> saveCustomer(fragment, io, main, saved, quoteTotal) }
+                    CustomerFormSheet.show(fragment, candidate) { saved -> saveCustomer(fragment, io, main, saved, quoteTotal, onCustomerSaved) }
                 }
                 .show()
         }
@@ -93,7 +98,8 @@ object QuoteApproval {
         io: ExecutorService,
         main: Handler,
         candidate: CustomerStorage.CustomerRecord,
-        quoteTotal: Double
+        quoteTotal: Double,
+        onCustomerSaved: (() -> Unit)? = null
     ) {
         val appCtx = fragment.requireContext().applicationContext
         io.execute {
@@ -112,6 +118,7 @@ object QuoteApproval {
                 if (fragment.isAdded) {
                     Toast.makeText(fragment.requireContext(), R.string.customer_added, Toast.LENGTH_SHORT).show()
                 }
+                onCustomerSaved?.invoke()
             }
         }
     }
