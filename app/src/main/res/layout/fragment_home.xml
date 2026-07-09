@@ -23,22 +23,36 @@
         app:layout_constraintStart_toStartOf="parent"
         />
 
-    <com.google.android.material.imageview.ShapeableImageView
+    <!-- Exit/login door badge — same premium red-gradient treatment as the receivables (wallet) button -->
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/image_profile"
-        android:layout_width="44dp"
-        android:layout_height="44dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_marginTop="@dimen/space_s"
         android:clickable="true"
         android:focusable="true"
         android:contentDescription="@string/profile"
-        android:scaleType="centerCrop"
-        android:src="@drawable/ic_door"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Rota.Circle"
-        app:strokeColor="@color/outline_light"
-        app:strokeWidth="1dp"
+        app:cardBackgroundColor="@android:color/transparent"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="6dp"
+        app:rippleColor="@color/white"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_gradient_red">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:contentDescription="@null"
+                app:srcCompat="@drawable/ic_door"
+                app:tint="@color/white" />
+        </FrameLayout>
+    </com.google.android.material.card.MaterialCardView>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/button_new_quote"

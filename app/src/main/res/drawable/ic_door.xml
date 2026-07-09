@@ -1,18 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="44dp"
-    android:height="44dp"
-    android:viewportWidth="44"
-    android:viewportHeight="44">
-    <!-- Circular soft background (clipped to a circle by the ShapeableImageView) -->
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Door frame (outer minus inner = clean outline) -->
     <path
-        android:fillColor="@color/brand_blue_soft"
-        android:pathData="M0,0h44v44h-44z" />
-    <!-- Door frame -->
+        android:fillColor="#FFFFFF"
+        android:fillType="evenOdd"
+        android:pathData="M4.7,21V4.4A1.8,1.8 0,0 1,6.5 2.6H17.5A1.8,1.8 0,0 1,19.3 4.4V21ZM6.5,4.6H17.5V21H6.5Z" />
+
+    <!-- Threshold / base line -->
     <path
-        android:fillColor="@color/brand_blue"
-        android:pathData="M16,11h12a1,1 0,0 1,1 1v20a1,1 0,0 1,-1 1h-12a1,1 0,0 1,-1 -1v-20a1,1 0,0 1,1 -1zM17,13v18h10v-18z" />
+        android:fillColor="#FFFFFF"
+        android:pathData="M4,21h16v1.6H4z" />
+
     <!-- Door knob -->
     <path
-        android:fillColor="@color/brand_blue"
-        android:pathData="M25,22m-1.4,0a1.4,1.4 0,1 1,2.8 0a1.4,1.4 0,1 1,-2.8 0" />
+        android:fillColor="#FFFFFF"
+        android:pathData="M15,12.6m-1.05,0a1.05,1.05 0,1 0,2.1 0a1.05,1.05 0,1 0,-2.1 0" />
 </vector>
