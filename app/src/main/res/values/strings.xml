@@ -200,8 +200,12 @@
     <string name="ledger_tab_report">Rapor</string>
 
     <string name="ledger_total_agreed">Toplam Alacak</string>
-    <string name="ledger_total_collected">Tahsil Edilen</string>
-    <string name="ledger_total_remaining">Kalan Borç</string>
+    <string name="ledger_total_collected">Toplam Tahsil Edilen</string>
+    <string name="ledger_total_remaining">Toplam Kalan Borç</string>
+
+    <string name="ledger_filter_all">Tümü</string>
+    <string name="ledger_filter_debtors">Borçlular</string>
+    <string name="ledger_filter_paid">Tamamlayanlar</string>
 
     <string name="ledger_agreed">Alacak</string>
     <string name="ledger_collected">Tahsilat</string>
@@ -216,9 +220,9 @@
     <string name="ledger_edit_agreement">Alacağı Düzenle</string>
     <string name="ledger_agreed_amount_hint">Anlaşılan tutar (₺)</string>
     <string name="ledger_agreed_date_pick">Anlaşılan tarih seç</string>
-    <string name="ledger_due_date">Alacak vadesi: %1$s</string>
-    <string name="ledger_due_date_pick">Alacak vadesi seç (opsiyonel)</string>
-    <string name="ledger_no_due">Vade belirtilmedi</string>
+    <string name="ledger_due_date">Ödeme tarihi: %1$s</string>
+    <string name="ledger_due_date_pick">Ödeme yapılacak tarih seç (opsiyonel)</string>
+    <string name="ledger_no_due">Ödeme tarihi belirtilmedi</string>
     <string name="ledger_clear_date">Tarihi temizle</string>
     <string name="ledger_no_phone">Telefon yok</string>
     <string name="ledger_payments_title">Ödeme Geçmişi</string>
@@ -240,8 +244,21 @@
     <string name="error_payment_amount_required">Geçerli bir tutar giriniz</string>
 
     <string name="report_summary">Özet</string>
-    <string name="report_monthly_revenue">Aylık Ciro (Tahsilat)</string>
-    <string name="report_method_breakdown">Nakit / Kart / Havale Dağılımı</string>
+    <string name="report_monthly_revenue">Aylık Ciro</string>
+    <string name="report_method_breakdown">Ödeme Yöntemi Dağılımı</string>
     <string name="report_top_debtors">En Çok Borçlular</string>
     <string name="report_no_data">Henüz tahsilat verisi yok.</string>
+
+    <string name="report_month_ciro">Ayın Cirosu</string>
+    <string name="report_overview">Genel Durum</string>
+    <string name="report_stat_customers">Müşteri</string>
+    <string name="report_stat_paid">Ödeyen</string>
+    <string name="report_stat_debtors">Borçlu</string>
+    <string name="report_stat_rate">Tahsilat Oranı</string>
+
+    <!-- Ödeme ekleme ekranı -->
+    <string name="payment_title">Ödeme Ekle</string>
+    <string name="payment_subtitle">Tahsil edilen tutarı ve yöntemini girin</string>
+    <string name="payment_amount_label">Alınan Tutar</string>
+    <string name="payment_note_label">Açıklama</string>
 </resources>

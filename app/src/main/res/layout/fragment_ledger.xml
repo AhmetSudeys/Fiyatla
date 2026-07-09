@@ -13,11 +13,52 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/toggle_group"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:navigationIcon="@drawable/ic_back"
         app:title="@string/ledger_title" />
+
+    <!-- Defter | Rapor segmented switch, top-right -->
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/toggle_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@id/toolbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/toolbar"
+        app:selectionRequired="true"
+        app:singleSelection="true">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_book"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:minWidth="0dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:text="@string/ledger_tab_book"
+            android:textAllCaps="false"
+            app:icon="@drawable/ic_nav_customers"
+            app:iconSize="16dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_report"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:minWidth="0dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:text="@string/ledger_tab_report"
+            android:textAllCaps="false"
+            app:iconSize="16dp" />
+    </com.google.android.material.button.MaterialButtonToggleGroup>
 
     <!-- Searchable customer select -->
     <com.google.android.material.textfield.TextInputLayout
@@ -69,7 +110,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_gradient_blue"
-                android:minHeight="86dp"
+                android:minHeight="90dp"
                 android:orientation="vertical"
                 android:padding="@dimen/space_s">
 
@@ -105,7 +146,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_gradient_green"
-                android:minHeight="86dp"
+                android:minHeight="90dp"
                 android:orientation="vertical"
                 android:padding="@dimen/space_s">
 
@@ -141,7 +182,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_gradient_red"
-                android:minHeight="86dp"
+                android:minHeight="90dp"
                 android:orientation="vertical"
                 android:padding="@dimen/space_s">
 
@@ -165,70 +206,81 @@
         </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
 
-    <!-- Defter | Rapor toggle -->
-    <com.google.android.material.chip.ChipGroup
-        android:id="@+id/chip_group_tabs"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/space_m"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/row_summary"
-        app:singleSelection="true"
-        app:selectionRequired="true"
-        app:chipSpacingHorizontal="@dimen/space_s">
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chip_tab_book"
-            style="@style/Widget.Material3.Chip.Filter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="@string/ledger_tab_book" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chip_tab_report"
-            style="@style/Widget.Material3.Chip.Filter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/ledger_tab_report" />
-    </com.google.android.material.chip.ChipGroup>
-
     <FrameLayout
         android:id="@+id/content_frame"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="@dimen/space_s"
+        android:layout_marginTop="@dimen/space_m"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/chip_group_tabs">
+        app:layout_constraintTop_toBottomOf="@id/row_summary">
 
         <!-- Defter view -->
-        <FrameLayout
+        <LinearLayout
             android:id="@+id/view_book"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/text_empty"
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chip_group_filters"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:alpha="0.7"
-                android:gravity="center"
-                android:padding="@dimen/space_m"
-                android:text="@string/ledger_no_customers"
-                android:textAppearance="?attr/textAppearanceBodyMedium" />
+                app:singleSelection="true"
+                app:selectionRequired="true"
+                app:chipSpacingHorizontal="@dimen/space_s">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_ledger"
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_filter_all"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="@string/ledger_filter_all" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_filter_debtors"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ledger_filter_debtors" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_filter_paid"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ledger_filter_paid" />
+            </com.google.android.material.chip.ChipGroup>
+
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:clipToPadding="false"
-                android:overScrollMode="never"
-                android:paddingBottom="@dimen/space_m"
-                tools:listitem="@layout/item_ledger_row" />
-        </FrameLayout>
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_marginTop="@dimen/space_s">
+
+                <TextView
+                    android:id="@+id/text_empty"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:alpha="0.7"
+                    android:gravity="center"
+                    android:padding="@dimen/space_m"
+                    android:text="@string/ledger_no_customers"
+                    android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_ledger"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clipToPadding="false"
+                    android:overScrollMode="never"
+                    android:paddingBottom="@dimen/space_m"
+                    tools:listitem="@layout/item_ledger_row" />
+            </FrameLayout>
+        </LinearLayout>
 
         <!-- Rapor view -->
         <androidx.core.widget.NestedScrollView
@@ -277,16 +329,97 @@
                                 android:textStyle="bold" />
                         </LinearLayout>
 
-                        <LinearLayout
-                            android:id="@+id/container_monthly"
+                        <com.google.android.material.chip.ChipGroup
+                            android:id="@+id/chip_group_months"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/space_s"
-                            android:orientation="vertical" />
+                            app:singleSelection="true"
+                            app:selectionRequired="true"
+                            app:chipSpacingHorizontal="@dimen/space_xs" />
+
+                        <com.ahmetsudeys.rotauygulama.ui.ledger.ColumnChartView
+                            android:id="@+id/chart_monthly"
+                            android:layout_width="match_parent"
+                            android:layout_height="160dp"
+                            android:layout_marginTop="@dimen/space_s" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/space_s"
+                            android:background="@drawable/bg_soft_tile"
+                            android:orientation="vertical"
+                            android:padding="@dimen/space_m">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:alpha="0.6"
+                                android:text="@string/report_month_ciro"
+                                android:textSize="12sp" />
+
+                            <TextView
+                                android:id="@+id/text_month_ciro"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:textColor="@color/accent_blue"
+                                android:textStyle="bold"
+                                android:textSize="22sp"
+                                tools:text="₺ 42.000" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/space_s"
+                                android:orientation="horizontal"
+                                android:weightSum="3">
+
+                                <TextView
+                                    android:id="@+id/text_month_cash"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:drawablePadding="4dp"
+                                    android:textColor="@color/accent_green"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold"
+                                    app:drawableStartCompat="@drawable/bg_dot"
+                                    app:drawableTint="@color/accent_green"
+                                    tools:text="Nakit ₺20.000" />
+
+                                <TextView
+                                    android:id="@+id/text_month_card"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:drawablePadding="4dp"
+                                    android:textColor="@color/accent_blue"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold"
+                                    app:drawableStartCompat="@drawable/bg_dot"
+                                    app:drawableTint="@color/accent_blue"
+                                    tools:text="Kart ₺15.000" />
+
+                                <TextView
+                                    android:id="@+id/text_month_transfer"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:drawablePadding="4dp"
+                                    android:textColor="@color/accent_amber"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold"
+                                    app:drawableStartCompat="@drawable/bg_dot"
+                                    app:drawableTint="@color/accent_amber"
+                                    tools:text="Havale ₺7.000" />
+                            </LinearLayout>
+                        </LinearLayout>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- Nakit / Kart / Havale -->
+                <!-- Ödeme yöntemi dağılımı -->
                 <com.google.android.material.card.MaterialCardView
                     style="@style/Widget.Rota.Card"
                     android:layout_width="match_parent"
@@ -321,11 +454,181 @@
                         </LinearLayout>
 
                         <LinearLayout
-                            android:id="@+id/container_methods"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/space_s"
-                            android:orientation="vertical" />
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <com.ahmetsudeys.rotauygulama.ui.ledger.DonutChartView
+                                android:id="@+id/chart_methods"
+                                android:layout_width="130dp"
+                                android:layout_height="130dp" />
+
+                            <LinearLayout
+                                android:id="@+id/container_method_legend"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="@dimen/space_m"
+                                android:orientation="vertical" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Genel durum -->
+                <com.google.android.material.card.MaterialCardView
+                    style="@style/Widget.Rota.Card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_s">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/space_m">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <View
+                                android:layout_width="6dp"
+                                android:layout_height="20dp"
+                                android:background="@drawable/bg_pill_fill"
+                                android:backgroundTint="@color/accent_teal" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/space_s"
+                                android:text="@string/report_overview"
+                                android:textAppearance="?attr/textAppearanceTitleMedium"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/space_s"
+                            android:baselineAligned="false"
+                            android:orientation="horizontal"
+                            android:weightSum="2">
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:background="@drawable/bg_soft_tile"
+                                android:orientation="vertical"
+                                android:padding="@dimen/space_s">
+
+                                <TextView
+                                    android:id="@+id/text_stat_customers"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/accent_blue"
+                                    android:textStyle="bold"
+                                    android:textSize="20sp"
+                                    tools:text="12" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:alpha="0.6"
+                                    android:text="@string/report_stat_customers"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="@dimen/space_xs"
+                                android:background="@drawable/bg_soft_tile"
+                                android:orientation="vertical"
+                                android:padding="@dimen/space_s">
+
+                                <TextView
+                                    android:id="@+id/text_stat_paid"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/accent_green"
+                                    android:textStyle="bold"
+                                    android:textSize="20sp"
+                                    tools:text="7" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:alpha="0.6"
+                                    android:text="@string/report_stat_paid"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/space_xs"
+                            android:baselineAligned="false"
+                            android:orientation="horizontal"
+                            android:weightSum="2">
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:background="@drawable/bg_soft_tile"
+                                android:orientation="vertical"
+                                android:padding="@dimen/space_s">
+
+                                <TextView
+                                    android:id="@+id/text_stat_debtors"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/accent_red"
+                                    android:textStyle="bold"
+                                    android:textSize="20sp"
+                                    tools:text="5" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:alpha="0.6"
+                                    android:text="@string/report_stat_debtors"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="@dimen/space_xs"
+                                android:background="@drawable/bg_soft_tile"
+                                android:orientation="vertical"
+                                android:padding="@dimen/space_s">
+
+                                <TextView
+                                    android:id="@+id/text_stat_rate"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/accent_purple"
+                                    android:textStyle="bold"
+                                    android:textSize="20sp"
+                                    tools:text="%58" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:alpha="0.6"
+                                    android:text="@string/report_stat_rate"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
+                        </LinearLayout>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 

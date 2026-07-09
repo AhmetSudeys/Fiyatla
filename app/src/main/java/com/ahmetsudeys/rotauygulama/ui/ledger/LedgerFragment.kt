@@ -3,10 +3,14 @@ package com.ahmetsudeys.rotauygulama.ui.ledger
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
@@ -19,8 +23,8 @@ import com.ahmetsudeys.rotauygulama.data.ledger.LedgerCalculator
 import com.ahmetsudeys.rotauygulama.data.ledger.LedgerStorage
 import com.ahmetsudeys.rotauygulama.data.quote.QuoteStorage
 import com.ahmetsudeys.rotauygulama.databinding.FragmentLedgerBinding
-import com.ahmetsudeys.rotauygulama.databinding.ItemReportBarBinding
 import com.ahmetsudeys.rotauygulama.databinding.ItemReportDebtorBinding
+import com.google.android.material.chip.Chip
 import java.text.NumberFormat
 import java.util.Currency
 import java.util.Locale
@@ -41,6 +45,13 @@ class LedgerFragment : Fragment() {
     private var allRows: List<LedgerCalculator.LedgerRow> = emptyList()
     private var currentQuery: String = ""
 
+    private enum class BookFilter { ALL, DEBTORS, PAID }
+    private var bookFilter: BookFilter = BookFilter.ALL
+
+    private var recentMonths: List<LedgerCalculator.YearMonth> = emptyList()
+    private var selectedMonth: LedgerCalculator.YearMonth? = null
+    private val monthChipMap = HashMap<Int, LedgerCalculator.YearMonth>()
+
     private val money: NumberFormat = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("tr-TR")).apply {
         currency = Currency.getInstance("TRY")
         maximumFractionDigits = 0
@@ -49,6 +60,10 @@ class LedgerFragment : Fragment() {
     private val monthNames = arrayOf(
         "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
         "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"
+    )
+    private val monthShort = arrayOf(
+        "Oca", "Şub", "Mar", "Nis", "May", "Haz",
+        "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"
     )
 
     override fun onCreateView(
@@ -69,12 +84,19 @@ class LedgerFragment : Fragment() {
         binding.recyclerLedger.setHasFixedSize(true)
         binding.recyclerLedger.itemAnimator = null
 
-        // Typing filters the book list.
+        // Top-right segmented switch between Defter and Rapor.
+        binding.toggleGroup.check(R.id.btn_book)
+        binding.toggleGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            if (!isChecked) return@addOnButtonCheckedListener
+            val showReport = checkedId == R.id.btn_report
+            binding.viewBook.isVisible = !showReport
+            binding.viewReport.isVisible = showReport
+        }
+
         binding.autoSearch.doAfterTextChanged { editable ->
             currentQuery = editable?.toString().orEmpty()
             applyFilter()
         }
-        // Picking a name from the dropdown opens that customer's detail.
         binding.autoSearch.setOnItemClickListener { parent, _, position, _ ->
             val name = parent.getItemAtPosition(position) as? String ?: return@setOnItemClickListener
             val row = allRows.firstOrNull { (it.customer.name ?: "") == name }
@@ -85,10 +107,13 @@ class LedgerFragment : Fragment() {
             }
         }
 
-        binding.chipGroupTabs.setOnCheckedStateChangeListener { _, checkedIds ->
-            val showReport = checkedIds.contains(R.id.chip_tab_report)
-            binding.viewBook.isVisible = !showReport
-            binding.viewReport.isVisible = showReport
+        binding.chipGroupFilters.setOnCheckedStateChangeListener { _, checkedIds ->
+            bookFilter = when (checkedIds.firstOrNull()) {
+                R.id.chip_filter_debtors -> BookFilter.DEBTORS
+                R.id.chip_filter_paid -> BookFilter.PAID
+                else -> BookFilter.ALL
+            }
+            applyFilter()
         }
     }
 
@@ -125,20 +150,22 @@ class LedgerFragment : Fragment() {
 
     private fun setupSearchAdapter() {
         val names = allRows.mapNotNull { it.customer.name?.takeIf { n -> n.isNotBlank() } }
-        val dropdownAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, names)
-        binding.autoSearch.setAdapter(dropdownAdapter)
+        binding.autoSearch.setAdapter(ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, names))
     }
 
     private fun applyFilter() {
         val q = currentQuery.trim()
-        val filtered = if (q.isBlank()) {
-            allRows
-        } else {
-            allRows.filter { it.customer.name.orEmpty().contains(q, ignoreCase = true) }
+        var list = when (bookFilter) {
+            BookFilter.ALL -> allRows
+            BookFilter.DEBTORS -> allRows.filter { it.remaining > 0.009 }
+            BookFilter.PAID -> allRows.filter { it.isFullyPaid }
         }
-        binding.textEmpty.isVisible = filtered.isEmpty()
-        binding.recyclerLedger.isVisible = filtered.isNotEmpty()
-        adapter.submitList(filtered)
+        if (q.isNotBlank()) {
+            list = list.filter { it.customer.name.orEmpty().contains(q, ignoreCase = true) }
+        }
+        binding.textEmpty.isVisible = list.isEmpty()
+        binding.recyclerLedger.isVisible = list.isNotEmpty()
+        adapter.submitList(list)
     }
 
     private fun openDetail(customerId: Long) {
@@ -151,52 +178,126 @@ class LedgerFragment : Fragment() {
     // --- Report -----------------------------------------------------------
 
     private fun buildReport() {
-        buildMonthly()
+        buildMonthChips()
+        renderMonthly()
         buildMethods()
+        buildStats()
         buildDebtors()
     }
 
-    private fun buildMonthly() {
-        val container = binding.containerMonthly
-        container.removeAllViews()
-        val monthly = LedgerCalculator.monthlyRevenue(allRows)
-        if (monthly.isEmpty()) {
-            container.addView(emptyHint())
+    /** Rebuilds the 3-month selector. Recomputed from today so it advances as months pass. */
+    private fun buildMonthChips() {
+        recentMonths = LedgerCalculator.recentMonths(3) // newest first
+        // Keep the current selection if it is still inside the window, else default to this month.
+        if (selectedMonth == null || recentMonths.none { it.key == selectedMonth?.key }) {
+            selectedMonth = recentMonths.firstOrNull()
+        }
+
+        val group = binding.chipGroupMonths
+        group.setOnCheckedStateChangeListener(null)
+        group.removeAllViews()
+        monthChipMap.clear()
+
+        recentMonths.forEach { ym ->
+            val chip = Chip(requireContext()).apply {
+                text = "${monthShort[(ym.month - 1).coerceIn(0, 11)]} ${ym.year}"
+                isCheckable = true
+                isClickable = true
+                id = View.generateViewId()
+                isChecked = ym.key == selectedMonth?.key
+            }
+            monthChipMap[chip.id] = ym
+            group.addView(chip)
+        }
+        group.setOnCheckedStateChangeListener { _, checkedIds ->
+            val ym = checkedIds.firstOrNull()?.let { monthChipMap[it] } ?: return@setOnCheckedStateChangeListener
+            selectedMonth = ym
+            renderMonthly()
+        }
+    }
+
+    private fun renderMonthly() {
+        // Column chart in chronological order (oldest -> newest, left to right).
+        val chrono = recentMonths.reversed()
+        val columns = chrono.map { ym ->
+            val total = LedgerCalculator.collectedInMonth(allRows, ym)
+            ColumnChartView.Column(
+                label = "${monthShort[(ym.month - 1).coerceIn(0, 11)]}",
+                value = total.toFloat(),
+                valueLabel = shortMoney(total),
+                color = ContextCompat.getColor(requireContext(), R.color.accent_blue),
+                highlight = ym.key == selectedMonth?.key
+            )
+        }
+        binding.chartMonthly.setColumns(columns)
+
+        val ym = selectedMonth
+        if (ym == null) {
+            binding.textMonthCiro.text = money.format(0)
+            binding.textMonthCash.text = ""
+            binding.textMonthCard.text = ""
+            binding.textMonthTransfer.text = ""
             return
         }
-        val max = monthly.maxOf { it.total }.coerceAtLeast(1.0)
-        // Alternate two vivid tones so consecutive months stay easy to tell apart.
-        val palette = intArrayOf(R.color.accent_blue, R.color.accent_teal)
-        monthly.take(12).forEachIndexed { index, m ->
-            val row = ItemReportBarBinding.inflate(layoutInflater, container, false)
-            row.textLabel.text = "${monthNames[(m.month - 1).coerceIn(0, 11)]} ${m.year}"
-            row.textValue.text = money.format(m.total)
-            setBarFraction(row, m.total / max, palette[index % palette.size])
-            container.addView(row.root)
-        }
+        val ciro = LedgerCalculator.collectedInMonth(allRows, ym)
+        val b = LedgerCalculator.methodBreakdownInMonth(allRows, ym)
+        binding.textMonthCiro.text = money.format(ciro)
+        binding.textMonthCash.text = "${getString(R.string.payment_method_cash)} ${money.format(b.cash)}"
+        binding.textMonthCard.text = "${getString(R.string.payment_method_card)} ${money.format(b.card)}"
+        binding.textMonthTransfer.text = "${getString(R.string.payment_method_transfer)} ${money.format(b.transfer)}"
     }
 
     private fun buildMethods() {
-        val container = binding.containerMethods
-        container.removeAllViews()
         val b = LedgerCalculator.methodBreakdown(allRows)
-        if (b.total <= 0.0) {
-            container.addView(emptyHint())
-            return
-        }
-        val max = b.total.coerceAtLeast(1.0)
-        addMethodRow(container, getString(R.string.payment_method_cash), b.cash, max, R.color.accent_green)
-        addMethodRow(container, getString(R.string.payment_method_card), b.card, max, R.color.accent_blue)
-        addMethodRow(container, getString(R.string.payment_method_transfer), b.transfer, max, R.color.accent_amber)
+        binding.chartMethods.setSlices(
+            listOf(
+                DonutChartView.Slice(b.cash.toFloat(), color(R.color.accent_green)),
+                DonutChartView.Slice(b.card.toFloat(), color(R.color.accent_blue)),
+                DonutChartView.Slice(b.transfer.toFloat(), color(R.color.accent_amber))
+            )
+        )
+        val legend = binding.containerMethodLegend
+        legend.removeAllViews()
+        addLegendRow(legend, R.color.accent_green, getString(R.string.payment_method_cash), b.cash)
+        addLegendRow(legend, R.color.accent_blue, getString(R.string.payment_method_card), b.card)
+        addLegendRow(legend, R.color.accent_amber, getString(R.string.payment_method_transfer), b.transfer)
     }
 
-    private fun addMethodRow(container: ViewGroup, label: String, value: Double, max: Double, colorRes: Int) {
-        val row = ItemReportBarBinding.inflate(layoutInflater, container, false)
-        val pct = if (max > 0.0) (value / max * 100).toInt() else 0
-        row.textLabel.text = label
-        row.textValue.text = "${money.format(value)}  (%$pct)"
-        setBarFraction(row, value / max, colorRes)
-        container.addView(row.root)
+    private fun addLegendRow(container: ViewGroup, colorRes: Int, label: String, amount: Double) {
+        val row = LinearLayout(requireContext()).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            setPadding(0, dp(5), 0, dp(5))
+        }
+        val dot = View(requireContext()).apply {
+            setBackgroundResource(R.drawable.bg_dot)
+            backgroundTintList = ContextCompat.getColorStateList(requireContext(), colorRes)
+            layoutParams = LinearLayout.LayoutParams(dp(11), dp(11))
+        }
+        val labelView = TextView(requireContext()).apply {
+            text = label
+            textSize = 13f
+            layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply {
+                marginStart = dp(8)
+            }
+        }
+        val amountView = TextView(requireContext()).apply {
+            text = money.format(amount)
+            textSize = 13f
+            setTypeface(typeface, android.graphics.Typeface.BOLD)
+        }
+        row.addView(dot)
+        row.addView(labelView)
+        row.addView(amountView)
+        container.addView(row)
+    }
+
+    private fun buildStats() {
+        val s = LedgerCalculator.stats(allRows)
+        binding.textStatCustomers.text = s.customerCount.toString()
+        binding.textStatPaid.text = s.paidCount.toString()
+        binding.textStatDebtors.text = s.debtorCount.toString()
+        binding.textStatRate.text = "%${(s.collectionRate * 100).toInt()}"
     }
 
     private fun buildDebtors() {
@@ -204,8 +305,12 @@ class LedgerFragment : Fragment() {
         container.removeAllViews()
         val debtors = LedgerCalculator.topDebtors(allRows, limit = 5)
         if (debtors.isEmpty()) {
-            val hint = emptyHint()
-            hint.text = getString(R.string.ledger_no_debtors)
+            val hint = TextView(requireContext()).apply {
+                text = getString(R.string.ledger_no_debtors)
+                alpha = 0.7f
+                textSize = 13f
+                setPadding(0, dp(8), 0, dp(8))
+            }
             container.addView(hint)
             return
         }
@@ -221,23 +326,23 @@ class LedgerFragment : Fragment() {
         }
     }
 
-    private fun setBarFraction(row: ItemReportBarBinding, fraction: Double, colorRes: Int) {
-        val f = fraction.coerceIn(0.0, 1.0).toFloat()
-        (row.barFill.layoutParams as android.widget.LinearLayout.LayoutParams).weight = f
-        (row.barEmpty.layoutParams as android.widget.LinearLayout.LayoutParams).weight = 1f - f
-        row.barFill.backgroundTintList =
-            androidx.core.content.ContextCompat.getColorStateList(requireContext(), colorRes)
-        row.barFill.requestLayout()
-        row.barEmpty.requestLayout()
+    // --- Helpers ----------------------------------------------------------
+
+    private fun color(res: Int): Int = ContextCompat.getColor(requireContext(), res)
+
+    private fun dp(v: Int): Int = (v * resources.displayMetrics.density).toInt()
+
+    /** Compact currency for chart labels: ₺42B (bin), ₺1,2M (milyon). */
+    private fun shortMoney(v: Double): String = when {
+        v >= 1_000_000 -> "₺" + trim1(v / 1_000_000) + "M"
+        v >= 1_000 -> "₺" + trim1(v / 1_000) + "B"
+        v <= 0 -> "₺0"
+        else -> "₺" + v.toInt()
     }
 
-    private fun emptyHint(): android.widget.TextView {
-        return android.widget.TextView(requireContext()).apply {
-            text = getString(R.string.report_no_data)
-            alpha = 0.7f
-            textSize = 13f
-            setPadding(0, 8, 0, 8)
-        }
+    private fun trim1(x: Double): String {
+        val r = Math.round(x * 10) / 10.0
+        return if (r % 1.0 == 0.0) r.toInt().toString() else r.toString().replace('.', ',')
     }
 
     override fun onDestroyView() {

@@ -146,4 +146,62 @@ object LedgerCalculator {
         rows.filter { it.remaining > 0.009 }
             .sortedByDescending { it.remaining }
             .take(limit)
+
+    // --- Month-scoped analytics (dynamic 3-month window) -------------------
+
+    data class YearMonth(val year: Int, val month: Int) { // month is 1..12
+        val key: String get() = "%04d-%02d".format(year, month)
+    }
+
+    /** The current month plus the previous [count]-1 months, newest first. Recomputed from today. */
+    fun recentMonths(count: Int = 3): List<YearMonth> {
+        val cal = Calendar.getInstance()
+        val out = ArrayList<YearMonth>(count)
+        repeat(count) {
+            out.add(YearMonth(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1))
+            cal.add(Calendar.MONTH, -1)
+        }
+        return out
+    }
+
+    private fun payments(rows: List<LedgerRow>) =
+        rows.flatMap { it.account?.payments.orEmpty() }
+
+    private fun inMonth(dateMillis: Long, ym: YearMonth): Boolean {
+        val cal = Calendar.getInstance().apply { timeInMillis = dateMillis }
+        return cal.get(Calendar.YEAR) == ym.year && (cal.get(Calendar.MONTH) + 1) == ym.month
+    }
+
+    fun collectedInMonth(rows: List<LedgerRow>, ym: YearMonth): Double =
+        payments(rows).filter { inMonth(it.dateMillis, ym) }.sumOf { it.amount }
+
+    fun methodBreakdownInMonth(rows: List<LedgerRow>, ym: YearMonth): MethodBreakdown {
+        var cash = 0.0; var card = 0.0; var transfer = 0.0
+        payments(rows).filter { inMonth(it.dateMillis, ym) }.forEach { p ->
+            when (p.method) {
+                LedgerStorage.PaymentMethod.CASH -> cash += p.amount
+                LedgerStorage.PaymentMethod.CARD -> card += p.amount
+                LedgerStorage.PaymentMethod.TRANSFER -> transfer += p.amount
+            }
+        }
+        return MethodBreakdown(cash, card, transfer)
+    }
+
+    /** Headline counts for the report overview. */
+    data class Stats(
+        val customerCount: Int,
+        val paidCount: Int,
+        val debtorCount: Int,
+        val collectionRate: Float // 0f..1f
+    )
+
+    fun stats(rows: List<LedgerRow>): Stats {
+        val withAmount = rows.filter { it.agreedAmount > 0.0 }
+        val paid = withAmount.count { it.isFullyPaid }
+        val debtors = rows.count { it.remaining > 0.009 }
+        val summary = summarize(rows)
+        val rate = if (summary.totalAgreed <= 0.0) 0f
+        else (summary.totalCollected / summary.totalAgreed).coerceIn(0.0, 1.0).toFloat()
+        return Stats(rows.size, paid, debtors, rate)
+    }
 }
