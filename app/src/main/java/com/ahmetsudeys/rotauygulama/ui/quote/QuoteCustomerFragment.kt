@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -53,12 +52,6 @@ class QuoteCustomerFragment : Fragment() {
             }
         )
 
-        // District dropdown (Isparta districts).
-        val districts = resources.getStringArray(R.array.isparta_districts)
-        binding.editDistrict.setAdapter(
-            ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, districts)
-        )
-
         // "Use current location" auto-fills the address fields.
         binding.textUseCurrentLocation.setOnClickListener {
             LocationAutofill.useCurrentLocation(
@@ -80,9 +73,9 @@ class QuoteCustomerFragment : Fragment() {
         binding.editTcNo.setText(QuoteDraftStore.customerTcNo)
         binding.editBuildingCode.setText(QuoteDraftStore.customerBuildingCode)
         binding.editInstallationNo.setText(QuoteDraftStore.customerInstallationNo)
-        // İl defaults to ISPARTA unless the draft already has a value.
-        binding.editCity.setText(QuoteDraftStore.customerCity.ifBlank { getString(R.string.default_city) })
-        binding.editDistrict.setText(QuoteDraftStore.customerDistrict, false)
+        // İl / ilçe are free-text and start empty (the app is used across different provinces).
+        binding.editCity.setText(QuoteDraftStore.customerCity)
+        binding.editDistrict.setText(QuoteDraftStore.customerDistrict)
         binding.editNeighborhood.setText(QuoteDraftStore.customerNeighborhood)
         binding.editStreet.setText(QuoteDraftStore.customerStreet)
         binding.editBuildingNo.setText(QuoteDraftStore.customerBuildingNo)

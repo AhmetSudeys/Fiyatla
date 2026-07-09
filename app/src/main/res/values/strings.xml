@@ -182,7 +182,6 @@
     <string name="customer_added">Müşteri Müşterilerim\'e eklendi</string>
     <string name="customer_info_title">Müşteri Bilgileri</string>
     <string name="note_hint">Not</string>
-    <string name="default_city">ISPARTA</string>
     <string name="add_as_customer">Müşteri Olarak Ekle</string>
     <string name="delete_quote">Teklifi Sil</string>
     <string name="delete_quote_confirm_title">Teklif silinsin mi?</string>
