@@ -4,12 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingTop="@dimen/space_xs"
-    android:paddingBottom="@dimen/space_xs">
+    android:paddingTop="6dp"
+    android:paddingBottom="6dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_vertical"
         android:orientation="horizontal">
 
         <TextView
@@ -20,6 +21,7 @@
             android:maxLines="1"
             android:ellipsize="end"
             android:textSize="13sp"
+            android:textStyle="bold"
             tools:text="Mayıs 2026" />
 
         <TextView
@@ -27,15 +29,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textStyle="bold"
-            android:textSize="13sp"
+            android:textSize="14sp"
             tools:text="₺ 20.000" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="6dp"
-        android:layout_marginTop="4dp"
-        android:background="@color/outline_light"
+        android:layout_height="10dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/bg_pill_track"
         android:orientation="horizontal">
 
         <View
@@ -43,7 +45,8 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@color/brand_blue" />
+            android:background="@drawable/bg_pill_fill"
+            android:backgroundTint="@color/accent_blue" />
 
         <View
             android:id="@+id/bar_empty"

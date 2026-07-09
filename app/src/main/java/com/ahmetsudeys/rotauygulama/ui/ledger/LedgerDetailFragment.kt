@@ -107,11 +107,21 @@ class LedgerDetailFragment : Fragment() {
         binding.textCollected.text = money.format(row.collected)
         binding.textRemaining.text = money.format(row.remaining)
 
+        // Phone: auto-filled from the customer record when present, otherwise a subtle placeholder.
+        binding.textPhone.text = row.phone ?: ctx.getString(R.string.ledger_no_phone)
+
         val dateMillis = row.agreedDateMillis
         binding.textDate.text = if (dateMillis != null) {
             ctx.getString(R.string.ledger_agreed_date, dateFmt.format(Date(dateMillis)))
         } else {
             ctx.getString(R.string.ledger_no_date)
+        }
+
+        val dueMillis = row.dueDateMillis
+        binding.textDue.text = if (dueMillis != null) {
+            ctx.getString(R.string.ledger_due_date, dateFmt.format(Date(dueMillis)))
+        } else {
+            ctx.getString(R.string.ledger_no_due)
         }
 
         when {
@@ -223,25 +233,35 @@ class LedgerDetailFragment : Fragment() {
         if (row.agreedAmount > 0.0) {
             content.editAmount.setText(trimAmount(row.agreedAmount))
         }
-        var pickedDate: Long? = row.agreedDateMillis
+        var agreementDate: Long? = row.agreedDateMillis
+        var dueDate: Long? = row.dueDateMillis
 
-        fun updateDateButton() {
-            content.buttonDate.text = pickedDate?.let {
+        fun updateButtons() {
+            content.buttonDate.text = agreementDate?.let {
                 getString(R.string.ledger_agreed_date_pick) + ": " + dateFmt.format(Date(it))
             } ?: getString(R.string.ledger_agreed_date_pick)
-            content.buttonClearDate.isVisible = pickedDate != null
+            content.buttonDueDate.text = dueDate?.let {
+                getString(R.string.ledger_due_date_pick) + ": " + dateFmt.format(Date(it))
+            } ?: getString(R.string.ledger_due_date_pick)
+            content.buttonClearDue.isVisible = dueDate != null
         }
-        updateDateButton()
+        updateButtons()
 
         content.buttonDate.setOnClickListener {
-            pickDate(pickedDate ?: System.currentTimeMillis()) { picked ->
-                pickedDate = picked
-                updateDateButton()
+            pickDate(agreementDate ?: System.currentTimeMillis()) { picked ->
+                agreementDate = picked
+                updateButtons()
             }
         }
-        content.buttonClearDate.setOnClickListener {
-            pickedDate = null
-            updateDateButton()
+        content.buttonDueDate.setOnClickListener {
+            pickDate(dueDate ?: System.currentTimeMillis()) { picked ->
+                dueDate = picked
+                updateButtons()
+            }
+        }
+        content.buttonClearDue.setOnClickListener {
+            dueDate = null
+            updateButtons()
         }
 
         MaterialAlertDialogBuilder(requireContext())
@@ -250,10 +270,11 @@ class LedgerDetailFragment : Fragment() {
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.save) { _, _ ->
                 val amount = parseAmount(content.editAmount.text?.toString())
-                val finalDate = pickedDate
+                val finalAgreement = agreementDate
+                val finalDue = dueDate
                 val appCtx = requireContext().applicationContext
                 ioExecutor.execute {
-                    LedgerStorage.setAgreement(appCtx, customerId, amount, finalDate)
+                    LedgerStorage.setAgreement(appCtx, customerId, amount, finalAgreement, finalDue)
                     mainHandler.post {
                         if (!isAdded) return@post
                         Toast.makeText(requireContext(), R.string.updated, Toast.LENGTH_SHORT).show()

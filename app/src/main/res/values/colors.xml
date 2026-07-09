@@ -29,4 +29,26 @@
     <color name="success_green_soft">#1F2E7D32</color>
     <color name="warning_amber_soft">#26F9A825</color>
     <color name="error_red_soft">#1FD32F2F</color>
+
+    <!-- Vivid accents + gradients for the Alacak Defteri (receivables) screens -->
+    <color name="accent_blue">#FF1E88E5</color>
+    <color name="accent_green">#FF2E9E5B</color>
+    <color name="accent_red">#FFE53935</color>
+    <color name="accent_purple">#FF7B1FA2</color>
+    <color name="accent_amber">#FFF57C00</color>
+    <color name="accent_teal">#FF00897B</color>
+
+    <color name="grad_blue_start">#FF42A5F5</color>
+    <color name="grad_blue_end">#FF1565C0</color>
+    <color name="grad_green_start">#FF66BB6A</color>
+    <color name="grad_green_end">#FF2E7D32</color>
+    <color name="grad_red_start">#FFFF6E6E</color>
+    <color name="grad_red_end">#FFC62828</color>
+    <color name="grad_purple_start">#FFAB47BC</color>
+    <color name="grad_purple_end">#FF6A1B9A</color>
+    <color name="grad_amber_start">#FFFFB74D</color>
+    <color name="grad_amber_end">#FFEF6C00</color>
+
+    <color name="white_70">#B3FFFFFF</color>
+    <color name="white_85">#D9FFFFFF</color>
 </resources>

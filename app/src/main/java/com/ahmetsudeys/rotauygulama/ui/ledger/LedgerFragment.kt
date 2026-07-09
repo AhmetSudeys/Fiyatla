@@ -165,11 +165,13 @@ class LedgerFragment : Fragment() {
             return
         }
         val max = monthly.maxOf { it.total }.coerceAtLeast(1.0)
-        monthly.take(12).forEach { m ->
+        // Alternate two vivid tones so consecutive months stay easy to tell apart.
+        val palette = intArrayOf(R.color.accent_blue, R.color.accent_teal)
+        monthly.take(12).forEachIndexed { index, m ->
             val row = ItemReportBarBinding.inflate(layoutInflater, container, false)
             row.textLabel.text = "${monthNames[(m.month - 1).coerceIn(0, 11)]} ${m.year}"
             row.textValue.text = money.format(m.total)
-            setBarFraction(row, m.total / max)
+            setBarFraction(row, m.total / max, palette[index % palette.size])
             container.addView(row.root)
         }
     }
@@ -183,16 +185,17 @@ class LedgerFragment : Fragment() {
             return
         }
         val max = b.total.coerceAtLeast(1.0)
-        addMethodRow(container, getString(R.string.payment_method_cash), b.cash, max)
-        addMethodRow(container, getString(R.string.payment_method_card), b.card, max)
-        addMethodRow(container, getString(R.string.payment_method_transfer), b.transfer, max)
+        addMethodRow(container, getString(R.string.payment_method_cash), b.cash, max, R.color.accent_green)
+        addMethodRow(container, getString(R.string.payment_method_card), b.card, max, R.color.accent_blue)
+        addMethodRow(container, getString(R.string.payment_method_transfer), b.transfer, max, R.color.accent_amber)
     }
 
-    private fun addMethodRow(container: ViewGroup, label: String, value: Double, max: Double) {
+    private fun addMethodRow(container: ViewGroup, label: String, value: Double, max: Double, colorRes: Int) {
         val row = ItemReportBarBinding.inflate(layoutInflater, container, false)
+        val pct = if (max > 0.0) (value / max * 100).toInt() else 0
         row.textLabel.text = label
-        row.textValue.text = money.format(value)
-        setBarFraction(row, value / max)
+        row.textValue.text = "${money.format(value)}  (%$pct)"
+        setBarFraction(row, value / max, colorRes)
         container.addView(row.root)
     }
 
@@ -206,18 +209,24 @@ class LedgerFragment : Fragment() {
             container.addView(hint)
             return
         }
-        debtors.forEach { row ->
+        debtors.forEachIndexed { index, row ->
             val item = ItemReportDebtorBinding.inflate(layoutInflater, container, false)
+            item.textRank.text = (index + 1).toString()
             item.textName.text = row.customer.name?.takeIf { it.isNotBlank() } ?: "-"
+            val phone = row.phone
+            item.textPhone.isVisible = phone != null
+            item.textPhone.text = phone.orEmpty()
             item.textRemaining.text = money.format(row.remaining)
             container.addView(item.root)
         }
     }
 
-    private fun setBarFraction(row: ItemReportBarBinding, fraction: Double) {
+    private fun setBarFraction(row: ItemReportBarBinding, fraction: Double, colorRes: Int) {
         val f = fraction.coerceIn(0.0, 1.0).toFloat()
         (row.barFill.layoutParams as android.widget.LinearLayout.LayoutParams).weight = f
         (row.barEmpty.layoutParams as android.widget.LinearLayout.LayoutParams).weight = 1f - f
+        row.barFill.backgroundTintList =
+            androidx.core.content.ContextCompat.getColorStateList(requireContext(), colorRes)
         row.barFill.requestLayout()
         row.barEmpty.requestLayout()
     }

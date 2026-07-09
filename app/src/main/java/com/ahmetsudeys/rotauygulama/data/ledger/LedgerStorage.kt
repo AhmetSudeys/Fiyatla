@@ -57,13 +57,18 @@ object LedgerStorage {
     /**
      * A customer's receivable account.
      *
-     * [agreedAmount] is the manually-set agreed total. When null the UI falls back to a value
-     * suggested from the customer's approved quotes (hybrid mode).
+     * [agreedAmount] is the persisted agreed total. It is seeded from the approved quote total the
+     * moment a customer is created, and can later be edited by hand. When null the UI falls back to
+     * a value suggested from the customer's approved quotes (hybrid mode).
+     *
+     * [agreedDateMillis] is the "anlaşılan tarih" (agreement date, auto-set on approval).
+     * [dueDateMillis] is the optional "anlaşılan alacak tarihi" (due date) used for overdue alerts.
      */
     data class LedgerAccount(
         val customerId: Long,
         val agreedAmount: Double? = null,
         val agreedDateMillis: Long? = null,
+        val dueDateMillis: Long? = null,
         val payments: List<Payment> = emptyList()
     ) {
         val collected: Double get() = payments.sumOf { it.amount }
@@ -72,6 +77,7 @@ object LedgerStorage {
             put("customerId", customerId)
             if (agreedAmount != null) put("agreedAmount", agreedAmount)
             if (agreedDateMillis != null) put("agreedDateMillis", agreedDateMillis)
+            if (dueDateMillis != null) put("dueDateMillis", dueDateMillis)
             val arr = JSONArray()
             payments.forEach { arr.put(it.toJson()) }
             put("payments", arr)
@@ -89,6 +95,7 @@ object LedgerStorage {
                     customerId = obj.optLong("customerId", 0L),
                     agreedAmount = if (obj.has("agreedAmount")) obj.optDouble("agreedAmount") else null,
                     agreedDateMillis = if (obj.has("agreedDateMillis")) obj.optLong("agreedDateMillis") else null,
+                    dueDateMillis = if (obj.has("dueDateMillis")) obj.optLong("dueDateMillis") else null,
                     payments = payments
                 )
             }
@@ -138,10 +145,52 @@ object LedgerStorage {
         prefs.edit().putString(KEY_ACCOUNTS, out.toString()).apply()
     }
 
-    /** Sets the agreed amount / date, creating the account if needed. */
-    fun setAgreement(context: Context, customerId: Long, agreedAmount: Double?, agreedDateMillis: Long?) {
+    /** Sets the agreed amount / agreement date / due date, creating the account if needed. */
+    fun setAgreement(
+        context: Context,
+        customerId: Long,
+        agreedAmount: Double?,
+        agreedDateMillis: Long?,
+        dueDateMillis: Long?
+    ) {
         val current = getAccount(context, customerId) ?: LedgerAccount(customerId = customerId)
-        upsertAccount(context, current.copy(agreedAmount = agreedAmount, agreedDateMillis = agreedDateMillis))
+        upsertAccount(
+            context,
+            current.copy(
+                agreedAmount = agreedAmount,
+                agreedDateMillis = agreedDateMillis,
+                dueDateMillis = dueDateMillis
+            )
+        )
+    }
+
+    /**
+     * Seeds the agreed amount + agreement date when a customer is created from an approved quote.
+     * Never overwrites an amount/date the user has already set, and never touches payments.
+     */
+    fun seedAgreementIfEmpty(
+        context: Context,
+        customerId: Long,
+        agreedAmount: Double,
+        agreedDateMillis: Long
+    ) {
+        val current = getAccount(context, customerId)
+        if (current == null) {
+            upsertAccount(
+                context,
+                LedgerAccount(
+                    customerId = customerId,
+                    agreedAmount = agreedAmount.takeIf { it > 0.0 },
+                    agreedDateMillis = agreedDateMillis
+                )
+            )
+            return
+        }
+        val nextAmount = current.agreedAmount ?: agreedAmount.takeIf { it > 0.0 }
+        val nextDate = current.agreedDateMillis ?: agreedDateMillis
+        if (nextAmount != current.agreedAmount || nextDate != current.agreedDateMillis) {
+            upsertAccount(context, current.copy(agreedAmount = nextAmount, agreedDateMillis = nextDate))
+        }
     }
 
     /** Appends a payment, creating the account if needed. */

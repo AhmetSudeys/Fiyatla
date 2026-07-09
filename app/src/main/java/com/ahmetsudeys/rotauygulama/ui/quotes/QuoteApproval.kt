@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.ahmetsudeys.rotauygulama.R
 import com.ahmetsudeys.rotauygulama.data.customer.CustomerStorage
+import com.ahmetsudeys.rotauygulama.data.ledger.LedgerStorage
 import com.ahmetsudeys.rotauygulama.data.quote.QuoteStatus
 import com.ahmetsudeys.rotauygulama.data.quote.QuoteStorage
 import com.ahmetsudeys.rotauygulama.ui.customers.CustomerFormSheet
@@ -58,6 +59,9 @@ object QuoteApproval {
             !candidate.phone.isNullOrBlank() &&
             candidate.address.preview().isNotBlank()
 
+        // Whatever the total of this (approved) quote is becomes the customer's receivable.
+        val quoteTotal = record.total
+
         if (essentialsComplete) {
             // Info already looks complete: offer a quick review or a direct add.
             MaterialAlertDialogBuilder(ctx)
@@ -65,10 +69,10 @@ object QuoteApproval {
                 .setMessage(ctx.getString(R.string.approve_add_customer_review_message, name))
                 .setNeutralButton(R.string.approve_later, null)
                 .setNegativeButton(R.string.approve_review) { _, _ ->
-                    CustomerFormSheet.show(fragment, candidate) { saved -> saveCustomer(fragment, io, main, saved) }
+                    CustomerFormSheet.show(fragment, candidate) { saved -> saveCustomer(fragment, io, main, saved, quoteTotal) }
                 }
                 .setPositiveButton(R.string.approve_direct_add) { _, _ ->
-                    saveCustomer(fragment, io, main, candidate)
+                    saveCustomer(fragment, io, main, candidate, quoteTotal)
                 }
                 .show()
         } else {
@@ -78,7 +82,7 @@ object QuoteApproval {
                 .setMessage(ctx.getString(R.string.approve_add_customer_fill_message, name))
                 .setNegativeButton(R.string.approve_later, null)
                 .setPositiveButton(R.string.approve_review) { _, _ ->
-                    CustomerFormSheet.show(fragment, candidate) { saved -> saveCustomer(fragment, io, main, saved) }
+                    CustomerFormSheet.show(fragment, candidate) { saved -> saveCustomer(fragment, io, main, saved, quoteTotal) }
                 }
                 .show()
         }
@@ -88,7 +92,8 @@ object QuoteApproval {
         fragment: Fragment,
         io: ExecutorService,
         main: Handler,
-        candidate: CustomerStorage.CustomerRecord
+        candidate: CustomerStorage.CustomerRecord,
+        quoteTotal: Double
     ) {
         val appCtx = fragment.requireContext().applicationContext
         io.execute {
@@ -100,6 +105,9 @@ object QuoteApproval {
                 appCtx,
                 candidate.copy(createdAtMillis = createdAt, updatedAtMillis = now)
             )
+            // Persist the receivable in the ledger so the amount is deterministic and never
+            // depends on re-matching the customer to a quote later. Agreement date = approval time.
+            LedgerStorage.seedAgreementIfEmpty(appCtx, createdAt, quoteTotal, now)
             main.post {
                 if (fragment.isAdded) {
                     Toast.makeText(fragment.requireContext(), R.string.customer_added, Toast.LENGTH_SHORT).show()

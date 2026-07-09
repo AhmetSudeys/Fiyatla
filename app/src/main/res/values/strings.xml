@@ -216,7 +216,11 @@
     <string name="ledger_edit_agreement">Alacağı Düzenle</string>
     <string name="ledger_agreed_amount_hint">Anlaşılan tutar (₺)</string>
     <string name="ledger_agreed_date_pick">Anlaşılan tarih seç</string>
+    <string name="ledger_due_date">Alacak vadesi: %1$s</string>
+    <string name="ledger_due_date_pick">Alacak vadesi seç (opsiyonel)</string>
+    <string name="ledger_no_due">Vade belirtilmedi</string>
     <string name="ledger_clear_date">Tarihi temizle</string>
+    <string name="ledger_no_phone">Telefon yok</string>
     <string name="ledger_payments_title">Ödeme Geçmişi</string>
     <string name="ledger_no_payments">Henüz ödeme kaydı yok.</string>
     <string name="ledger_add_payment">Ödeme Ekle</string>

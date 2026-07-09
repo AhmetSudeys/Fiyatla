@@ -27,7 +27,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/space_s"
         android:hint="@string/ledger_search_hint"
+        app:boxStrokeColor="@color/accent_blue"
         app:startIconDrawable="@drawable/ic_search"
+        app:startIconTint="@color/accent_blue"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar">
@@ -42,12 +44,13 @@
             android:maxLines="1" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Summary cards -->
+    <!-- Vivid summary cards -->
     <LinearLayout
         android:id="@+id/row_summary"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/space_s"
+        android:layout_marginTop="@dimen/space_m"
+        android:baselineAligned="false"
         android:orientation="horizontal"
         android:weightSum="3"
         app:layout_constraintEnd_toEndOf="parent"
@@ -55,92 +58,108 @@
         app:layout_constraintTop_toBottomOf="@id/input_search">
 
         <com.google.android.material.card.MaterialCardView
-            style="@style/Widget.Rota.Card"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            app:cardBackgroundColor="@android:color/transparent"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="5dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/bg_gradient_blue"
+                android:minHeight="86dp"
                 android:orientation="vertical"
                 android:padding="@dimen/space_s">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:alpha="0.6"
                     android:text="@string/ledger_total_agreed"
-                    android:textSize="10sp" />
+                    android:textColor="@color/white_85"
+                    android:textSize="11sp" />
 
                 <TextView
                     android:id="@+id/text_total_agreed"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:textColor="@color/white"
                     android:textStyle="bold"
-                    android:textSize="14sp"
+                    android:textSize="17sp"
                     tools:text="₺ 120.000" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
-            style="@style/Widget.Rota.Card"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/space_xs"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            app:cardBackgroundColor="@android:color/transparent"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="5dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/bg_gradient_green"
+                android:minHeight="86dp"
                 android:orientation="vertical"
                 android:padding="@dimen/space_s">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:alpha="0.6"
                     android:text="@string/ledger_total_collected"
-                    android:textSize="10sp" />
+                    android:textColor="@color/white_85"
+                    android:textSize="11sp" />
 
                 <TextView
                     android:id="@+id/text_total_collected"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/success_green"
+                    android:layout_marginTop="6dp"
+                    android:textColor="@color/white"
                     android:textStyle="bold"
-                    android:textSize="14sp"
+                    android:textSize="17sp"
                     tools:text="₺ 70.000" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
-            style="@style/Widget.Rota.Card"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/space_xs"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            app:cardBackgroundColor="@android:color/transparent"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="5dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/bg_gradient_red"
+                android:minHeight="86dp"
                 android:orientation="vertical"
                 android:padding="@dimen/space_s">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:alpha="0.6"
                     android:text="@string/ledger_total_remaining"
-                    android:textSize="10sp" />
+                    android:textColor="@color/white_85"
+                    android:textSize="11sp" />
 
                 <TextView
                     android:id="@+id/text_total_remaining"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/error_red"
+                    android:layout_marginTop="6dp"
+                    android:textColor="@color/white"
                     android:textStyle="bold"
-                    android:textSize="14sp"
+                    android:textSize="17sp"
                     tools:text="₺ 50.000" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -151,7 +170,7 @@
         android:id="@+id/chip_group_tabs"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/space_s"
+        android:layout_marginTop="@dimen/space_m"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/row_summary"
         app:singleSelection="true"
@@ -237,18 +256,32 @@
                         android:orientation="vertical"
                         android:padding="@dimen/space_m">
 
-                        <TextView
-                            android:layout_width="wrap_content"
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="@string/report_monthly_revenue"
-                            android:textAppearance="?attr/textAppearanceTitleSmall"
-                            android:textStyle="bold" />
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <View
+                                android:layout_width="6dp"
+                                android:layout_height="20dp"
+                                android:background="@drawable/bg_pill_fill"
+                                android:backgroundTint="@color/accent_blue" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/space_s"
+                                android:text="@string/report_monthly_revenue"
+                                android:textAppearance="?attr/textAppearanceTitleMedium"
+                                android:textStyle="bold" />
+                        </LinearLayout>
 
                         <LinearLayout
                             android:id="@+id/container_monthly"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/space_xs"
+                            android:layout_marginTop="@dimen/space_s"
                             android:orientation="vertical" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -266,18 +299,32 @@
                         android:orientation="vertical"
                         android:padding="@dimen/space_m">
 
-                        <TextView
-                            android:layout_width="wrap_content"
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="@string/report_method_breakdown"
-                            android:textAppearance="?attr/textAppearanceTitleSmall"
-                            android:textStyle="bold" />
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <View
+                                android:layout_width="6dp"
+                                android:layout_height="20dp"
+                                android:background="@drawable/bg_pill_fill"
+                                android:backgroundTint="@color/accent_purple" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/space_s"
+                                android:text="@string/report_method_breakdown"
+                                android:textAppearance="?attr/textAppearanceTitleMedium"
+                                android:textStyle="bold" />
+                        </LinearLayout>
 
                         <LinearLayout
                             android:id="@+id/container_methods"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/space_xs"
+                            android:layout_marginTop="@dimen/space_s"
                             android:orientation="vertical" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -295,18 +342,32 @@
                         android:orientation="vertical"
                         android:padding="@dimen/space_m">
 
-                        <TextView
-                            android:layout_width="wrap_content"
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="@string/report_top_debtors"
-                            android:textAppearance="?attr/textAppearanceTitleSmall"
-                            android:textStyle="bold" />
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <View
+                                android:layout_width="6dp"
+                                android:layout_height="20dp"
+                                android:background="@drawable/bg_pill_fill"
+                                android:backgroundTint="@color/accent_red" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/space_s"
+                                android:text="@string/report_top_debtors"
+                                android:textAppearance="?attr/textAppearanceTitleMedium"
+                                android:textStyle="bold" />
+                        </LinearLayout>
 
                         <LinearLayout
                             android:id="@+id/container_debtors"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/space_xs"
+                            android:layout_marginTop="@dimen/space_s"
                             android:orientation="vertical" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>

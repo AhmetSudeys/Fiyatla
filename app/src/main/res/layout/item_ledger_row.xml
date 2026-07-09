@@ -6,20 +6,23 @@
     style="@style/Widget.Rota.Card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="@dimen/space_xs"
+    android:layout_marginBottom="@dimen/space_s"
     android:clickable="true"
-    android:focusable="true">
+    android:focusable="true"
+    app:cardCornerRadius="18dp"
+    app:cardElevation="2dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/space_s">
+        android:padding="@dimen/space_m">
 
         <View
             android:id="@+id/view_accent"
-            android:layout_width="4dp"
+            android:layout_width="5dp"
             android:layout_height="0dp"
-            android:background="@color/brand_blue"
+            android:background="@drawable/bg_pill_fill"
+            android:backgroundTint="@color/accent_blue"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -28,7 +31,7 @@
             android:id="@+id/text_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/space_s"
+            android:layout_marginStart="@dimen/space_m"
             android:ellipsize="end"
             android:maxLines="1"
             android:textAppearance="?attr/textAppearanceTitleMedium"
@@ -55,17 +58,35 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Ödendi" />
 
+        <TextView
+            android:id="@+id/text_phone"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/space_m"
+            android:layout_marginTop="1dp"
+            android:alpha="0.7"
+            android:drawablePadding="4dp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textSize="12sp"
+            app:drawableStartCompat="@drawable/ic_phone"
+            app:drawableTint="@color/accent_blue"
+            app:layout_constraintStart_toEndOf="@id/view_accent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_name"
+            tools:text="0555 111 22 33" />
+
         <LinearLayout
             android:id="@+id/row_amounts"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/space_s"
+            android:layout_marginStart="@dimen/space_m"
             android:layout_marginTop="@dimen/space_s"
             android:orientation="horizontal"
             android:weightSum="3"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/view_accent"
-            app:layout_constraintTop_toBottomOf="@id/text_name">
+            app:layout_constraintTop_toBottomOf="@id/text_phone">
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -85,7 +106,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
-                    android:textSize="13sp"
+                    android:textSize="14sp"
                     tools:text="₺ 38.700" />
             </LinearLayout>
 
@@ -106,9 +127,9 @@
                     android:id="@+id/text_collected"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/success_green"
+                    android:textColor="@color/accent_green"
                     android:textStyle="bold"
-                    android:textSize="13sp"
+                    android:textSize="14sp"
                     tools:text="₺ 20.000" />
             </LinearLayout>
 
@@ -129,26 +150,54 @@
                     android:id="@+id/text_remaining"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/error_red"
+                    android:textColor="@color/accent_red"
                     android:textStyle="bold"
-                    android:textSize="13sp"
+                    android:textSize="14sp"
                     tools:text="₺ 18.700" />
             </LinearLayout>
+        </LinearLayout>
+
+        <!-- Collected progress -->
+        <LinearLayout
+            android:id="@+id/progress_bar"
+            android:layout_width="0dp"
+            android:layout_height="8dp"
+            android:layout_marginStart="@dimen/space_m"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/bg_pill_track"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/view_accent"
+            app:layout_constraintTop_toBottomOf="@id/row_amounts">
+
+            <View
+                android:id="@+id/bar_fill"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0"
+                android:background="@drawable/bg_pill_fill"
+                android:backgroundTint="@color/accent_green" />
+
+            <View
+                android:id="@+id/bar_empty"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
         </LinearLayout>
 
         <TextView
             android:id="@+id/text_date"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/space_s"
-            android:layout_marginTop="@dimen/space_xs"
+            android:layout_marginStart="@dimen/space_m"
+            android:layout_marginTop="@dimen/space_s"
             android:alpha="0.7"
             android:maxLines="1"
             android:ellipsize="end"
             android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/view_accent"
-            app:layout_constraintTop_toBottomOf="@id/row_amounts"
+            app:layout_constraintTop_toBottomOf="@id/progress_bar"
             tools:text="Anlaşılan tarih: 12.05.2026" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

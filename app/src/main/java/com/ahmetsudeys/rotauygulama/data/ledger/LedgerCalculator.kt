@@ -16,19 +16,25 @@ object LedgerCalculator {
     /** One customer's receivable state, ready to render. */
     data class LedgerRow(
         val customer: CustomerStorage.CustomerRecord,
-        val agreedAmount: Double,       // effective (manual if set, else suggested from quotes)
+        val agreedAmount: Double,       // effective (persisted if set, else suggested from quotes)
         val suggestedAmount: Double,    // from approved quotes
-        val isManualAmount: Boolean,    // true when the user typed the amount by hand
+        val isManualAmount: Boolean,    // true when an amount is persisted for this customer
         val collected: Double,
-        val agreedDateMillis: Long?,
+        val agreedDateMillis: Long?,    // anlaşılan tarih
+        val dueDateMillis: Long?,       // anlaşılan alacak tarihi (vade)
         val account: LedgerStorage.LedgerAccount?
     ) {
+        val phone: String? get() = customer.phone?.trim()?.takeIf { it.isNotBlank() }
         val remaining: Double get() = (agreedAmount - collected).coerceAtLeast(0.0)
         val isFullyPaid: Boolean get() = agreedAmount > 0.0 && remaining <= 0.009
         val isOverdue: Boolean
             get() = remaining > 0.009 &&
-                agreedDateMillis != null &&
-                agreedDateMillis < System.currentTimeMillis()
+                dueDateMillis != null &&
+                dueDateMillis < System.currentTimeMillis()
+
+        /** 0f..1f share of the agreed amount that has been collected. */
+        val collectedFraction: Float
+            get() = if (agreedAmount <= 0.0) 0f else (collected / agreedAmount).coerceIn(0.0, 1.0).toFloat()
 
         val customerId: Long get() = customer.createdAtMillis
     }
@@ -58,14 +64,15 @@ object LedgerCalculator {
         quotes: List<QuoteStorage.QuoteRecord>
     ): LedgerRow {
         val suggested = suggestedAmountFor(customer, quotes)
-        val manual = account?.agreedAmount
+        val persisted = account?.agreedAmount
         return LedgerRow(
             customer = customer,
-            agreedAmount = manual ?: suggested,
+            agreedAmount = persisted ?: suggested,
             suggestedAmount = suggested,
-            isManualAmount = manual != null,
+            isManualAmount = persisted != null,
             collected = account?.collected ?: 0.0,
             agreedDateMillis = account?.agreedDateMillis,
+            dueDateMillis = account?.dueDateMillis,
             account = account
         )
     }

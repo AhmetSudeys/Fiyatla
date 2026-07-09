@@ -47,27 +47,39 @@ class LedgerAdapter(
             binding.textCollected.text = money.format(item.collected)
             binding.textRemaining.text = money.format(item.remaining)
 
+            val phone = item.phone
+            binding.textPhone.isVisible = phone != null
+            binding.textPhone.text = phone.orEmpty()
+
             // Status badge + accent bar
-            when {
+            val accentColor: Int = when {
                 item.isOverdue -> {
                     binding.badgeStatus.isVisible = true
                     binding.badgeStatus.text = ctx.getString(R.string.ledger_overdue)
-                    binding.badgeStatus.setTextColor(ContextCompat.getColor(ctx, R.color.error_red))
+                    binding.badgeStatus.setTextColor(ContextCompat.getColor(ctx, R.color.accent_red))
                     binding.badgeStatus.backgroundTintList = ContextCompat.getColorStateList(ctx, R.color.error_red_soft)
-                    binding.viewAccent.setBackgroundResource(R.color.error_red)
+                    R.color.accent_red
                 }
                 item.isFullyPaid -> {
                     binding.badgeStatus.isVisible = true
                     binding.badgeStatus.text = ctx.getString(R.string.ledger_paid)
-                    binding.badgeStatus.setTextColor(ContextCompat.getColor(ctx, R.color.success_green))
+                    binding.badgeStatus.setTextColor(ContextCompat.getColor(ctx, R.color.accent_green))
                     binding.badgeStatus.backgroundTintList = ContextCompat.getColorStateList(ctx, R.color.success_green_soft)
-                    binding.viewAccent.setBackgroundResource(R.color.success_green)
+                    R.color.accent_green
                 }
                 else -> {
                     binding.badgeStatus.isVisible = false
-                    binding.viewAccent.setBackgroundResource(R.color.brand_blue)
+                    R.color.accent_blue
                 }
             }
+            binding.viewAccent.backgroundTintList = ContextCompat.getColorStateList(ctx, accentColor)
+
+            // Collected progress bar
+            val f = item.collectedFraction
+            (binding.barFill.layoutParams as android.widget.LinearLayout.LayoutParams).weight = f
+            (binding.barEmpty.layoutParams as android.widget.LinearLayout.LayoutParams).weight = 1f - f
+            binding.barFill.requestLayout()
+            binding.barEmpty.requestLayout()
 
             val dateMillis = item.agreedDateMillis
             binding.textDate.text = if (dateMillis != null) {
