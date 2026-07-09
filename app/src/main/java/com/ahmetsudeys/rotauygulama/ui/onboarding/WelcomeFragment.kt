@@ -35,6 +35,14 @@ class WelcomeFragment : Fragment() {
             if (uri != null) confirmAndRestore(uri)
         }
 
+    // Save-to-phone: let the user pick where the .xlsx backup is stored (Downloads, Documents, ...).
+    private val createBackupDocument =
+        registerForActivityResult(
+            ActivityResultContracts.CreateDocument(
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            )
+        ) { uri -> if (uri != null) downloadBackupTo(uri) }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -57,6 +65,9 @@ class WelcomeFragment : Fragment() {
         }
 
         binding.buttonBackup.setOnSingleClickListener { startBackup() }
+        binding.buttonDownload.setOnSingleClickListener {
+            createBackupDocument.launch(BackupManager.defaultBackupFileName())
+        }
         binding.buttonRestore.setOnSingleClickListener {
             // Accept any file type; some providers (WhatsApp/Drive) report a generic MIME.
             pickBackup.launch(arrayOf("*/*"))
@@ -78,6 +89,27 @@ class WelcomeFragment : Fragment() {
                     BackupManager.startShare(requireContext(), uri, getString(R.string.backup_share_title))
                 }.onFailure {
                     Toast.makeText(requireContext(), R.string.backup_failed, Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
+    private fun downloadBackupTo(uri: Uri) {
+        showProgress(getString(R.string.backup_in_progress))
+        ioExecutor.execute {
+            val result = runCatching {
+                val ctx = requireContext()
+                ctx.contentResolver.openOutputStream(uri)?.use { out ->
+                    BackupManager.writeBackup(ctx, out)
+                } ?: error("Yedek dosyası açılamadı")
+            }
+            mainHandler.post {
+                if (_binding == null) return@post
+                dismissProgress()
+                result.onSuccess {
+                    Toast.makeText(requireContext(), R.string.backup_download_success, Toast.LENGTH_LONG).show()
+                }.onFailure {
+                    Toast.makeText(requireContext(), R.string.backup_download_failed, Toast.LENGTH_LONG).show()
                 }
             }
         }

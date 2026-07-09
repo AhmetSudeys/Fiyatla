@@ -279,6 +279,9 @@
     <string name="restore_pick_title">Yedek dosyasını seçin</string>
     <string name="backup_in_progress">Yedek hazırlanıyor…</string>
     <string name="backup_failed">Yedek oluşturulamadı. Lütfen tekrar deneyin.</string>
+    <string name="backup_download">Telefona İndir</string>
+    <string name="backup_download_success">Yedek telefona kaydedildi.</string>
+    <string name="backup_download_failed">Yedek kaydedilemedi. Lütfen tekrar deneyin.</string>
     <string name="restore_in_progress">Geri yükleniyor…</string>
     <string name="restore_confirm_title">Yedekten geri yüklensin mi?</string>
     <string name="restore_confirm_message">Uygulamadaki mevcut tüm veriler (müşteriler, teklifler, alacak defteri) yedekteki verilerle değiştirilecek. Bu işlem geri alınamaz. Devam edilsin mi?</string>

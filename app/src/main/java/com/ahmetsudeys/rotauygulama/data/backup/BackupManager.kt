@@ -48,11 +48,17 @@ object BackupManager {
 
     // region Export ----------------------------------------------------------------------------
 
+    /** Default file name (with date) suggested when saving/downloading a backup. */
+    fun defaultBackupFileName(): String {
+        val dateForName = SimpleDateFormat("yyyy-MM-dd", trLocale).format(Date())
+        return "DogalgazUsta_Yedek_$dateForName.xlsx"
+    }
+
     /**
-     * Builds the backup .xlsx in the cache dir and returns a shareable content Uri.
-     * Heavy work; call off the main thread.
+     * Writes the backup .xlsx content straight into [output] (e.g. a user-picked document on the
+     * phone's storage). Heavy work; call off the main thread. The caller owns/closes [output].
      */
-    fun buildBackup(context: Context): Uri {
+    fun writeBackup(context: Context, output: java.io.OutputStream) {
         val sheets = buildList {
             add(summarySheet(context))
             add(customersSheet(context))
@@ -60,10 +66,16 @@ object BackupManager {
             add(ledgerSheet(context))
             add(machineSheet(context))
         }
+        XlsxWriter.write(output, sheets)
+    }
 
-        val dateForName = SimpleDateFormat("yyyy-MM-dd", trLocale).format(Date())
-        val outFile = File(context.cacheDir, "DogalgazUsta_Yedek_$dateForName.xlsx")
-        FileOutputStream(outFile).use { fos -> XlsxWriter.write(fos, sheets) }
+    /**
+     * Builds the backup .xlsx in the cache dir and returns a shareable content Uri.
+     * Heavy work; call off the main thread.
+     */
+    fun buildBackup(context: Context): Uri {
+        val outFile = File(context.cacheDir, defaultBackupFileName())
+        FileOutputStream(outFile).use { fos -> writeBackup(context, fos) }
         return FileProvider.getUriForFile(context, context.packageName + ".fileprovider", outFile)
     }
 
