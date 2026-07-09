@@ -75,9 +75,19 @@ object LedgerStorage {
          * records are dropped to keep the store small, but their total is preserved here so the
          * collected/remaining figures stay correct forever.
          */
-        val archivedCollected: Double = 0.0
+        val archivedCollected: Double = 0.0,
+        /**
+         * Name/phone snapshot written when the customer is deleted from Müşterilerim, so the ledger
+         * can still display this receivable as a "silinmiş müşteri" (financial records are kept).
+         */
+        val customerName: String? = null,
+        val customerPhone: String? = null
     ) {
         val collected: Double get() = archivedCollected + payments.sumOf { it.amount }
+
+        /** True if this account carries anything worth keeping when the customer is removed. */
+        val hasFinancialData: Boolean
+            get() = (agreedAmount ?: 0.0) > 0.0 || payments.isNotEmpty() || archivedCollected > 0.0
 
         fun toJson(): JSONObject = JSONObject().apply {
             put("customerId", customerId)
@@ -85,6 +95,8 @@ object LedgerStorage {
             if (agreedDateMillis != null) put("agreedDateMillis", agreedDateMillis)
             if (dueDateMillis != null) put("dueDateMillis", dueDateMillis)
             if (archivedCollected != 0.0) put("archivedCollected", archivedCollected)
+            if (!customerName.isNullOrBlank()) put("customerName", customerName)
+            if (!customerPhone.isNullOrBlank()) put("customerPhone", customerPhone)
             val arr = JSONArray()
             payments.forEach { arr.put(it.toJson()) }
             put("payments", arr)
@@ -104,7 +116,9 @@ object LedgerStorage {
                     agreedDateMillis = if (obj.has("agreedDateMillis")) obj.optLong("agreedDateMillis") else null,
                     dueDateMillis = if (obj.has("dueDateMillis")) obj.optLong("dueDateMillis") else null,
                     payments = payments,
-                    archivedCollected = obj.optDouble("archivedCollected", 0.0)
+                    archivedCollected = obj.optDouble("archivedCollected", 0.0),
+                    customerName = obj.optString("customerName", "").takeIf { it.isNotBlank() },
+                    customerPhone = obj.optString("customerPhone", "").takeIf { it.isNotBlank() }
                 )
             }
         }
@@ -139,6 +153,30 @@ object LedgerStorage {
         }
         if (!replaced) arr.put(account.toJson())
         prefs.edit().putString(KEY_ACCOUNTS, arr.toString()).apply()
+    }
+
+    /**
+     * Called when a customer is deleted from Müşterilerim. If the account holds financial data
+     * (agreed amount, payments, or archived collections) it is KEPT, with a name/phone snapshot so
+     * the ledger can still show it as a "silinmiş müşteri". Otherwise the empty account is removed.
+     *
+     * @return true if the account was kept (financial data preserved).
+     */
+    fun detachDeletedCustomer(context: Context, customerId: Long, name: String?, phone: String?): Boolean {
+        val account = getAccount(context, customerId) ?: return false
+        return if (account.hasFinancialData) {
+            upsertAccount(
+                context,
+                account.copy(
+                    customerName = name?.trim()?.takeIf { it.isNotBlank() } ?: account.customerName,
+                    customerPhone = phone?.trim()?.takeIf { it.isNotBlank() } ?: account.customerPhone
+                )
+            )
+            true
+        } else {
+            deleteAccount(context, customerId)
+            false
+        }
     }
 
     /** Deletes a customer's whole ledger account (used when a customer is removed). */

@@ -31,6 +31,8 @@ import com.ahmetsudeys.rotauygulama.databinding.BottomsheetCustomerFormBinding
 import com.ahmetsudeys.rotauygulama.databinding.FragmentCustomersBinding
 import com.ahmetsudeys.rotauygulama.ui.util.setOnSingleClickListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import java.text.NumberFormat
+import java.util.Currency
 import java.util.Locale
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -48,6 +50,10 @@ class CustomersFragment : Fragment() {
     private val ioExecutor: ExecutorService = Executors.newSingleThreadExecutor()
     private val mainHandler = Handler(Looper.getMainLooper())
     private var refreshToken: Int = 0
+    private val money: NumberFormat = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("tr-TR")).apply {
+        currency = Currency.getInstance("TRY")
+        maximumFractionDigits = 0
+    }
     private val filterHandler = Handler(Looper.getMainLooper())
     private var filterRunnable: Runnable? = null
 
@@ -170,14 +176,42 @@ class CustomersFragment : Fragment() {
     }
 
     private fun confirmDelete(record: CustomerStorage.CustomerRecord) {
+        // Inspect the ledger first so we can warn about kept records / outstanding debt.
+        ioExecutor.execute {
+            val account = LedgerStorage.getAccount(requireContext(), record.createdAtMillis)
+            val hasData = account?.hasFinancialData == true
+            val remaining = account?.let { ((it.agreedAmount ?: 0.0) - it.collected).coerceAtLeast(0.0) } ?: 0.0
+            mainHandler.post {
+                if (!isAdded) return@post
+                showDeleteDialog(record, hasData, remaining)
+            }
+        }
+    }
+
+    private fun showDeleteDialog(
+        record: CustomerStorage.CustomerRecord,
+        hasLedgerData: Boolean,
+        remaining: Double
+    ) {
+        val message = when {
+            remaining > 0.009 -> getString(R.string.delete_customer_message_debt, money.format(remaining))
+            hasLedgerData -> getString(R.string.delete_customer_message_kept)
+            else -> getString(R.string.delete_customer_message)
+        }
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.delete_customer_title)
-            .setMessage(R.string.delete_customer_message)
+            .setMessage(message)
             .setNegativeButton(R.string.cancel, null)
             .setPositiveButton(R.string.delete_customer) { _, _ ->
                 ioExecutor.execute {
                     CustomerStorage.deleteCustomer(requireContext(), record.createdAtMillis)
-                    LedgerStorage.deleteAccount(requireContext(), record.createdAtMillis)
+                    // Keep the ledger record (with a name/phone snapshot) when it holds financial data.
+                    LedgerStorage.detachDeletedCustomer(
+                        requireContext(),
+                        record.createdAtMillis,
+                        record.name,
+                        record.phone
+                    )
                     mainHandler.post { if (isAdded) refresh() }
                 }
             }

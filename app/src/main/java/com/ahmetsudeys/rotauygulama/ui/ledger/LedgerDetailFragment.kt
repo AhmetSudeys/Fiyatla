@@ -87,11 +87,15 @@ class LedgerDetailFragment : Fragment() {
             val customer = CustomerStorage.getCustomers(appCtx).firstOrNull { it.createdAtMillis == customerId }
             val account = LedgerStorage.getAccount(appCtx, customerId)
             val quotes = QuoteStorage.getQuotes(appCtx)
-            val row = customer?.let { LedgerCalculator.buildRow(it, account, quotes) }
+            val row = when {
+                customer != null -> LedgerCalculator.buildRow(customer, account, quotes)
+                account != null -> LedgerCalculator.buildOrphanRow(account) // kept "silinmiş müşteri" record
+                else -> null
+            }
             mainHandler.post {
                 if (_binding == null || token != refreshToken) return@post
                 if (row == null) {
-                    // Customer no longer exists; go back.
+                    // Neither a customer nor a kept ledger record; nothing to show.
                     findNavController().navigateUp()
                     return@post
                 }
@@ -126,6 +130,12 @@ class LedgerDetailFragment : Fragment() {
         }
 
         when {
+            row.isDeletedCustomer -> {
+                binding.badgeStatus.isVisible = true
+                binding.badgeStatus.text = ctx.getString(R.string.ledger_deleted_customer)
+                binding.badgeStatus.setTextColor(ContextCompat.getColor(ctx, R.color.text_secondary))
+                binding.badgeStatus.backgroundTintList = ContextCompat.getColorStateList(ctx, R.color.outline_light)
+            }
             row.isOverdue -> {
                 binding.badgeStatus.isVisible = true
                 binding.badgeStatus.text = ctx.getString(R.string.ledger_overdue)

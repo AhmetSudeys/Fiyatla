@@ -53,6 +53,13 @@ class LedgerAdapter(
 
             // Status badge + accent bar
             val accentColor: Int = when {
+                item.isDeletedCustomer -> {
+                    binding.badgeStatus.isVisible = true
+                    binding.badgeStatus.text = ctx.getString(R.string.ledger_deleted_customer)
+                    binding.badgeStatus.setTextColor(ContextCompat.getColor(ctx, R.color.text_secondary))
+                    binding.badgeStatus.backgroundTintList = ContextCompat.getColorStateList(ctx, R.color.outline_light)
+                    R.color.text_secondary
+                }
                 item.isOverdue -> {
                     binding.badgeStatus.isVisible = true
                     binding.badgeStatus.text = ctx.getString(R.string.ledger_overdue)

@@ -22,7 +22,8 @@ object LedgerCalculator {
         val collected: Double,
         val agreedDateMillis: Long?,    // anlaşılan tarih
         val dueDateMillis: Long?,       // anlaşılan alacak tarihi (vade)
-        val account: LedgerStorage.LedgerAccount?
+        val account: LedgerStorage.LedgerAccount?,
+        val isDeletedCustomer: Boolean = false // customer removed from Müşterilerim, record kept
     ) {
         val phone: String? get() = customer.phone?.trim()?.takeIf { it.isNotBlank() }
         val remaining: Double get() = (agreedAmount - collected).coerceAtLeast(0.0)
@@ -83,7 +84,35 @@ object LedgerCalculator {
         quotes: List<QuoteStorage.QuoteRecord>
     ): List<LedgerRow> {
         val accByCustomer = accounts.associateBy { it.customerId }
-        return customers.map { buildRow(it, accByCustomer[it.createdAtMillis], quotes) }
+        val liveRows = customers.map { buildRow(it, accByCustomer[it.createdAtMillis], quotes) }
+
+        // Accounts whose customer was deleted are still shown (financial records are kept).
+        val liveIds = customers.mapTo(HashSet()) { it.createdAtMillis }
+        val orphanRows = accounts
+            .filter { it.customerId !in liveIds }
+            .map { buildOrphanRow(it) }
+
+        return liveRows + orphanRows
+    }
+
+    /** Builds a row for a ledger account whose customer no longer exists (kept for records). */
+    fun buildOrphanRow(account: LedgerStorage.LedgerAccount): LedgerRow {
+        val synthetic = CustomerStorage.CustomerRecord(
+            name = account.customerName,
+            phone = account.customerPhone,
+            createdAtMillis = account.customerId
+        )
+        return LedgerRow(
+            customer = synthetic,
+            agreedAmount = account.agreedAmount ?: 0.0,
+            suggestedAmount = 0.0,
+            isManualAmount = account.agreedAmount != null,
+            collected = account.collected,
+            agreedDateMillis = account.agreedDateMillis,
+            dueDateMillis = account.dueDateMillis,
+            account = account,
+            isDeletedCustomer = true
+        )
     }
 
     // --- Analytics ---------------------------------------------------------

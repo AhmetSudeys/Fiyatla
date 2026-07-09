@@ -41,6 +41,9 @@
     <string name="delete_customer">Sil</string>
     <string name="delete_customer_title">Müşteri silinsin mi?</string>
     <string name="delete_customer_message">Emin misin? Bu işlem geri alınamaz.</string>
+    <string name="delete_customer_message_kept">Bu müşterinin alacak defteri kaydı (ödeme geçmişi) korunacak; cüzdanda \"silinmiş müşteri\" olarak görünecek. Müşteri silinsin mi?</string>
+    <string name="delete_customer_message_debt">Dikkat: Bu müşterinin kalan borcu %1$s. Müşteri silinse bile alacak defteri kaydı korunacak (\"silinmiş müşteri\" olarak). Devam edilsin mi?</string>
+    <string name="ledger_deleted_customer">Silinmiş müşteri</string>
     <string name="filter_all">Tümü</string>
     <string name="filter_painted">Boyalı</string>
     <string name="filter_not_painted">Boyasız</string>
