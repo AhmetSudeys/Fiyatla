@@ -268,4 +268,27 @@
     <string name="payment_subtitle">Tahsil edilen tutarı ve yöntemini girin</string>
     <string name="payment_amount_label">Alınan Tutar</string>
     <string name="payment_note_label">Açıklama</string>
+
+    <!-- Veri yedekleme / geri yükleme -->
+    <string name="backup_data">Verileri Yedekle</string>
+    <string name="restore_data">Yedekten Geri Yükle</string>
+    <string name="backup_share_title">Yedeği kaydet veya gönder</string>
+    <string name="restore_pick_title">Yedek dosyasını seçin</string>
+    <string name="backup_in_progress">Yedek hazırlanıyor…</string>
+    <string name="backup_failed">Yedek oluşturulamadı. Lütfen tekrar deneyin.</string>
+    <string name="restore_in_progress">Geri yükleniyor…</string>
+    <string name="restore_confirm_title">Yedekten geri yüklensin mi?</string>
+    <string name="restore_confirm_message">Uygulamadaki mevcut tüm veriler (müşteriler, teklifler, alacak defteri) yedekteki verilerle değiştirilecek. Bu işlem geri alınamaz. Devam edilsin mi?</string>
+    <string name="restore_success">Verileriniz başarıyla geri yüklendi.</string>
+    <string name="restore_invalid">Bu dosya geçerli bir yedek değil. Lütfen uygulamayla oluşturduğunuz yedek dosyasını (.xlsx) seçin.</string>
+    <string name="restore_failed">Geri yükleme başarısız oldu. Lütfen tekrar deneyin.</string>
+    <string name="restart_now">Tamam</string>
+
+    <!-- İlk açılış bilgilendirme -->
+    <string name="disclaimer_title">Verileriniz size ait</string>
+    <string name="disclaimer_message">Uygulama içindeki tüm verileriniz yalnızca bu telefonda saklanır. Bilgilerinize ikinci bir kişi erişemez.\n\nVeriler yalnızca telefonunuzda tutulduğu için yedekleme sorumluluğu size aittir. Bu konuda sorumluluk kabul etmediğimizi belirtir, verilerinizi düzenli olarak yedeklemenizi önemle tavsiye ederiz.</string>
+    <string name="disclaimer_accept">Onaylıyorum</string>
+
+    <!-- Anasayfa profil -->
+    <string name="profile">Profil</string>
 </resources>

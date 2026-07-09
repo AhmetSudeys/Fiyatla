@@ -50,6 +50,36 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/text_welcome"
+        app:layout_constraintBottom_toTopOf="@id/button_backup" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_backup"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_s"
+        android:text="@string/backup_data"
+        style="@style/Widget.Rota.Button.Outlined"
+        app:icon="@drawable/ic_backup"
+        app:iconGravity="textStart"
+        app:iconPadding="@dimen/space_s"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/button_login"
+        app:layout_constraintBottom_toTopOf="@id/button_restore" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_restore"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_xs"
+        android:text="@string/restore_data"
+        style="@style/Widget.Rota.Button.Outlined"
+        app:icon="@drawable/ic_restore"
+        app:iconGravity="textStart"
+        app:iconPadding="@dimen/space_s"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/button_backup"
         app:layout_constraintBottom_toTopOf="@id/text_edit_company" />
 
     <TextView
@@ -70,7 +100,7 @@
         app:layout_constraintBottom_toTopOf="@id/text_footer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/button_login" />
+        app:layout_constraintTop_toBottomOf="@id/button_restore" />
 
     <TextView
         android:id="@+id/text_footer"

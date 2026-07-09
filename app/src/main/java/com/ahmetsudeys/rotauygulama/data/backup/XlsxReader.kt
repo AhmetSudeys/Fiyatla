@@ -1,0 +1,165 @@
+package com.ahmetsudeys.rotauygulama.data.backup
+
+import java.io.ByteArrayOutputStream
+import java.io.InputStream
+import java.util.zip.ZipInputStream
+
+/**
+ * Reads back the small .xlsx files produced by [XlsxWriter]. Only what we need for restore:
+ * locate a sheet by name and return its rows as strings.
+ *
+ * Handles both inline strings (what we write) and the shared-strings table (what Excel/Sheets may
+ * produce if the user opens and re-saves the backup), so a round-trip through a spreadsheet app
+ * doesn't break restore.
+ */
+object XlsxReader {
+
+    /** Returns the rows of [sheetName] (each row a list of cell strings), or null if not found. */
+    fun readSheet(input: InputStream, sheetName: String): List<List<String>>? {
+        val entries = readZip(input)
+
+        val workbook = entries["xl/workbook.xml"]?.toString(Charsets.UTF_8) ?: return null
+        val rels = entries["xl/_rels/workbook.xml.rels"]?.toString(Charsets.UTF_8) ?: return null
+
+        val rId = findSheetRid(workbook, sheetName) ?: return null
+        val target = findRelTarget(rels, rId) ?: return null
+        val sheetPath = normalizeSheetPath(target)
+        val sheetXml = entries[sheetPath]?.toString(Charsets.UTF_8) ?: return null
+
+        val sharedStrings = entries["xl/sharedStrings.xml"]?.toString(Charsets.UTF_8)?.let { parseSharedStrings(it) }
+            ?: emptyList()
+
+        return parseRows(sheetXml, sharedStrings)
+    }
+
+    private fun readZip(input: InputStream): Map<String, ByteArray> {
+        val out = LinkedHashMap<String, ByteArray>()
+        ZipInputStream(input).use { zip ->
+            while (true) {
+                val entry = zip.nextEntry ?: break
+                if (!entry.isDirectory) {
+                    val buffer = ByteArray(8 * 1024)
+                    val bos = ByteArrayOutputStream()
+                    while (true) {
+                        val read = zip.read(buffer)
+                        if (read <= 0) break
+                        bos.write(buffer, 0, read)
+                    }
+                    out[entry.name] = bos.toByteArray()
+                }
+                zip.closeEntry()
+            }
+        }
+        return out
+    }
+
+    private fun findSheetRid(workbookXml: String, sheetName: String): String? {
+        val matcher = Regex("""<sheet\b[^>]*?/?>""")
+        for (m in matcher.findAll(workbookXml)) {
+            val tag = m.value
+            val name = Regex("""name="([^"]*)"""").find(tag)?.groupValues?.get(1)?.let { unescape(it) }
+            if (name != null && name == sheetName) {
+                return Regex("""r:id="([^"]*)"""").find(tag)?.groupValues?.get(1)
+            }
+        }
+        return null
+    }
+
+    private fun findRelTarget(relsXml: String, rId: String): String? {
+        for (m in Regex("""<Relationship\b[^>]*?/?>""").findAll(relsXml)) {
+            val tag = m.value
+            val id = Regex("""Id="([^"]*)"""").find(tag)?.groupValues?.get(1)
+            if (id == rId) {
+                return Regex("""Target="([^"]*)"""").find(tag)?.groupValues?.get(1)
+            }
+        }
+        return null
+    }
+
+    private fun normalizeSheetPath(target: String): String {
+        val t = target.removePrefix("/")
+        return if (t.startsWith("xl/")) t else "xl/$t"
+    }
+
+    private fun parseSharedStrings(xml: String): List<String> {
+        val out = ArrayList<String>()
+        for (m in Regex("""<si\b[^>]*>(.*?)</si>""", RegexOption.DOT_MATCHES_ALL).findAll(xml)) {
+            val inner = m.groupValues[1]
+            // A shared string may hold several <t> runs; concatenate them.
+            val sb = StringBuilder()
+            for (t in Regex("""<t\b[^>]*>(.*?)</t>""", RegexOption.DOT_MATCHES_ALL).findAll(inner)) {
+                sb.append(unescape(t.groupValues[1]))
+            }
+            out.add(sb.toString())
+        }
+        return out
+    }
+
+    private fun parseRows(sheetXml: String, sharedStrings: List<String>): List<List<String>> {
+        val rows = ArrayList<List<String>>()
+        for (rowMatch in Regex("""<row\b[^>]*>(.*?)</row>""", RegexOption.DOT_MATCHES_ALL).findAll(sheetXml)) {
+            val rowInner = rowMatch.groupValues[1]
+            // Collect cells by their column index so gaps are preserved as blanks.
+            val cellsByCol = sortedMapOf<Int, String>()
+            for (cellMatch in Regex("""<c\b([^>]*)>(.*?)</c>""", RegexOption.DOT_MATCHES_ALL).findAll(rowInner)) {
+                val attrs = cellMatch.groupValues[1]
+                val body = cellMatch.groupValues[2]
+                val ref = Regex("""r="([A-Z]+)\d+"""").find(attrs)?.groupValues?.get(1)
+                val col = if (ref != null) colIndex(ref) else cellsByCol.size
+                val type = Regex("""t="([^"]*)"""").find(attrs)?.groupValues?.get(1)
+                cellsByCol[col] = cellValue(type, body, sharedStrings)
+            }
+            if (cellsByCol.isEmpty()) {
+                rows.add(emptyList())
+                continue
+            }
+            val maxCol = cellsByCol.lastKey()
+            val row = ArrayList<String>(maxCol + 1)
+            for (c in 0..maxCol) row.add(cellsByCol[c] ?: "")
+            rows.add(row)
+        }
+        return rows
+    }
+
+    private fun cellValue(type: String?, body: String, sharedStrings: List<String>): String {
+        return when (type) {
+            "inlineStr" -> {
+                val sb = StringBuilder()
+                for (t in Regex("""<t\b[^>]*>(.*?)</t>""", RegexOption.DOT_MATCHES_ALL).findAll(body)) {
+                    sb.append(unescape(t.groupValues[1]))
+                }
+                sb.toString()
+            }
+            "s" -> {
+                val idx = Regex("""<v\b[^>]*>(.*?)</v>""", RegexOption.DOT_MATCHES_ALL)
+                    .find(body)?.groupValues?.get(1)?.trim()?.toIntOrNull()
+                if (idx != null && idx in sharedStrings.indices) sharedStrings[idx] else ""
+            }
+            "str" -> {
+                val v = Regex("""<v\b[^>]*>(.*?)</v>""", RegexOption.DOT_MATCHES_ALL).find(body)?.groupValues?.get(1)
+                unescape(v.orEmpty())
+            }
+            else -> {
+                // Numeric or untyped: return the raw <v> text.
+                val v = Regex("""<v\b[^>]*>(.*?)</v>""", RegexOption.DOT_MATCHES_ALL).find(body)?.groupValues?.get(1)
+                unescape(v.orEmpty())
+            }
+        }
+    }
+
+    /** "A" -> 0, "Z" -> 25, "AA" -> 26. */
+    private fun colIndex(ref: String): Int {
+        var result = 0
+        for (ch in ref) {
+            result = result * 26 + (ch - 'A' + 1)
+        }
+        return result - 1
+    }
+
+    private fun unescape(s: String): String = s
+        .replace("&lt;", "<")
+        .replace("&gt;", ">")
+        .replace("&quot;", "\"")
+        .replace("&apos;", "'")
+        .replace("&amp;", "&")
+}

@@ -26,6 +26,23 @@ object CompanyBrandingStore {
             outFile
         }.getOrNull()?.takeIf { it.exists() && it.length() > 0 }
     }
+
+    /**
+     * Restores the company logo from raw bytes (used by backup restore) into app-internal storage
+     * and persists its path in [Prefs]. Returns the stored [File] on success, or null on failure.
+     */
+    fun saveCompanyLogoFromBytes(context: Context, bytes: ByteArray): File? {
+        if (bytes.isEmpty()) return null
+        val outFile = File(context.filesDir, COMPANY_LOGO_FILE_NAME)
+        return runCatching {
+            FileOutputStream(outFile).use { output ->
+                output.write(bytes)
+                output.flush()
+            }
+            Prefs.setCompanyLogoPath(context, outFile.absolutePath)
+            outFile
+        }.getOrNull()?.takeIf { it.exists() && it.length() > 0 }
+    }
 }
 
 

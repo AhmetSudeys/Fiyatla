@@ -9,9 +9,21 @@ object Prefs {
     private const val KEY_COMPANY_LOGO_PATH = "company_logo_path"
     private const val KEY_LABOR_RATE = "labor_rate"
     private const val KEY_RADIATOR_RATE = "radiator_rate"
+    private const val KEY_DISCLAIMER_ACCEPTED = "disclaimer_accepted"
 
     const val DEFAULT_LABOR_RATE = "400"
     const val DEFAULT_RADIATOR_RATE = "2600"
+
+    /** True once the user has read + accepted the "data is stored only on this device" notice. */
+    fun isDisclaimerAccepted(context: Context): Boolean {
+        val prefs = context.getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE)
+        return prefs.getBoolean(KEY_DISCLAIMER_ACCEPTED, false)
+    }
+
+    fun setDisclaimerAccepted(context: Context) {
+        val prefs = context.getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE)
+        prefs.edit().putBoolean(KEY_DISCLAIMER_ACCEPTED, true).apply()
+    }
 
     /** Last-used labor unit rate (₺/m). Remembered across quotes. */
     fun getLaborRate(context: Context): String {

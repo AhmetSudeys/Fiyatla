@@ -1,5 +1,6 @@
 package com.ahmetsudeys.rotauygulama.ui.home
 
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -10,6 +11,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ahmetsudeys.rotauygulama.R
@@ -50,6 +52,16 @@ class HomeFragment : Fragment() {
         val company = Prefs.getCompanyName(requireContext()).ifBlank { "-" }
         // Greeting removed from UI by request (kept company value for future use if needed)
         binding.textGreeting.text = ""
+
+        // Profile avatar (company logo). Tapping it returns to the login screen.
+        Prefs.getCompanyLogoFile(requireContext())?.let { file ->
+            binding.imageProfile.setImageURI(Uri.fromFile(file))
+        }
+        binding.imageProfile.setOnSingleClickListener {
+            // Home lives inside the child NavHost; navigate the root controller back to login.
+            requireActivity().findNavController(R.id.nav_host_fragment)
+                .navigate(R.id.action_mainShellFragment_to_welcomeFragment)
+        }
 
         binding.buttonNewQuote.setOnSingleClickListener {
             // Starting a brand-new quote should always be clean (no leftovers from edit / unfinished drafts).
