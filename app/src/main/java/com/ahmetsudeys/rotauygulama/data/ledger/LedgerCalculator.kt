@@ -66,9 +66,13 @@ object LedgerCalculator {
     ): LedgerRow {
         val suggested = suggestedAmountFor(customer, quotes)
         val persisted = account?.agreedAmount
+        // The effective receivable is ONLY the amount explicitly seeded for THIS customer (from its
+        // own approved quote) or edited by hand. We must not fall back to a name-matched quote total:
+        // a customer added manually in Müşterilerim would otherwise inherit a same-named customer's
+        // amount. Manually added customers therefore start at 0 in the ledger.
         return LedgerRow(
             customer = customer,
-            agreedAmount = persisted ?: suggested,
+            agreedAmount = persisted ?: 0.0,
             suggestedAmount = suggested,
             isManualAmount = persisted != null,
             collected = account?.collected ?: 0.0,

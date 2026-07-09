@@ -284,24 +284,31 @@ object BackupManager {
      * Heavy work; call off the main thread.
      */
     fun restore(context: Context, uri: Uri): RestoreResult {
-        val rows = runCatching {
+        val sheets = runCatching {
             context.contentResolver.openInputStream(uri)?.use { input ->
-                XlsxReader.readSheet(input, MACHINE_SHEET)
+                XlsxReader.readAllSheets(input)
             }
-        }.getOrNull() ?: return RestoreResult.InvalidFile
+        }.getOrNull()
+        if (sheets.isNullOrEmpty()) return RestoreResult.InvalidFile
 
-        if (rows.isEmpty() || rows.first().getOrNull(0) != BACKUP_MARKER) {
-            return RestoreResult.InvalidFile
-        }
+        fun List<List<String>>.hasMarker() =
+            any { it.getOrNull(0)?.trim() == BACKUP_MARKER }
+
+        // Prefer the "Yedek" sheet, but fall back to any sheet that carries our marker row so a
+        // backup still restores even if a spreadsheet app renamed or reordered the sheets.
+        val rows = sheets.firstOrNull { it.name == MACHINE_SHEET && it.rows.hasMarker() }?.rows
+            ?: sheets.firstOrNull { it.rows.hasMarker() }?.rows
+            ?: return RestoreResult.InvalidFile
 
         return runCatching {
-            // Group the restorable rows (skip the marker row).
             val byStore = LinkedHashMap<String, MutableList<Pair<String, String>>>()
             var logoBytes: ByteArray? = null
 
-            for (i in 1 until rows.size) {
+            // Everything after the marker row is restorable data (leading blank/extra rows tolerated).
+            val markerIndex = rows.indexOfFirst { it.getOrNull(0)?.trim() == BACKUP_MARKER }
+            for (i in (markerIndex + 1) until rows.size) {
                 val row = rows[i]
-                val col0 = row.getOrNull(0).orEmpty()
+                val col0 = row.getOrNull(0).orEmpty().trim()
                 val col1 = row.getOrNull(1).orEmpty()
                 if (col0.isBlank()) continue
                 // Value may be split across columns C, D, E, ... — stitch them back in order.

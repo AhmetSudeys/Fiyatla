@@ -344,8 +344,24 @@ class CustomersFragment : Fragment() {
                 updatedAtMillis = now
             )
 
+            val appCtx = requireContext().applicationContext
             ioExecutor.execute {
-                CustomerStorage.upsertCustomer(requireContext(), record)
+                // Disallow two customers with the same name (case-insensitive). This keeps the
+                // customer/quote/ledger matching unambiguous and prevents a new customer from
+                // accidentally sharing a same-named person's receivable.
+                val nameLc = name.lowercase()
+                val duplicate = CustomerStorage.getCustomers(appCtx).any {
+                    it.createdAtMillis != createdAt && it.name.orEmpty().trim().lowercase() == nameLc
+                }
+                if (duplicate) {
+                    mainHandler.post {
+                        if (!isAdded) return@post
+                        sheet.inputName.error = getString(R.string.error_customer_duplicate_name)
+                    }
+                    return@execute
+                }
+
+                CustomerStorage.upsertCustomer(appCtx, record)
                 mainHandler.post {
                     if (!isAdded) return@post
                     dialog.dismiss()

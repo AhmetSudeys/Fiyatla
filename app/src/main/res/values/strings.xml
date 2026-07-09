@@ -76,6 +76,7 @@
     <string name="updated">Güncellendi</string>
 
     <string name="error_customer_required">Müşteri adı zorunludur</string>
+    <string name="error_customer_duplicate_name">Bu isimde bir müşteri zaten var</string>
 
     <string name="continue_text">Devam Et</string>
     <string name="quote_customer_title">Müşteri Bilgileri</string>
@@ -280,14 +281,14 @@
     <string name="backup_in_progress">Yedek hazırlanıyor…</string>
     <string name="backup_failed">Yedek oluşturulamadı. Lütfen tekrar deneyin.</string>
     <string name="backup_download">Telefona İndir</string>
-    <string name="backup_download_success">Yedek telefona kaydedildi.</string>
+    <string name="backup_download_success">Verileriniz başarıyla yedeklendi.</string>
     <string name="backup_download_failed">Yedek kaydedilemedi. Lütfen tekrar deneyin.</string>
     <string name="restore_in_progress">Geri yükleniyor…</string>
     <string name="restore_confirm_title">Yedekten geri yüklensin mi?</string>
     <string name="restore_confirm_message">Uygulamadaki mevcut tüm veriler (müşteriler, teklifler, alacak defteri) yedekteki verilerle değiştirilecek. Bu işlem geri alınamaz. Devam edilsin mi?</string>
     <string name="restore_success">Verileriniz başarıyla geri yüklendi.</string>
-    <string name="restore_invalid">Bu dosya geçerli bir yedek değil. Lütfen uygulamayla oluşturduğunuz yedek dosyasını (.xlsx) seçin.</string>
-    <string name="restore_failed">Geri yükleme başarısız oldu. Lütfen tekrar deneyin.</string>
+    <string name="restore_invalid">Geçerli bir yedek dosyası değil.</string>
+    <string name="restore_failed">Geri yükleme başarısız oldu.</string>
     <string name="restart_now">Tamam</string>
 
     <!-- İlk açılış bilgilendirme -->

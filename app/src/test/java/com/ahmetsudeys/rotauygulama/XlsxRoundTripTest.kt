@@ -60,6 +60,59 @@ class XlsxRoundTripTest {
     }
 
     @Test
+    fun largeCellRoundTrips() {
+        // Simulates a backed-up company logo: a single very large Base64 cell (~300 KB).
+        val big = "A".repeat(300_000)
+        val yedekRows = listOf(
+            listOf(XlsxWriter.text("FIYATLA_BACKUP"), XlsxWriter.text("1"), XlsxWriter.text("t")),
+            listOf(XlsxWriter.text("__LOGO__"), XlsxWriter.text("company_logo.png"), XlsxWriter.text(big)),
+        )
+        val bos = ByteArrayOutputStream()
+        XlsxWriter.write(bos, listOf(XlsxWriter.Sheet("Yedek", yedekRows)))
+
+        val rows = XlsxReader.readSheet(ByteArrayInputStream(bos.toByteArray()), "Yedek")
+        requireNotNull(rows)
+        assertEquals("FIYATLA_BACKUP", rows[0][0])
+        assertEquals(big, rows[1][2])
+    }
+
+    @Test
+    fun markerFoundAcrossRenamedSheetWithChunkedValue() {
+        // A value split across columns C..D (as the real backup does for long values), inside a
+        // machine sheet that a spreadsheet app has *renamed* away from "Yedek".
+        val part1 = "X".repeat(40_000)
+        val part2 = "Y".repeat(15_000)
+        val machine = XlsxWriter.Sheet(
+            "Sheet2",
+            listOf(
+                emptyList(), // stray leading blank row
+                listOf(XlsxWriter.text("FIYATLA_BACKUP"), XlsxWriter.text("1"), XlsxWriter.text("ts")),
+                listOf(
+                    XlsxWriter.text("rota_customers"),
+                    XlsxWriter.text("customers"),
+                    XlsxWriter.text(part1),
+                    XlsxWriter.text(part2)
+                ),
+            )
+        )
+        val readable = XlsxWriter.Sheet("Özet", listOf(listOf(XlsxWriter.text("Firma"), XlsxWriter.text("X"))))
+
+        val bos = ByteArrayOutputStream()
+        XlsxWriter.write(bos, listOf(readable, machine))
+
+        val sheets = XlsxReader.readAllSheets(ByteArrayInputStream(bos.toByteArray()))
+        requireNotNull(sheets)
+
+        val rows = sheets.firstOrNull { s -> s.rows.any { it.getOrNull(0)?.trim() == "FIYATLA_BACKUP" } }?.rows
+        requireNotNull(rows)
+
+        val markerIdx = rows.indexOfFirst { it.getOrNull(0)?.trim() == "FIYATLA_BACKUP" }
+        val dataRow = rows[markerIdx + 1]
+        val stitched = (2 until dataRow.size).joinToString("") { dataRow[it] }
+        assertEquals(part1 + part2, stitched)
+    }
+
+    @Test
     fun missingSheetReturnsNull() {
         val bos = ByteArrayOutputStream()
         XlsxWriter.write(bos, listOf(XlsxWriter.Sheet("Özet", listOf(listOf(XlsxWriter.text("x"))))))

@@ -1,8 +1,9 @@
 package com.ahmetsudeys.rotauygulama.data.backup
 
-import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileOutputStream
 import java.io.InputStream
-import java.util.zip.ZipInputStream
+import java.util.zip.ZipFile
 
 /**
  * Reads back the small .xlsx files produced by [XlsxWriter]. Only what we need for restore:
@@ -13,6 +14,40 @@ import java.util.zip.ZipInputStream
  * doesn't break restore.
  */
 object XlsxReader {
+
+    /** One parsed worksheet: its (unescaped) name and its rows. */
+    data class SheetData(val name: String, val rows: List<List<String>>)
+
+    /**
+     * Reads every worksheet in the workbook. Used by restore so it can locate the backup's machine
+     * sheet even if a spreadsheet app renamed/reordered sheets — we just look for the marker row.
+     */
+    fun readAllSheets(input: InputStream): List<SheetData>? {
+        val entries = readZip(input)
+        val workbook = entries["xl/workbook.xml"]?.toString(Charsets.UTF_8) ?: return null
+        val rels = entries["xl/_rels/workbook.xml.rels"]?.toString(Charsets.UTF_8) ?: return null
+        val sharedStrings = entries["xl/sharedStrings.xml"]?.toString(Charsets.UTF_8)?.let { parseSharedStrings(it) }
+            ?: emptyList()
+
+        val result = ArrayList<SheetData>()
+        for ((name, rId) in findAllSheets(workbook)) {
+            val target = findRelTarget(rels, rId) ?: continue
+            val sheetXml = entries[normalizeSheetPath(target)]?.toString(Charsets.UTF_8) ?: continue
+            result.add(SheetData(name, parseRows(sheetXml, sharedStrings)))
+        }
+        return result
+    }
+
+    private fun findAllSheets(workbookXml: String): List<Pair<String, String>> {
+        val out = ArrayList<Pair<String, String>>()
+        for (m in Regex("""<sheet\b[^>]*?/?>""").findAll(workbookXml)) {
+            val tag = m.value
+            val name = Regex("""name="([^"]*)"""").find(tag)?.groupValues?.get(1)?.let { unescape(it) } ?: continue
+            val rId = Regex("""r:id="([^"]*)"""").find(tag)?.groupValues?.get(1) ?: continue
+            out.add(name to rId)
+        }
+        return out
+    }
 
     /** Returns the rows of [sheetName] (each row a list of cell strings), or null if not found. */
     fun readSheet(input: InputStream, sheetName: String): List<List<String>>? {
@@ -33,24 +68,28 @@ object XlsxReader {
     }
 
     private fun readZip(input: InputStream): Map<String, ByteArray> {
-        val out = LinkedHashMap<String, ByteArray>()
-        ZipInputStream(input).use { zip ->
-            while (true) {
-                val entry = zip.nextEntry ?: break
-                if (!entry.isDirectory) {
-                    val buffer = ByteArray(8 * 1024)
-                    val bos = ByteArrayOutputStream()
-                    while (true) {
-                        val read = zip.read(buffer)
-                        if (read <= 0) break
-                        bos.write(buffer, 0, read)
+        // Buffer to a temp file and read via ZipFile (central directory) instead of ZipInputStream
+        // (sequential local headers). ZipFile is far more tolerant of the zip variants that Excel /
+        // Google Sheets produce when a user opens and re-saves the backup, so restore keeps working.
+        val tmp = File.createTempFile("rota_restore", ".xlsx")
+        try {
+            FileOutputStream(tmp).use { fos -> input.copyTo(fos) }
+            val out = LinkedHashMap<String, ByteArray>()
+            ZipFile(tmp).use { zf ->
+                val entries = zf.entries()
+                while (entries.hasMoreElements()) {
+                    val entry = entries.nextElement()
+                    if (!entry.isDirectory) {
+                        zf.getInputStream(entry).use { stream ->
+                            out[entry.name] = stream.readBytes()
+                        }
                     }
-                    out[entry.name] = bos.toByteArray()
                 }
-                zip.closeEntry()
             }
+            return out
+        } finally {
+            tmp.delete()
         }
-        return out
     }
 
     private fun findSheetRid(workbookXml: String, sheetName: String): String? {
