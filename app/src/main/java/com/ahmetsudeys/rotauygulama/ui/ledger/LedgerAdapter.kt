@@ -88,6 +88,9 @@ class LedgerAdapter(
                 ctx.getString(R.string.ledger_no_date)
             }
 
+            // Payment date passed and the customer still owes -> red warning.
+            binding.textOverdueNotice.isVisible = item.isOverdue
+
             binding.root.setOnClickListener { onRowClick(item) }
         }
     }

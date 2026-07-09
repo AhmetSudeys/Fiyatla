@@ -51,6 +51,7 @@ class LedgerDetailFragment : Fragment() {
         maximumFractionDigits = 0
     }
     private val dateFmt = SimpleDateFormat("dd.MM.yyyy", Locale("tr", "TR"))
+    private val longDateFmt = SimpleDateFormat("d MMMM yyyy", Locale("tr", "TR"))
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -140,8 +141,14 @@ class LedgerDetailFragment : Fragment() {
             else -> binding.badgeStatus.isVisible = false
         }
 
+        val archived = row.account?.archivedCollected ?: 0.0
+        binding.textArchived.isVisible = archived > 0.0
+        if (archived > 0.0) {
+            binding.textArchived.text = ctx.getString(R.string.ledger_archived_note, money.format(archived))
+        }
+
         val payments = row.account?.payments.orEmpty().sortedByDescending { it.dateMillis }
-        binding.textEmptyPayments.isVisible = payments.isEmpty()
+        binding.textEmptyPayments.isVisible = payments.isEmpty() && archived <= 0.0
         binding.recyclerPayments.isVisible = payments.isNotEmpty()
         paymentsAdapter.submitList(payments)
     }
@@ -154,9 +161,10 @@ class LedgerDetailFragment : Fragment() {
         dialog.setView(sheet.root)
         dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
 
-        var selectedDate = System.currentTimeMillis()
+        // Default to today (normalised to noon so the picker and display always agree).
+        var selectedDate = todayNoonMillis()
         fun updateDateButton() {
-            sheet.buttonDate.text = getString(R.string.payment_date) + ": " + dateFmt.format(Date(selectedDate))
+            sheet.buttonDate.text = longDateFmt.format(Date(selectedDate))
         }
         updateDateButton()
 
@@ -286,6 +294,15 @@ class LedgerDetailFragment : Fragment() {
     }
 
     // --- Helpers ----------------------------------------------------------
+
+    private fun todayNoonMillis(): Long {
+        return Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 12)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.timeInMillis
+    }
 
     private fun pickDate(initialMillis: Long, onPicked: (Long) -> Unit) {
         val cal = Calendar.getInstance().apply { timeInMillis = initialMillis }

@@ -200,5 +200,22 @@
             app:layout_constraintTop_toBottomOf="@id/progress_bar"
             tools:text="Anlaşılan tarih: 12.05.2026" />
 
+        <TextView
+            android:id="@+id/text_overdue_notice"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/space_m"
+            android:layout_marginTop="4dp"
+            android:maxLines="2"
+            android:text="@string/ledger_overdue_notice"
+            android:textColor="@color/accent_red"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/view_accent"
+            app:layout_constraintTop_toBottomOf="@id/text_date"
+            tools:visibility="visible" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

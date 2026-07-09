@@ -222,6 +222,35 @@
         app:layout_constraintTop_toBottomOf="@id/card_header" />
 
     <TextView
+        android:id="@+id/text_payments_hint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/space_s"
+        android:alpha="0.55"
+        android:text="@string/ledger_payments_hint"
+        android:textSize="11sp"
+        app:layout_constraintBaseline_toBaselineOf="@id/text_payments_title"
+        app:layout_constraintStart_toEndOf="@id/text_payments_title" />
+
+    <TextView
+        android:id="@+id/text_archived"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:drawablePadding="6dp"
+        android:textColor="@color/accent_green"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:drawableStartCompat="@drawable/ic_wallet"
+        app:drawableTint="@color/accent_green"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_payments_title"
+        tools:text="Önceki dönem tahsilatı (özet): ₺ 12.000"
+        tools:visibility="visible" />
+
+    <TextView
         android:id="@+id/text_empty_payments"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -232,7 +261,7 @@
         android:textAppearance="?attr/textAppearanceBodyMedium"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_payments_title" />
+        app:layout_constraintTop_toBottomOf="@id/text_archived" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_payments"
@@ -245,7 +274,7 @@
         app:layout_constraintBottom_toTopOf="@id/button_add_payment"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_payments_title"
+        app:layout_constraintTop_toBottomOf="@id/text_archived"
         tools:listitem="@layout/item_payment_row" />
 
     <com.google.android.material.button.MaterialButton

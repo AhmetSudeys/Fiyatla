@@ -69,15 +69,22 @@ object LedgerStorage {
         val agreedAmount: Double? = null,
         val agreedDateMillis: Long? = null,
         val dueDateMillis: Long? = null,
-        val payments: List<Payment> = emptyList()
+        val payments: List<Payment> = emptyList(),
+        /**
+         * Sum of payments that were pruned once they aged past the retention window. Detailed
+         * records are dropped to keep the store small, but their total is preserved here so the
+         * collected/remaining figures stay correct forever.
+         */
+        val archivedCollected: Double = 0.0
     ) {
-        val collected: Double get() = payments.sumOf { it.amount }
+        val collected: Double get() = archivedCollected + payments.sumOf { it.amount }
 
         fun toJson(): JSONObject = JSONObject().apply {
             put("customerId", customerId)
             if (agreedAmount != null) put("agreedAmount", agreedAmount)
             if (agreedDateMillis != null) put("agreedDateMillis", agreedDateMillis)
             if (dueDateMillis != null) put("dueDateMillis", dueDateMillis)
+            if (archivedCollected != 0.0) put("archivedCollected", archivedCollected)
             val arr = JSONArray()
             payments.forEach { arr.put(it.toJson()) }
             put("payments", arr)
@@ -96,7 +103,8 @@ object LedgerStorage {
                     agreedAmount = if (obj.has("agreedAmount")) obj.optDouble("agreedAmount") else null,
                     agreedDateMillis = if (obj.has("agreedDateMillis")) obj.optLong("agreedDateMillis") else null,
                     dueDateMillis = if (obj.has("dueDateMillis")) obj.optLong("dueDateMillis") else null,
-                    payments = payments
+                    payments = payments,
+                    archivedCollected = obj.optDouble("archivedCollected", 0.0)
                 )
             }
         }
@@ -202,5 +210,33 @@ object LedgerStorage {
     fun deletePayment(context: Context, customerId: Long, paymentId: Long) {
         val current = getAccount(context, customerId) ?: return
         upsertAccount(context, current.copy(payments = current.payments.filterNot { it.id == paymentId }))
+    }
+
+    /**
+     * Drops individual payment records older than [cutoffMillis], folding their sum into
+     * [LedgerAccount.archivedCollected]. Keeps the store bounded (~last 3 months of detail) without
+     * changing any customer's collected/remaining totals. Writes only when something actually moves.
+     *
+     * @return true if any account was modified.
+     */
+    fun pruneOlderThan(context: Context, cutoffMillis: Long): Boolean {
+        val prefs = context.getSharedPreferences(FILE, Context.MODE_PRIVATE)
+        val arr = JSONArray(prefs.getString(KEY_ACCOUNTS, "[]").orEmpty())
+        var changed = false
+        for (i in 0 until arr.length()) {
+            val obj = arr.optJSONObject(i) ?: continue
+            val account = LedgerAccount.fromJson(obj)
+            val old = account.payments.filter { it.dateMillis < cutoffMillis }
+            if (old.isEmpty()) continue
+            val kept = account.payments.filter { it.dateMillis >= cutoffMillis }
+            val pruned = account.copy(
+                payments = kept,
+                archivedCollected = account.archivedCollected + old.sumOf { it.amount }
+            )
+            arr.put(i, pruned.toJson())
+            changed = true
+        }
+        if (changed) prefs.edit().putString(KEY_ACCOUNTS, arr.toString()).apply()
+        return changed
     }
 }

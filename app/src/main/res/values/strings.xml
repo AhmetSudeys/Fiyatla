@@ -215,6 +215,7 @@
     <string name="ledger_agreed_date">Anlaşılan tarih: %1$s</string>
     <string name="ledger_no_date">Tarih belirtilmedi</string>
     <string name="ledger_suggested_hint">Onaylı tekliften</string>
+    <string name="ledger_overdue_notice">⚠ Belirtilen tarihte ödeme yapılmadı</string>
 
     <string name="ledger_detail_title">Müşteri Hesabı</string>
     <string name="ledger_edit_agreement">Alacağı Düzenle</string>
@@ -226,6 +227,8 @@
     <string name="ledger_clear_date">Tarihi temizle</string>
     <string name="ledger_no_phone">Telefon yok</string>
     <string name="ledger_payments_title">Ödeme Geçmişi</string>
+    <string name="ledger_payments_hint">Son 3 ay gösterilir</string>
+    <string name="ledger_archived_note">Önceki dönem tahsilatı (özet): %1$s</string>
     <string name="ledger_no_payments">Henüz ödeme kaydı yok.</string>
     <string name="ledger_add_payment">Ödeme Ekle</string>
 
@@ -250,11 +253,12 @@
     <string name="report_no_data">Henüz tahsilat verisi yok.</string>
 
     <string name="report_month_ciro">Ayın Cirosu</string>
-    <string name="report_overview">Genel Durum</string>
-    <string name="report_stat_customers">Müşteri</string>
-    <string name="report_stat_paid">Ödeyen</string>
-    <string name="report_stat_debtors">Borçlu</string>
-    <string name="report_stat_rate">Tahsilat Oranı</string>
+    <string name="report_overview">Seçilen Ayın Özeti</string>
+    <string name="report_stat_collected">Tahsilat</string>
+    <string name="report_stat_count">Ödeme Sayısı</string>
+    <string name="report_stat_payers">Ödeyen Müşteri</string>
+    <string name="report_stat_avg">Ort. Ödeme</string>
+    <string name="report_method_month_hint">Seçilen ay: %1$s</string>
 
     <!-- Ödeme ekleme ekranı -->
     <string name="payment_title">Ödeme Ekle</string>

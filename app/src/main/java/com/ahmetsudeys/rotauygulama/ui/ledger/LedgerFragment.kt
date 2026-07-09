@@ -126,6 +126,10 @@ class LedgerFragment : Fragment() {
         val token = ++refreshToken
         val appCtx = requireContext().applicationContext
         ioExecutor.execute {
+            // Keep only the last 3 months of detailed payments; older ones are folded into an
+            // archived total so the store stays small and the app stays fast long-term.
+            LedgerStorage.pruneOlderThan(appCtx, LedgerCalculator.retentionCutoffMillis())
+
             val customers = CustomerStorage.getCustomers(appCtx).sortedByDescending { it.createdAtMillis }
             val accounts = LedgerStorage.getAccounts(appCtx)
             val quotes = QuoteStorage.getQuotes(appCtx)
@@ -179,9 +183,7 @@ class LedgerFragment : Fragment() {
 
     private fun buildReport() {
         buildMonthChips()
-        renderMonthly()
-        buildMethods()
-        buildStats()
+        renderSelectedMonth()
         buildDebtors()
     }
 
@@ -212,55 +214,62 @@ class LedgerFragment : Fragment() {
         group.setOnCheckedStateChangeListener { _, checkedIds ->
             val ym = checkedIds.firstOrNull()?.let { monthChipMap[it] } ?: return@setOnCheckedStateChangeListener
             selectedMonth = ym
-            renderMonthly()
+            renderSelectedMonth()
         }
     }
 
-    private fun renderMonthly() {
+    /** Every report figure below the month selector is scoped to [selectedMonth]. */
+    private fun renderSelectedMonth() {
         // Column chart in chronological order (oldest -> newest, left to right).
         val chrono = recentMonths.reversed()
         val columns = chrono.map { ym ->
             val total = LedgerCalculator.collectedInMonth(allRows, ym)
             ColumnChartView.Column(
-                label = "${monthShort[(ym.month - 1).coerceIn(0, 11)]}",
+                label = monthShort[(ym.month - 1).coerceIn(0, 11)],
                 value = total.toFloat(),
                 valueLabel = shortMoney(total),
-                color = ContextCompat.getColor(requireContext(), R.color.accent_blue),
+                color = color(R.color.accent_blue),
                 highlight = ym.key == selectedMonth?.key
             )
         }
         binding.chartMonthly.setColumns(columns)
 
         val ym = selectedMonth
-        if (ym == null) {
-            binding.textMonthCiro.text = money.format(0)
-            binding.textMonthCash.text = ""
-            binding.textMonthCard.text = ""
-            binding.textMonthTransfer.text = ""
-            return
-        }
-        val ciro = LedgerCalculator.collectedInMonth(allRows, ym)
-        val b = LedgerCalculator.methodBreakdownInMonth(allRows, ym)
-        binding.textMonthCiro.text = money.format(ciro)
-        binding.textMonthCash.text = "${getString(R.string.payment_method_cash)} ${money.format(b.cash)}"
-        binding.textMonthCard.text = "${getString(R.string.payment_method_card)} ${money.format(b.card)}"
-        binding.textMonthTransfer.text = "${getString(R.string.payment_method_transfer)} ${money.format(b.transfer)}"
-    }
+        val monthLabel = ym?.let { "${monthNames[(it.month - 1).coerceIn(0, 11)]} ${it.year}" }.orEmpty()
+        binding.textMethodMonthHint.text = getString(R.string.report_method_month_hint, monthLabel)
+        binding.textOverviewMonthHint.text = getString(R.string.report_method_month_hint, monthLabel)
 
-    private fun buildMethods() {
-        val b = LedgerCalculator.methodBreakdown(allRows)
+        val breakdown = ym?.let { LedgerCalculator.methodBreakdownInMonth(allRows, it) }
+            ?: LedgerCalculator.MethodBreakdown(0.0, 0.0, 0.0)
+        val ciro = ym?.let { LedgerCalculator.collectedInMonth(allRows, it) } ?: 0.0
+
+        // Monthly ciro detail row
+        binding.textMonthCiro.text = money.format(ciro)
+        binding.textMonthCash.text = "${getString(R.string.payment_method_cash)} ${money.format(breakdown.cash)}"
+        binding.textMonthCard.text = "${getString(R.string.payment_method_card)} ${money.format(breakdown.card)}"
+        binding.textMonthTransfer.text = "${getString(R.string.payment_method_transfer)} ${money.format(breakdown.transfer)}"
+
+        // Method distribution donut + legend (selected month)
         binding.chartMethods.setSlices(
             listOf(
-                DonutChartView.Slice(b.cash.toFloat(), color(R.color.accent_green)),
-                DonutChartView.Slice(b.card.toFloat(), color(R.color.accent_blue)),
-                DonutChartView.Slice(b.transfer.toFloat(), color(R.color.accent_amber))
+                DonutChartView.Slice(breakdown.cash.toFloat(), color(R.color.accent_green)),
+                DonutChartView.Slice(breakdown.card.toFloat(), color(R.color.accent_blue)),
+                DonutChartView.Slice(breakdown.transfer.toFloat(), color(R.color.accent_amber))
             )
         )
         val legend = binding.containerMethodLegend
         legend.removeAllViews()
-        addLegendRow(legend, R.color.accent_green, getString(R.string.payment_method_cash), b.cash)
-        addLegendRow(legend, R.color.accent_blue, getString(R.string.payment_method_card), b.card)
-        addLegendRow(legend, R.color.accent_amber, getString(R.string.payment_method_transfer), b.transfer)
+        addLegendRow(legend, R.color.accent_green, getString(R.string.payment_method_cash), breakdown.cash)
+        addLegendRow(legend, R.color.accent_blue, getString(R.string.payment_method_card), breakdown.card)
+        addLegendRow(legend, R.color.accent_amber, getString(R.string.payment_method_transfer), breakdown.transfer)
+
+        // Overview stats (selected month)
+        val stats = ym?.let { LedgerCalculator.monthStats(allRows, it) }
+            ?: LedgerCalculator.MonthStats(0.0, 0, 0, 0.0)
+        binding.textStatCollected.text = money.format(stats.collected)
+        binding.textStatCount.text = stats.paymentCount.toString()
+        binding.textStatPayers.text = stats.payingCustomers.toString()
+        binding.textStatAvg.text = money.format(stats.average)
     }
 
     private fun addLegendRow(container: ViewGroup, colorRes: Int, label: String, amount: Double) {
@@ -290,14 +299,6 @@ class LedgerFragment : Fragment() {
         row.addView(labelView)
         row.addView(amountView)
         container.addView(row)
-    }
-
-    private fun buildStats() {
-        val s = LedgerCalculator.stats(allRows)
-        binding.textStatCustomers.text = s.customerCount.toString()
-        binding.textStatPaid.text = s.paidCount.toString()
-        binding.textStatDebtors.text = s.debtorCount.toString()
-        binding.textStatRate.text = "%${(s.collectionRate * 100).toInt()}"
     }
 
     private fun buildDebtors() {

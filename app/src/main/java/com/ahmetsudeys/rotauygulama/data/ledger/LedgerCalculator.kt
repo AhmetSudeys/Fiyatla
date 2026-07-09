@@ -187,21 +187,43 @@ object LedgerCalculator {
         return MethodBreakdown(cash, card, transfer)
     }
 
-    /** Headline counts for the report overview. */
-    data class Stats(
-        val customerCount: Int,
-        val paidCount: Int,
-        val debtorCount: Int,
-        val collectionRate: Float // 0f..1f
+    /** Per-month activity summary — everything under the month selector is scoped to the picked month. */
+    data class MonthStats(
+        val collected: Double,
+        val paymentCount: Int,
+        val payingCustomers: Int,
+        val average: Double
     )
 
-    fun stats(rows: List<LedgerRow>): Stats {
-        val withAmount = rows.filter { it.agreedAmount > 0.0 }
-        val paid = withAmount.count { it.isFullyPaid }
-        val debtors = rows.count { it.remaining > 0.009 }
-        val summary = summarize(rows)
-        val rate = if (summary.totalAgreed <= 0.0) 0f
-        else (summary.totalCollected / summary.totalAgreed).coerceIn(0.0, 1.0).toFloat()
-        return Stats(rows.size, paid, debtors, rate)
+    fun monthStats(rows: List<LedgerRow>, ym: YearMonth): MonthStats {
+        var collected = 0.0
+        var count = 0
+        val payers = HashSet<Long>()
+        rows.forEach { row ->
+            row.account?.payments?.forEach { p ->
+                if (inMonth(p.dateMillis, ym)) {
+                    collected += p.amount
+                    count++
+                    payers.add(row.customerId)
+                }
+            }
+        }
+        val avg = if (count > 0) collected / count else 0.0
+        return MonthStats(collected, count, payers.size, avg)
+    }
+
+    /**
+     * Cutoff for the 3-month retention window: 00:00 on the first day of the oldest kept month
+     * (current month minus 2). Payments before this can be pruned. Recomputed from today.
+     */
+    fun retentionCutoffMillis(): Long {
+        val cal = Calendar.getInstance()
+        cal.add(Calendar.MONTH, -2)
+        cal.set(Calendar.DAY_OF_MONTH, 1)
+        cal.set(Calendar.HOUR_OF_DAY, 0)
+        cal.set(Calendar.MINUTE, 0)
+        cal.set(Calendar.SECOND, 0)
+        cal.set(Calendar.MILLISECOND, 0)
+        return cal.timeInMillis
     }
 }

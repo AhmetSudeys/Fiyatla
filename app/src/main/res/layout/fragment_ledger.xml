@@ -453,6 +453,15 @@
                                 android:textStyle="bold" />
                         </LinearLayout>
 
+                        <TextView
+                            android:id="@+id/text_method_month_hint"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:alpha="0.55"
+                            android:textSize="11sp"
+                            tools:text="Seçilen ay: Mayıs 2026" />
+
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -510,6 +519,15 @@
                                 android:textStyle="bold" />
                         </LinearLayout>
 
+                        <TextView
+                            android:id="@+id/text_overview_month_hint"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:alpha="0.55"
+                            android:textSize="11sp"
+                            tools:text="Seçilen ay: Mayıs 2026" />
+
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -527,19 +545,19 @@
                                 android:padding="@dimen/space_s">
 
                                 <TextView
-                                    android:id="@+id/text_stat_customers"
+                                    android:id="@+id/text_stat_collected"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:textColor="@color/accent_blue"
+                                    android:textColor="@color/accent_green"
                                     android:textStyle="bold"
-                                    android:textSize="20sp"
-                                    tools:text="12" />
+                                    android:textSize="17sp"
+                                    tools:text="₺ 42.000" />
 
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:alpha="0.6"
-                                    android:text="@string/report_stat_customers"
+                                    android:text="@string/report_stat_collected"
                                     android:textSize="12sp" />
                             </LinearLayout>
 
@@ -553,19 +571,19 @@
                                 android:padding="@dimen/space_s">
 
                                 <TextView
-                                    android:id="@+id/text_stat_paid"
+                                    android:id="@+id/text_stat_count"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:textColor="@color/accent_green"
+                                    android:textColor="@color/accent_blue"
                                     android:textStyle="bold"
                                     android:textSize="20sp"
-                                    tools:text="7" />
+                                    tools:text="8" />
 
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:alpha="0.6"
-                                    android:text="@string/report_stat_paid"
+                                    android:text="@string/report_stat_count"
                                     android:textSize="12sp" />
                             </LinearLayout>
                         </LinearLayout>
@@ -587,19 +605,19 @@
                                 android:padding="@dimen/space_s">
 
                                 <TextView
-                                    android:id="@+id/text_stat_debtors"
+                                    android:id="@+id/text_stat_payers"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:textColor="@color/accent_red"
+                                    android:textColor="@color/accent_teal"
                                     android:textStyle="bold"
                                     android:textSize="20sp"
-                                    tools:text="5" />
+                                    tools:text="4" />
 
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:alpha="0.6"
-                                    android:text="@string/report_stat_debtors"
+                                    android:text="@string/report_stat_payers"
                                     android:textSize="12sp" />
                             </LinearLayout>
 
@@ -613,19 +631,19 @@
                                 android:padding="@dimen/space_s">
 
                                 <TextView
-                                    android:id="@+id/text_stat_rate"
+                                    android:id="@+id/text_stat_avg"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:textColor="@color/accent_purple"
                                     android:textStyle="bold"
-                                    android:textSize="20sp"
-                                    tools:text="%58" />
+                                    android:textSize="17sp"
+                                    tools:text="₺ 5.250" />
 
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:alpha="0.6"
-                                    android:text="@string/report_stat_rate"
+                                    android:text="@string/report_stat_avg"
                                     android:textSize="12sp" />
                             </LinearLayout>
                         </LinearLayout>
