@@ -30,7 +30,6 @@
             android:name=".ui.onboarding.BackupDownloadActivity"
             android:exported="false"
             android:excludeFromRecents="true"
-            android:noHistory="true"
             android:theme="@style/Theme.RotaUygulama.Invisible" />
 
         <provider

@@ -7,6 +7,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.ahmetsudeys.rotauygulama.R
 import com.ahmetsudeys.rotauygulama.data.backup.BackupManager
+import java.io.ByteArrayOutputStream
 
 /**
  * Invisible helper activity used as a "Telefona İndir" target inside the backup share sheet.
@@ -38,8 +39,16 @@ class BackupDownloadActivity : AppCompatActivity() {
         val appContext = applicationContext
         Thread {
             val ok = runCatching {
-                appContext.contentResolver.openOutputStream(uri)?.use { out ->
-                    BackupManager.writeBackup(appContext, out)
+                // Build the whole backup in memory first, then write it in one shot + flush. This
+                // avoids ever leaving a half-written / 0-byte document if anything goes wrong midway.
+                val bytes = ByteArrayOutputStream().use { bos ->
+                    BackupManager.writeBackup(appContext, bos)
+                    bos.toByteArray()
+                }
+                require(bytes.isNotEmpty()) { "Yedek içeriği boş" }
+                appContext.contentResolver.openOutputStream(uri, "w")?.use { out ->
+                    out.write(bytes)
+                    out.flush()
                 } ?: error("Yedek dosyası açılamadı")
             }.isSuccess
             runOnUiThread {
