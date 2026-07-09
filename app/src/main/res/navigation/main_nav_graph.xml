@@ -37,7 +37,29 @@
     <fragment
         android:id="@+id/customersFragment"
         android:name="com.ahmetsudeys.rotauygulama.ui.customers.CustomersFragment"
-        android:label="Müşteriler" />
+        android:label="Müşteriler">
+        <action
+            android:id="@+id/action_customersFragment_to_ledgerFragment"
+            app:destination="@id/ledgerFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/ledgerFragment"
+        android:name="com.ahmetsudeys.rotauygulama.ui.ledger.LedgerFragment"
+        android:label="Alacak Defteri">
+        <action
+            android:id="@+id/action_ledgerFragment_to_ledgerDetailFragment"
+            app:destination="@id/ledgerDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/ledgerDetailFragment"
+        android:name="com.ahmetsudeys.rotauygulama.ui.ledger.LedgerDetailFragment"
+        android:label="Müşteri Hesabı">
+        <argument
+            android:name="customerId"
+            app:argType="long" />
+    </fragment>
 
     <fragment
         android:id="@+id/quoteDetailFragment"

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="@dimen/space_l">
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/input_amount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/ledger_agreed_amount_hint">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edit_amount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"
+            android:maxLines="1" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_date"
+        style="@style/Widget.Rota.Button.Outlined"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_s"
+        android:text="@string/ledger_agreed_date_pick"
+        app:icon="@drawable/ic_calendar"
+        app:iconGravity="textStart"
+        app:iconTint="@color/brand_blue" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_clear_date"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_xs"
+        android:text="@string/ledger_clear_date"
+        android:textColor="@color/error_red" />
+
+</LinearLayout>

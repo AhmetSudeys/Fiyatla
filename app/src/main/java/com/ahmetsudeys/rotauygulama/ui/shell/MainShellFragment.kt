@@ -109,7 +109,9 @@ class MainShellFragment : Fragment() {
                 R.id.quoteMaterialsFragment,
                 R.id.quoteExtrasFragment,
                 R.id.quoteSummaryFragment,
-                R.id.quoteOutputFragment -> false
+                R.id.quoteOutputFragment,
+                R.id.ledgerFragment,
+                R.id.ledgerDetailFragment -> false
                 else -> true
             }
             binding.bottomNavigation.visibility = if (shouldShowBottomNav) View.VISIBLE else View.GONE
