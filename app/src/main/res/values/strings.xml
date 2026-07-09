@@ -48,6 +48,10 @@
     <string name="delete_customer_message_kept">Bu müşterinin alacak defteri kaydı (ödeme geçmişi) korunacak; cüzdanda \"silinmiş müşteri\" olarak görünecek. Müşteri silinsin mi?</string>
     <string name="delete_customer_message_debt">Dikkat: Bu müşterinin kalan borcu %1$s. Müşteri silinse bile alacak defteri kaydı korunacak (\"silinmiş müşteri\" olarak). Devam edilsin mi?</string>
     <string name="ledger_deleted_customer">Silinmiş müşteri</string>
+    <string name="ledger_delete_record">Kaydı Sil</string>
+    <string name="ledger_delete_record_title">Kayıt silinsin mi?</string>
+    <string name="ledger_delete_record_message">Bu silinmiş müşterinin cüzdan kaydı (anlaşılan tutar, tahsilatlar ve ödeme geçmişi) tamamen silinecek. Bu işlem geri alınamaz.</string>
+    <string name="ledger_record_deleted">Kayıt silindi</string>
     <string name="filter_all">Tümü</string>
     <string name="filter_painted">Boyalı</string>
     <string name="filter_not_painted">Boyasız</string>

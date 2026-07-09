@@ -66,6 +66,18 @@ class LedgerDetailFragment : Fragment() {
         customerId = requireArguments().getLong("customerId", 0L)
         binding.toolbar.setNavigationOnClickListener { findNavController().navigateUp() }
 
+        // "Kaydı Sil" is only offered for kept records of deleted customers (toggled in bindRow).
+        binding.toolbar.inflateMenu(R.menu.menu_ledger_detail)
+        binding.toolbar.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.action_delete_ledger_record -> {
+                    confirmDeleteLedgerRecord()
+                    true
+                }
+                else -> false
+            }
+        }
+
         paymentsAdapter = PaymentsAdapter(onDelete = { payment -> confirmDeletePayment(payment) })
         binding.recyclerPayments.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerPayments.adapter = paymentsAdapter
@@ -128,6 +140,9 @@ class LedgerDetailFragment : Fragment() {
         } else {
             ctx.getString(R.string.ledger_no_due)
         }
+
+        // Only deleted-customer records can be permanently removed from the ledger.
+        binding.toolbar.menu.findItem(R.id.action_delete_ledger_record)?.isVisible = row.isDeletedCustomer
 
         when {
             row.isDeletedCustomer -> {
@@ -235,6 +250,27 @@ class LedgerDetailFragment : Fragment() {
                         if (!isAdded) return@post
                         Toast.makeText(requireContext(), R.string.payment_deleted, Toast.LENGTH_SHORT).show()
                         refresh()
+                    }
+                }
+            }
+            .show()
+    }
+
+    private fun confirmDeleteLedgerRecord() {
+        // Guard: only kept records of deleted customers may be removed here.
+        if (currentRow?.isDeletedCustomer != true) return
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.ledger_delete_record_title)
+            .setMessage(R.string.ledger_delete_record_message)
+            .setNegativeButton(R.string.cancel, null)
+            .setPositiveButton(R.string.delete) { _, _ ->
+                val appCtx = requireContext().applicationContext
+                ioExecutor.execute {
+                    LedgerStorage.deleteAccount(appCtx, customerId)
+                    mainHandler.post {
+                        if (!isAdded) return@post
+                        Toast.makeText(requireContext(), R.string.ledger_record_deleted, Toast.LENGTH_SHORT).show()
+                        findNavController().navigateUp()
                     }
                 }
             }
