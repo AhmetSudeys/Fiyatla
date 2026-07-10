@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/bg_light"
     android:padding="@dimen/space_m"
-    tools:context="com.ahmetsudeys.rotauygulama.ui.ledger.LedgerFragment">
+    tools:context="com.ahmetsudeys.dogalgazteklif.ui.ledger.LedgerFragment">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
@@ -338,7 +338,7 @@
                             app:selectionRequired="true"
                             app:chipSpacingHorizontal="@dimen/space_xs" />
 
-                        <com.ahmetsudeys.rotauygulama.ui.ledger.ColumnChartView
+                        <com.ahmetsudeys.dogalgazteklif.ui.ledger.ColumnChartView
                             android:id="@+id/chart_monthly"
                             android:layout_width="match_parent"
                             android:layout_height="160dp"
@@ -469,7 +469,7 @@
                             android:gravity="center_vertical"
                             android:orientation="horizontal">
 
-                            <com.ahmetsudeys.rotauygulama.ui.ledger.DonutChartView
+                            <com.ahmetsudeys.dogalgazteklif.ui.ledger.DonutChartView
                                 android:id="@+id/chart_methods"
                                 android:layout_width="130dp"
                                 android:layout_height="130dp" />

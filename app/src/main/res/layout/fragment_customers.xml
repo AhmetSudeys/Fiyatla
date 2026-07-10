@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/bg_light"
     android:padding="@dimen/space_m"
-    tools:context="com.ahmetsudeys.rotauygulama.ui.customers.CustomersFragment">
+    tools:context="com.ahmetsudeys.dogalgazteklif.ui.customers.CustomersFragment">
 
     <TextView
         android:id="@+id/text_title"

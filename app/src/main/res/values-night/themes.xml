@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.RotaUygulama" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.Theme.DogalgazTeklif" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Reference-based colors (dark: keep brand accent, darker surface) -->
         <item name="colorPrimary">@color/brand_red</item>
         <item name="colorOnPrimary">@color/white</item>

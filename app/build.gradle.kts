@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.ahmetsudeys.rotauygulama"
+    namespace = "com.ahmetsudeys.dogalgazteklif"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.ahmetsudeys.rotauygulama"
+        applicationId = "com.ahmetsudeys.dogalgazteklif"
         minSdk = 24
         targetSdk = 36
         versionCode = 1

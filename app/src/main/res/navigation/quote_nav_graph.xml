@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/quoteCustomerFragment"
-        android:name="com.ahmetsudeys.rotauygulama.ui.quote.QuoteCustomerFragment"
+        android:name="com.ahmetsudeys.dogalgazteklif.ui.quote.QuoteCustomerFragment"
         android:label="Müşteri">
         <action
             android:id="@+id/action_quoteCustomerFragment_to_quoteOperationSelectFragment"
@@ -15,7 +15,7 @@
 
     <fragment
         android:id="@+id/quoteOperationSelectFragment"
-        android:name="com.ahmetsudeys.rotauygulama.ui.quote.QuoteOperationSelectFragment"
+        android:name="com.ahmetsudeys.dogalgazteklif.ui.quote.QuoteOperationSelectFragment"
         android:label="İşlem Türü">
         <action
             android:id="@+id/action_quoteOperationSelectFragment_to_quoteMaterialsFragment"
@@ -24,7 +24,7 @@
 
     <fragment
         android:id="@+id/quoteMaterialsFragment"
-        android:name="com.ahmetsudeys.rotauygulama.ui.quote.QuoteMaterialsFragment"
+        android:name="com.ahmetsudeys.dogalgazteklif.ui.quote.QuoteMaterialsFragment"
         android:label="Malzemeler">
         <argument
             android:name="selectedOperations"
@@ -36,7 +36,7 @@
 
     <fragment
         android:id="@+id/quoteExtrasFragment"
-        android:name="com.ahmetsudeys.rotauygulama.ui.quote.QuoteExtrasFragment"
+        android:name="com.ahmetsudeys.dogalgazteklif.ui.quote.QuoteExtrasFragment"
         android:label="Ek Bilgiler">
         <action
             android:id="@+id/action_quoteExtrasFragment_to_quoteSummaryFragment"
@@ -45,7 +45,7 @@
 
     <fragment
         android:id="@+id/quoteSummaryFragment"
-        android:name="com.ahmetsudeys.rotauygulama.ui.quote.QuoteSummaryFragment"
+        android:name="com.ahmetsudeys.dogalgazteklif.ui.quote.QuoteSummaryFragment"
         android:label="Özet">
         <argument
             android:name="pipeMeters"
@@ -79,7 +79,7 @@
 
     <fragment
         android:id="@+id/quoteOutputFragment"
-        android:name="com.ahmetsudeys.rotauygulama.ui.quote.QuoteOutputFragment"
+        android:name="com.ahmetsudeys.dogalgazteklif.ui.quote.QuoteOutputFragment"
         android:label="Çıktı" />
 
 </navigation>

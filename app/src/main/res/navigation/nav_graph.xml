@@ -7,7 +7,7 @@
     <!-- App entry: decides first-run vs normal. Minimal logic. -->
     <fragment
         android:id="@+id/launchFragment"
-        android:name="com.ahmetsudeys.rotauygulama.ui.launch.LaunchFragment"
+        android:name="com.ahmetsudeys.dogalgazteklif.ui.launch.LaunchFragment"
         android:label="Launch">
         <action
             android:id="@+id/action_launchFragment_to_companySetupFragment"
@@ -23,7 +23,7 @@
 
     <fragment
         android:id="@+id/companySetupFragment"
-        android:name="com.ahmetsudeys.rotauygulama.ui.onboarding.CompanySetupFragment"
+        android:name="com.ahmetsudeys.dogalgazteklif.ui.onboarding.CompanySetupFragment"
         android:label="Firma Adı">
         <action
             android:id="@+id/action_companySetupFragment_to_welcomeFragment"
@@ -34,7 +34,7 @@
 
     <fragment
         android:id="@+id/welcomeFragment"
-        android:name="com.ahmetsudeys.rotauygulama.ui.onboarding.WelcomeFragment"
+        android:name="com.ahmetsudeys.dogalgazteklif.ui.onboarding.WelcomeFragment"
         android:label="Hoşgeldiniz">
         <action
             android:id="@+id/action_welcomeFragment_to_companySetupFragment"
@@ -50,7 +50,7 @@
 
     <fragment
         android:id="@+id/mainShellFragment"
-        android:name="com.ahmetsudeys.rotauygulama.ui.shell.MainShellFragment"
+        android:name="com.ahmetsudeys.dogalgazteklif.ui.shell.MainShellFragment"
         android:label="Main">
         <argument
             android:name="companyName"

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Doğalgaz Usta</string>
+    <string name="app_name">Doğalgaz Teklif Fiyatlandırma</string>
 
     <string name="nav_home">Anasayfa</string>
     <string name="nav_materials">Malzemeler</string>
@@ -199,7 +199,7 @@
     <string name="quote_customer_details_note">Bu bilgiler isteğe bağlıdır. Teklif onaylanırsa müşteri kaydı için kullanılır.</string>
 
 
-    <string name="copyright_footer">Tüm hakları Ahmet Sudeys Soylu\u0027ya aittir</string>
+    <string name="copyright_footer">© Ahmet Sudeys Soylu &amp; Muhammet Uysal | Tüm Hakları Saklıdır.</string>
     <string name="contact_email" translatable="false">İletişim: asudeys.dev@gmail.com</string>
 
     <!-- Alacak Defteri (receivables ledger) -->

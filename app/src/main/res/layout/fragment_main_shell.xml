@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg_light"
-    tools:context="com.ahmetsudeys.rotauygulama.ui.shell.MainShellFragment">
+    tools:context="com.ahmetsudeys.dogalgazteklif.ui.shell.MainShellFragment">
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/main_nav_host_fragment"

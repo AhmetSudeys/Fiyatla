@@ -13,12 +13,12 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.RotaUygulama"
+        android:theme="@style/Theme.DogalgazTeklif"
         tools:targetApi="31">
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.RotaUygulama.Splash">
+            android:theme="@style/Theme.DogalgazTeklif.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -30,7 +30,7 @@
             android:name=".ui.onboarding.BackupDownloadActivity"
             android:exported="false"
             android:excludeFromRecents="true"
-            android:theme="@style/Theme.RotaUygulama.Invisible" />
+            android:theme="@style/Theme.DogalgazTeklif.Invisible" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

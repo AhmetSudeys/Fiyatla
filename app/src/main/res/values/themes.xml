@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.RotaUygulama" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.Theme.DogalgazTeklif" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Reference-based colors -->
         <item name="colorPrimary">@color/brand_red</item>
         <item name="colorOnPrimary">@color/white</item>
@@ -17,10 +17,10 @@
         <item name="materialButtonStyle">@style/Widget.Rota.Button.Primary</item>
     </style>
 
-    <style name="Theme.RotaUygulama" parent="Base.Theme.RotaUygulama" />
+    <style name="Theme.DogalgazTeklif" parent="Base.Theme.DogalgazTeklif" />
 
     <!-- Invisible host for the "Telefona İndir" backup target: no window chrome, just the SAF picker. -->
-    <style name="Theme.RotaUygulama.Invisible" parent="Base.Theme.RotaUygulama">
+    <style name="Theme.DogalgazTeklif.Invisible" parent="Base.Theme.DogalgazTeklif">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowContentOverlay">@null</item>
@@ -29,11 +29,11 @@
     </style>
 
     <!-- System splash (Android 12+). Removes the "double splash" by using only the OS splash + exit animation. -->
-    <style name="Theme.RotaUygulama.Splash" parent="Theme.SplashScreen">
+    <style name="Theme.DogalgazTeklif.Splash" parent="Theme.SplashScreen">
         <!-- Full red splash matching the logo, with the larger artwork centered on it. No icon
              background color so the OS uses the wider "icon without background" size. -->
         <item name="windowSplashScreenBackground">@color/logo_red</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/splash_logo</item>
-        <item name="postSplashScreenTheme">@style/Theme.RotaUygulama</item>
+        <item name="postSplashScreenTheme">@style/Theme.DogalgazTeklif</item>
     </style>
 </resources>

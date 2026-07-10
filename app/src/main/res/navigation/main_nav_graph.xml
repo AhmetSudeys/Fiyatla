@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.ahmetsudeys.rotauygulama.ui.home.HomeFragment"
+        android:name="com.ahmetsudeys.dogalgazteklif.ui.home.HomeFragment"
         android:label="Anasayfa">
         <action
             android:id="@+id/action_homeFragment_to_quote_nav_graph"
@@ -19,12 +19,12 @@
 
     <fragment
         android:id="@+id/materialsFragment"
-        android:name="com.ahmetsudeys.rotauygulama.ui.materials.MaterialsFragment"
+        android:name="com.ahmetsudeys.dogalgazteklif.ui.materials.MaterialsFragment"
         android:label="Malzeme Listesi" />
 
     <fragment
         android:id="@+id/quotesFragment"
-        android:name="com.ahmetsudeys.rotauygulama.ui.quotes.QuotesFragment"
+        android:name="com.ahmetsudeys.dogalgazteklif.ui.quotes.QuotesFragment"
         android:label="Tekliflerim">
         <action
             android:id="@+id/action_quotesFragment_to_quoteDetailFragment"
@@ -36,7 +36,7 @@
 
     <fragment
         android:id="@+id/customersFragment"
-        android:name="com.ahmetsudeys.rotauygulama.ui.customers.CustomersFragment"
+        android:name="com.ahmetsudeys.dogalgazteklif.ui.customers.CustomersFragment"
         android:label="Müşteriler">
         <action
             android:id="@+id/action_customersFragment_to_ledgerFragment"
@@ -45,7 +45,7 @@
 
     <fragment
         android:id="@+id/ledgerFragment"
-        android:name="com.ahmetsudeys.rotauygulama.ui.ledger.LedgerFragment"
+        android:name="com.ahmetsudeys.dogalgazteklif.ui.ledger.LedgerFragment"
         android:label="Alacak Defteri">
         <action
             android:id="@+id/action_ledgerFragment_to_ledgerDetailFragment"
@@ -54,7 +54,7 @@
 
     <fragment
         android:id="@+id/ledgerDetailFragment"
-        android:name="com.ahmetsudeys.rotauygulama.ui.ledger.LedgerDetailFragment"
+        android:name="com.ahmetsudeys.dogalgazteklif.ui.ledger.LedgerDetailFragment"
         android:label="Müşteri Hesabı">
         <argument
             android:name="customerId"
@@ -63,7 +63,7 @@
 
     <fragment
         android:id="@+id/quoteDetailFragment"
-        android:name="com.ahmetsudeys.rotauygulama.ui.quotes.QuoteDetailFragment"
+        android:name="com.ahmetsudeys.dogalgazteklif.ui.quotes.QuoteDetailFragment"
         android:label="Teklif Detayı">
         <argument
             android:name="createdAtMillis"

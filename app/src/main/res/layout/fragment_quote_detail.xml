@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/bg_light"
     android:padding="@dimen/space_l"
-    tools:context="com.ahmetsudeys.rotauygulama.ui.quotes.QuoteDetailFragment">
+    tools:context="com.ahmetsudeys.dogalgazteklif.ui.quotes.QuoteDetailFragment">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
