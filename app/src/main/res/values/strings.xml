@@ -201,6 +201,8 @@
 
     <string name="copyright_footer">© Ahmet Sudeys Soylu &amp; Muhammet Uysal | Tüm Hakları Saklıdır.</string>
     <string name="contact_email" translatable="false">İletişim: asudeys.dev@gmail.com</string>
+    <string name="privacy_policy">Gizlilik Politikası</string>
+    <string name="privacy_policy_url" translatable="false">https://ahmetsudeys.github.io/Fiyatla/gizlilik-politikasi.html</string>
 
     <!-- Alacak Defteri (receivables ledger) -->
     <string name="ledger_title">Alacak Defteri</string>

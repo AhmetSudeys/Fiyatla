@@ -123,7 +123,6 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
-        android:layout_marginBottom="@dimen/space_xs"
         android:alpha="0.55"
         android:autoLink="email"
         android:fontFamily="sans-serif-light"
@@ -132,10 +131,31 @@
         android:textAlignment="center"
         android:textColorLink="@color/brand_blue"
         android:textSize="9sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/text_privacy"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/text_footer" />
+
+    <TextView
+        android:id="@+id/text_privacy"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="@dimen/space_xs"
+        android:alpha="0.7"
+        android:clickable="true"
+        android:focusable="true"
+        android:fontFamily="sans-serif-light"
+        android:gravity="center"
+        android:paddingVertical="4dp"
+        android:text="@string/privacy_policy"
+        android:textAlignment="center"
+        android:textColor="@color/brand_blue"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_contact" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

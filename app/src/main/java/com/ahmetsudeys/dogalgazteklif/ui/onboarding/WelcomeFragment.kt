@@ -65,6 +65,17 @@ class WelcomeFragment : Fragment() {
         binding.textEditCompany.setOnSingleClickListener {
             findNavController().navigate(R.id.action_welcomeFragment_to_companySetupFragment)
         }
+
+        binding.textPrivacy.setOnSingleClickListener { openPrivacyPolicy() }
+    }
+
+    private fun openPrivacyPolicy() {
+        val url = getString(R.string.privacy_policy_url)
+        val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, Uri.parse(url))
+        runCatching { startActivity(intent) }
+            .onFailure {
+                Toast.makeText(requireContext(), url, Toast.LENGTH_LONG).show()
+            }
     }
 
     private fun startBackup() {
