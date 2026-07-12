@@ -136,26 +136,56 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/text_footer" />
 
-    <TextView
-        android:id="@+id/text_privacy"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:id="@+id/layout_legal_links"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:layout_marginBottom="@dimen/space_xs"
-        android:alpha="0.7"
-        android:clickable="true"
-        android:focusable="true"
-        android:fontFamily="sans-serif-light"
-        android:gravity="center"
-        android:paddingVertical="4dp"
-        android:text="@string/privacy_policy"
-        android:textAlignment="center"
-        android:textColor="@color/brand_blue"
-        android:textSize="10sp"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_contact" />
+        app:layout_constraintTop_toBottomOf="@id/text_contact">
+
+        <TextView
+            android:id="@+id/text_privacy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0.7"
+            android:clickable="true"
+            android:focusable="true"
+            android:fontFamily="sans-serif-light"
+            android:paddingVertical="4dp"
+            android:paddingHorizontal="4dp"
+            android:text="@string/privacy_policy"
+            android:textColor="@color/brand_blue"
+            android:textSize="10sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0.7"
+            android:fontFamily="sans-serif-light"
+            android:paddingVertical="4dp"
+            android:text="•"
+            android:textColor="@color/text_secondary"
+            android:textSize="10sp" />
+
+        <TextView
+            android:id="@+id/text_terms"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0.7"
+            android:clickable="true"
+            android:focusable="true"
+            android:fontFamily="sans-serif-light"
+            android:paddingVertical="4dp"
+            android:paddingHorizontal="4dp"
+            android:text="@string/sub_terms_of_use"
+            android:textColor="@color/brand_blue"
+            android:textSize="10sp" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

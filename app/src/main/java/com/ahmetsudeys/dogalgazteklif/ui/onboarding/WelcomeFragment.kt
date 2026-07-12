@@ -87,14 +87,14 @@ class WelcomeFragment : Fragment() {
             findNavController().navigate(R.id.action_welcomeFragment_to_companySetupFragment)
         }
 
-        binding.textPrivacy.setOnSingleClickListener { openPrivacyPolicy() }
+        binding.textPrivacy.setOnSingleClickListener { openUrl(getString(R.string.privacy_policy_url)) }
+        binding.textTerms.setOnSingleClickListener { openUrl(getString(R.string.terms_of_use_url)) }
 
         // Re-verify Play subscription in the background; may bounce a lapsed subscriber to the paywall.
         billing = BillingManager(requireContext(), entitlementVerifier).also { it.start() }
     }
 
-    private fun openPrivacyPolicy() {
-        val url = getString(R.string.privacy_policy_url)
+    private fun openUrl(url: String) {
         val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, Uri.parse(url))
         runCatching { startActivity(intent) }
             .onFailure {
