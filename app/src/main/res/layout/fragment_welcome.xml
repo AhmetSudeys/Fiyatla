@@ -97,7 +97,7 @@
         android:textColor="@color/brand_blue"
         android:textSize="12sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@id/text_footer"
+        app:layout_constraintBottom_toTopOf="@id/layout_legal_links"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/button_restore" />
@@ -116,7 +116,7 @@
         app:layout_constraintBottom_toTopOf="@id/text_contact"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_edit_company" />
+        app:layout_constraintTop_toBottomOf="@id/layout_legal_links" />
 
     <TextView
         android:id="@+id/text_contact"
@@ -131,7 +131,7 @@
         android:textAlignment="center"
         android:textColorLink="@color/brand_blue"
         android:textSize="9sp"
-        app:layout_constraintBottom_toTopOf="@id/text_privacy"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/text_footer" />
@@ -140,13 +140,12 @@
         android:id="@+id/layout_legal_links"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="@dimen/space_xs"
+        android:layout_marginTop="@dimen/space_xs"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/text_footer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_contact">
+        app:layout_constraintTop_toBottomOf="@id/text_edit_company">
 
         <TextView
             android:id="@+id/text_privacy"
