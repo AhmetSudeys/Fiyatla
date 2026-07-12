@@ -323,10 +323,13 @@
 
     <string name="sub_plan_monthly_title">Aylık</string>
     <string name="sub_plan_yearly_title">Yıllık</string>
-    <string name="sub_plan_yearly_badge">2 AY BEDAVA</string>
-    <string name="sub_per_month">/ ay</string>
-    <string name="sub_per_year">/ yıl</string>
+    <string name="sub_plan_monthly_sub">Her ay yenilenir</string>
+    <string name="sub_plan_yearly_sub">Yılda tek ödeme · 2 ay bedava</string>
+    <string name="sub_plan_yearly_badge">EN AVANTAJLI</string>
+    <string name="sub_per_month">/ay</string>
+    <string name="sub_per_year">/yıl</string>
     <string name="sub_subscribe">Abone Ol</string>
+    <string name="sub_price_placeholder">—</string>
     <string name="sub_restore">Satın alımı geri yükle</string>
     <string name="sub_trial_days_left">Deneme süresi: %1$d gün kaldı</string>
 

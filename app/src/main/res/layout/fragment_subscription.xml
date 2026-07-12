@@ -16,8 +16,8 @@
 
         <ImageView
             android:id="@+id/image_logo"
-            android:layout_width="88dp"
-            android:layout_height="88dp"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/space_s"
             android:adjustViewBounds="true"
@@ -35,7 +35,7 @@
             android:gravity="center"
             android:textAppearance="?attr/textAppearanceHeadlineSmall"
             android:textStyle="bold"
-            tools:text="Uygulamayı ücretsiz deneyin" />
+            tools:text="Deneme süreniz doldu" />
 
         <TextView
             android:id="@+id/text_subtitle"
@@ -45,7 +45,7 @@
             android:gravity="center"
             android:textColor="@color/text_secondary"
             android:textSize="14sp"
-            tools:text="7 gün boyunca tüm özellikleri ücretsiz kullanın." />
+            tools:text="Uygulamayı kullanmaya devam etmek için bir plan seçin." />
 
         <!-- Feature list -->
         <com.google.android.material.card.MaterialCardView
@@ -91,8 +91,9 @@
             android:orientation="vertical"
             android:visibility="gone">
 
+            <!-- Monthly first: this is the plan we lead with. -->
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/card_yearly"
+                android:id="@+id/card_monthly"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/space_s"
@@ -111,6 +112,14 @@
                     android:orientation="horizontal"
                     android:padding="@dimen/space_m">
 
+                    <ImageView
+                        android:id="@+id/radio_monthly"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginEnd="@dimen/space_s"
+                        android:contentDescription="@string/sub_plan_monthly_title"
+                        android:src="@drawable/ic_radio_off" />
+
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -118,56 +127,53 @@
                         android:orientation="vertical">
 
                         <TextView
-                            android:id="@+id/badge_yearly"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/bg_sub_badge"
-                            android:paddingHorizontal="8dp"
-                            android:paddingVertical="2dp"
-                            android:layout_marginBottom="4dp"
-                            android:text="@string/sub_plan_yearly_badge"
-                            android:textColor="@color/white"
-                            android:textSize="10sp"
+                            android:text="@string/sub_plan_monthly_title"
+                            android:textColor="@color/black"
+                            android:textSize="16sp"
                             android:textStyle="bold" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/sub_plan_yearly_title"
-                            android:textSize="16sp"
-                            android:textStyle="bold" />
+                            android:layout_marginTop="2dp"
+                            android:text="@string/sub_plan_monthly_sub"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="12sp" />
                     </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="end"
+                        android:gravity="bottom"
                         android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/text_yearly_price"
+                            android:id="@+id/text_monthly_price"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:text="@string/sub_price_placeholder"
                             android:textColor="@color/brand_blue"
-                            android:textSize="18sp"
+                            android:textSize="20sp"
                             android:textStyle="bold"
-                            tools:text="₺1.499,99" />
+                            tools:text="₺149,99" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="bottom"
                             android:layout_marginStart="2dp"
-                            android:paddingBottom="2dp"
-                            android:text="@string/sub_per_year"
+                            android:paddingBottom="3dp"
+                            android:text="@string/sub_per_month"
                             android:textColor="@color/text_secondary"
                             android:textSize="12sp" />
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- Yearly second, flagged as the best value. -->
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/card_monthly"
+                android:id="@+id/card_yearly"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:checkable="true"
@@ -185,36 +191,72 @@
                     android:orientation="horizontal"
                     android:padding="@dimen/space_m">
 
-                    <TextView
+                    <ImageView
+                        android:id="@+id/radio_yearly"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginEnd="@dimen/space_s"
+                        android:contentDescription="@string/sub_plan_yearly_title"
+                        android:src="@drawable/ic_radio_off" />
+
+                    <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="@string/sub_plan_monthly_title"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/badge_yearly"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="4dp"
+                            android:background="@drawable/bg_sub_badge"
+                            android:paddingHorizontal="8dp"
+                            android:paddingVertical="2dp"
+                            android:text="@string/sub_plan_yearly_badge"
+                            android:textColor="@color/white"
+                            android:textSize="9sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/sub_plan_yearly_title"
+                            android:textColor="@color/black"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="@string/sub_plan_yearly_sub"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="12sp" />
+                    </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="end"
+                        android:gravity="bottom"
                         android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/text_monthly_price"
+                            android:id="@+id/text_yearly_price"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:text="@string/sub_price_placeholder"
                             android:textColor="@color/brand_blue"
-                            android:textSize="18sp"
+                            android:textSize="20sp"
                             android:textStyle="bold"
-                            tools:text="₺149,99" />
+                            tools:text="₺1.499,99" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="bottom"
                             android:layout_marginStart="2dp"
-                            android:paddingBottom="2dp"
-                            android:text="@string/sub_per_month"
+                            android:paddingBottom="3dp"
+                            android:text="@string/sub_per_year"
                             android:textColor="@color/text_secondary"
                             android:textSize="12sp" />
                     </LinearLayout>

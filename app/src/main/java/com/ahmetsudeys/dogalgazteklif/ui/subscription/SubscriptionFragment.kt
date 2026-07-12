@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -23,9 +24,12 @@ import com.google.android.material.card.MaterialCardView
  *  - **Start trial** ([EntitlementManager.canStartTrial]): a single button starts the on-device
  *    7-day free trial. No Google Play needed — the trial is entirely local.
  *  - **Choose plan** (trial expired): monthly / yearly Play subscription cards + "subscribe".
+ *    The monthly plan is shown first and selected by default.
  *
- * If Play reports an active subscription at any point (fresh purchase or a restore on the same
- * Google account), the user is sent straight into the app.
+ * Plan selection is tracked by base-plan id and is independent of billing availability, so the cards
+ * are always interactive. The actual purchase resolves the selected id to the [BillingManager.PlanInfo]
+ * that Play returned. If Play reports an active subscription at any point (fresh purchase or a restore
+ * on the same Google account), the user is sent straight into the app.
  */
 class SubscriptionFragment : Fragment(), BillingManager.Listener {
 
@@ -37,7 +41,7 @@ class SubscriptionFragment : Fragment(), BillingManager.Listener {
 
     private var monthlyPlan: BillingManager.PlanInfo? = null
     private var yearlyPlan: BillingManager.PlanInfo? = null
-    private var selectedPlan: BillingManager.PlanInfo? = null
+    private var selectedBasePlanId: String = BillingManager.BASE_PLAN_MONTHLY
 
     /** State A (start trial) vs state B (choose a paid plan). Decided once on entry. */
     private val startTrialMode: Boolean
@@ -58,6 +62,9 @@ class SubscriptionFragment : Fragment(), BillingManager.Listener {
             binding.imageLogo.visibility = View.VISIBLE
         }
 
+        binding.cardMonthly.setOnClickListener { selectPlan(BillingManager.BASE_PLAN_MONTHLY) }
+        binding.cardYearly.setOnClickListener { selectPlan(BillingManager.BASE_PLAN_YEARLY) }
+
         if (startTrialMode) bindStartTrialState() else bindChoosePlanState()
 
         binding.buttonRestore.setOnSingleClickListener {
@@ -67,9 +74,6 @@ class SubscriptionFragment : Fragment(), BillingManager.Listener {
         }
         binding.textPrivacy.setOnSingleClickListener { openLink(getString(R.string.privacy_policy_url)) }
         binding.textTerms.setOnSingleClickListener { openLink(getString(R.string.terms_of_use_url)) }
-
-        binding.cardMonthly.setOnClickListener { selectPlan(monthlyPlan) }
-        binding.cardYearly.setOnClickListener { selectPlan(yearlyPlan) }
 
         billing = BillingManager(requireContext(), this)
         billing.start()
@@ -94,36 +98,42 @@ class SubscriptionFragment : Fragment(), BillingManager.Listener {
         binding.groupPlans.visibility = View.VISIBLE
         binding.textTrialNote.visibility = View.GONE
         binding.buttonPrimary.setText(R.string.sub_subscribe)
-        // Disabled until Play returns the plans.
+        // Enabled once Play returns the plans.
         binding.buttonPrimary.isEnabled = false
         binding.textStatus.visibility = View.VISIBLE
         binding.textStatus.setText(R.string.sub_loading)
+        // Lead with monthly, selected by default.
+        selectPlan(BillingManager.BASE_PLAN_MONTHLY)
         binding.buttonPrimary.setOnSingleClickListener {
-            val plan = selectedPlan ?: return@setOnSingleClickListener
+            val plan = planFor(selectedBasePlanId)
+            if (plan == null) {
+                binding.textStatus.visibility = View.VISIBLE
+                binding.textStatus.setText(R.string.sub_unavailable)
+                return@setOnSingleClickListener
+            }
             billing.launchPurchase(requireActivity(), plan)
         }
     }
 
-    private fun selectPlan(plan: BillingManager.PlanInfo?) {
-        if (plan == null) return
-        selectedPlan = plan
-        val selected = R.color.brand_blue
-        val normal = R.color.outline_light
-        val density = resources.displayMetrics.density
-        highlightCard(binding.cardYearly, plan === yearlyPlan, selected, normal, density)
-        highlightCard(binding.cardMonthly, plan === monthlyPlan, selected, normal, density)
+    private fun planFor(basePlanId: String): BillingManager.PlanInfo? =
+        if (basePlanId == BillingManager.BASE_PLAN_YEARLY) yearlyPlan else monthlyPlan
+
+    private fun selectPlan(basePlanId: String) {
+        selectedBasePlanId = basePlanId
+        val monthlySelected = basePlanId == BillingManager.BASE_PLAN_MONTHLY
+        styleCard(binding.cardMonthly, binding.radioMonthly, monthlySelected)
+        styleCard(binding.cardYearly, binding.radioYearly, !monthlySelected)
     }
 
-    private fun highlightCard(
-        card: MaterialCardView,
-        isSelected: Boolean,
-        selectedColorRes: Int,
-        normalColorRes: Int,
-        density: Float
-    ) {
-        val colorRes = if (isSelected) selectedColorRes else normalColorRes
-        card.strokeColor = requireContext().getColor(colorRes)
-        card.strokeWidth = ((if (isSelected) 2 else 1) * density).toInt()
+    private fun styleCard(card: MaterialCardView, radio: ImageView, selected: Boolean) {
+        val density = resources.displayMetrics.density
+        val ctx = requireContext()
+        card.strokeColor = ctx.getColor(if (selected) R.color.brand_blue else R.color.outline_light)
+        card.strokeWidth = ((if (selected) 2 else 1) * density).toInt()
+        card.setCardBackgroundColor(
+            ctx.getColor(if (selected) R.color.brand_blue_soft else R.color.surface_white)
+        )
+        radio.setImageResource(if (selected) R.drawable.ic_radio_on else R.drawable.ic_radio_off)
     }
 
     // --- BillingManager.Listener ---
@@ -155,8 +165,8 @@ class SubscriptionFragment : Fragment(), BillingManager.Listener {
             }
             binding.textStatus.visibility = View.GONE
             binding.buttonPrimary.isEnabled = true
-            // Default to the best-value yearly plan when available.
-            selectPlan(yearlyPlan ?: monthlyPlan)
+            // Keep the current selection (monthly by default), just refresh visuals.
+            selectPlan(selectedBasePlanId)
         }
     }
 
