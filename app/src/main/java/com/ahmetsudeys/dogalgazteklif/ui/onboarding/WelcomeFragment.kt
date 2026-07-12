@@ -12,6 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.ahmetsudeys.dogalgazteklif.R
+import com.ahmetsudeys.dogalgazteklif.billing.BillingManager
 import com.ahmetsudeys.dogalgazteklif.data.Prefs
 import com.ahmetsudeys.dogalgazteklif.data.backup.BackupManager
 import com.ahmetsudeys.dogalgazteklif.databinding.FragmentWelcomeBinding
@@ -29,6 +30,26 @@ class WelcomeFragment : Fragment() {
     private val ioExecutor: ExecutorService = Executors.newSingleThreadExecutor()
     private val mainHandler = Handler(Looper.getMainLooper())
     private var progressDialog: androidx.appcompat.app.AlertDialog? = null
+
+    /**
+     * Background re-verification of Play subscription state. Every launch of an entitled user passes
+     * through this screen, so it is the natural place to catch a subscription that has lapsed since
+     * the cached flag was written. It never locks out a user when Play is simply unreachable
+     * (offline / billing unavailable) — only a definitive "no active subscription" from Play, with
+     * no running trial, sends the user back to the paywall.
+     */
+    private var billing: BillingManager? = null
+    private val entitlementVerifier = object : BillingManager.Listener {
+        override fun onEntitlementChanged(subscribed: Boolean) {
+            if (_binding == null || !isAdded) return
+            if (!subscribed && !Prefs.isTrialActive(requireContext())) {
+                findNavController().navigate(R.id.action_welcomeFragment_to_subscriptionFragment)
+            }
+        }
+        override fun onPlansLoaded(plans: List<BillingManager.PlanInfo>) {}
+        override fun onPurchaseFailed(userCancelled: Boolean, message: String?) {}
+        override fun onBillingUnavailable() {}
+    }
 
     private val pickBackup =
         registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
@@ -67,6 +88,9 @@ class WelcomeFragment : Fragment() {
         }
 
         binding.textPrivacy.setOnSingleClickListener { openPrivacyPolicy() }
+
+        // Re-verify Play subscription in the background; may bounce a lapsed subscriber to the paywall.
+        billing = BillingManager(requireContext(), entitlementVerifier).also { it.start() }
     }
 
     private fun openPrivacyPolicy() {
@@ -168,6 +192,8 @@ class WelcomeFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         dismissProgress()
+        billing?.destroy()
+        billing = null
         _binding = null
     }
 

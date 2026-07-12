@@ -83,6 +83,18 @@
         <item name="android:ellipsize">end</item>
     </style>
 
+    <!-- A single "✓ feature" row on the subscription screen. -->
+    <style name="SubFeatureRow">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingVertical">6dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:drawablePadding">@dimen/space_s</item>
+        <item name="android:drawableStart">@drawable/ic_check_sub</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
 </resources>
 
 

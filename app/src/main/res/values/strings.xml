@@ -305,4 +305,34 @@
 
     <!-- Anasayfa profil -->
     <string name="profile">Profil</string>
+
+    <!-- Abonelik / ücretsiz deneme -->
+    <string name="sub_trial_title">Uygulamayı ücretsiz deneyin</string>
+    <string name="sub_trial_subtitle">7 gün boyunca tüm özellikleri ücretsiz kullanın. Kart bilgisi istenmez, otomatik ücret alınmaz.</string>
+    <string name="sub_feature_1">Sınırsız teklif oluşturma ve paylaşma</string>
+    <string name="sub_feature_2">Malzeme ve fiyat listesi yönetimi</string>
+    <string name="sub_feature_3">Alacak defteri ve müşteri takibi</string>
+    <string name="sub_feature_4">Excel yedekleme ve geri yükleme</string>
+    <string name="sub_start_trial">7 Gün Ücretsiz Başlat</string>
+    <string name="sub_trial_note">Deneme süresi sonunda, kullanmaya devam etmek için abonelik gerekir.</string>
+
+    <string name="sub_expired_title">Deneme süreniz doldu</string>
+    <string name="sub_expired_subtitle">Uygulamayı kullanmaya devam etmek için bir abonelik planı seçin.</string>
+    <string name="sub_choose_plan">Devam etmek için plan seçin</string>
+
+    <string name="sub_plan_monthly_title">Aylık</string>
+    <string name="sub_plan_yearly_title">Yıllık</string>
+    <string name="sub_plan_yearly_badge">2 AY BEDAVA</string>
+    <string name="sub_per_month">/ ay</string>
+    <string name="sub_per_year">/ yıl</string>
+    <string name="sub_subscribe">Abone Ol</string>
+    <string name="sub_restore">Satın alımı geri yükle</string>
+    <string name="sub_trial_days_left">Deneme süresi: %1$d gün kaldı</string>
+
+    <string name="sub_legal">Abonelik seçtiğiniz döneme göre otomatik olarak yenilenir. Google Play hesabınızdan tahsil edilir. İstediğiniz zaman Google Play &gt; Abonelikler bölümünden iptal edebilirsiniz. Yenilenme tarihinden en az 24 saat önce iptal edilmezse ücret alınır.</string>
+    <string name="sub_loading">Planlar yükleniyor…</string>
+    <string name="sub_unavailable">Google Play hizmetine ulaşılamadı. Lütfen Play Store\'a giriş yaptığınızdan ve internet bağlantınızdan emin olun.</string>
+    <string name="sub_purchase_failed">Satın alma tamamlanamadı. Lütfen tekrar deneyin.</string>
+    <string name="sub_already_active">Aboneliğiniz aktif. Teşekkürler!</string>
+    <string name="sub_terms_of_use">Kullanım Koşulları</string>
 </resources>

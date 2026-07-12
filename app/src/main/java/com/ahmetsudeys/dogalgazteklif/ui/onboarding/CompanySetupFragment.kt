@@ -14,6 +14,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.ahmetsudeys.dogalgazteklif.R
+import com.ahmetsudeys.dogalgazteklif.billing.EntitlementManager
 import com.ahmetsudeys.dogalgazteklif.data.CompanyBrandingStore
 import com.ahmetsudeys.dogalgazteklif.data.Prefs
 import com.ahmetsudeys.dogalgazteklif.databinding.FragmentCompanySetupBinding
@@ -72,7 +73,13 @@ class CompanySetupFragment : Fragment() {
             Prefs.setCompanyName(requireContext(), name)
             // Persist the newly cropped logo only now, on save.
             pendingLogoBitmap?.let { CompanyBrandingStore.saveCompanyLogoBitmap(requireContext(), it) }
-            findNavController().navigate(R.id.action_companySetupFragment_to_welcomeFragment)
+            // First-time setup lands on the paywall; an already-entitled user just editing their
+            // company info goes back to the welcome screen.
+            if (EntitlementManager.isEntitled(requireContext())) {
+                findNavController().navigate(R.id.action_companySetupFragment_to_welcomeFragment)
+            } else {
+                findNavController().navigate(R.id.action_companySetupFragment_to_subscriptionFragment)
+            }
         }
     }
 

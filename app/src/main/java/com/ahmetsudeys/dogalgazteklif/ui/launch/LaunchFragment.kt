@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.ahmetsudeys.dogalgazteklif.R
+import com.ahmetsudeys.dogalgazteklif.billing.EntitlementManager
 import com.ahmetsudeys.dogalgazteklif.data.Prefs
 import com.ahmetsudeys.dogalgazteklif.databinding.FragmentLaunchBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -56,10 +57,16 @@ class LaunchFragment : Fragment() {
     private fun proceed() {
         if (!isAdded) return
         val navController = findNavController()
-        if (!Prefs.hasCompanyName(requireContext())) {
-            navController.navigate(R.id.action_launchFragment_to_companySetupFragment)
-        } else {
-            navController.navigate(R.id.action_launchFragment_to_welcomeFragment)
+        when {
+            // First run: no company yet → set up company, then the paywall follows.
+            !Prefs.hasCompanyName(requireContext()) ->
+                navController.navigate(R.id.action_launchFragment_to_companySetupFragment)
+            // Active subscription or a running free trial → straight into the app.
+            EntitlementManager.isEntitled(requireContext()) ->
+                navController.navigate(R.id.action_launchFragment_to_welcomeFragment)
+            // Trial used up and not subscribed → paywall.
+            else ->
+                navController.navigate(R.id.action_launchFragment_to_subscriptionFragment)
         }
     }
 

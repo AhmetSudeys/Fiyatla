@@ -19,6 +19,11 @@
             app:destination="@id/welcomeFragment"
             app:popUpTo="@id/launchFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_launchFragment_to_subscriptionFragment"
+            app:destination="@id/subscriptionFragment"
+            app:popUpTo="@id/launchFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment
@@ -28,6 +33,11 @@
         <action
             android:id="@+id/action_companySetupFragment_to_welcomeFragment"
             app:destination="@id/welcomeFragment"
+            app:popUpTo="@id/companySetupFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_companySetupFragment_to_subscriptionFragment"
+            app:destination="@id/subscriptionFragment"
             app:popUpTo="@id/companySetupFragment"
             app:popUpToInclusive="true" />
     </fragment>
@@ -45,6 +55,22 @@
             android:id="@+id/action_welcomeFragment_to_mainShellFragment"
             app:destination="@id/mainShellFragment"
             app:popUpTo="@id/welcomeFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_welcomeFragment_to_subscriptionFragment"
+            app:destination="@id/subscriptionFragment"
+            app:popUpTo="@id/welcomeFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/subscriptionFragment"
+        android:name="com.ahmetsudeys.dogalgazteklif.ui.subscription.SubscriptionFragment"
+        android:label="Abonelik">
+        <action
+            android:id="@+id/action_subscriptionFragment_to_welcomeFragment"
+            app:destination="@id/welcomeFragment"
+            app:popUpTo="@id/subscriptionFragment"
             app:popUpToInclusive="true" />
     </fragment>
 
