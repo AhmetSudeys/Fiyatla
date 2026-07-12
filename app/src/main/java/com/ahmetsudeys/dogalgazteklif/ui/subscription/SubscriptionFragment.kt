@@ -66,7 +66,7 @@ class SubscriptionFragment : Fragment(), BillingManager.Listener {
             billing.refreshPurchases()
         }
         binding.textPrivacy.setOnSingleClickListener { openLink(getString(R.string.privacy_policy_url)) }
-        binding.textTerms.setOnSingleClickListener { openLink(getString(R.string.privacy_policy_url)) }
+        binding.textTerms.setOnSingleClickListener { openLink(getString(R.string.terms_of_use_url)) }
 
         binding.cardMonthly.setOnClickListener { selectPlan(monthlyPlan) }
         binding.cardYearly.setOnClickListener { selectPlan(yearlyPlan) }
