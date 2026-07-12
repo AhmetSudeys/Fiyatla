@@ -1,4 +1,4 @@
-package clc
+package com.ahmetsudeys.dogalgazteklif
 
 import android.os.Bundle
 import android.view.MotionEvent
