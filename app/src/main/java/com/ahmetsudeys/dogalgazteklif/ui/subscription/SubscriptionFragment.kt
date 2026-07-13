@@ -43,6 +43,12 @@ class SubscriptionFragment : Fragment(), BillingManager.Listener {
     private var yearlyPlan: BillingManager.PlanInfo? = null
     private var selectedBasePlanId: String = BillingManager.BASE_PLAN_MONTHLY
 
+    private val mainHandler = android.os.Handler(android.os.Looper.getMainLooper())
+    /** True while a "restore purchases" request is awaiting its result. */
+    private var restoreInProgress = false
+    /** Guards the UI from hanging if Play never calls back. */
+    private val restoreTimeout = Runnable { finishRestore(BillingManager.RestoreOutcome.UNAVAILABLE) }
+
     /** State A (start trial) vs state B (choose a paid plan). Decided once on entry. */
     private val startTrialMode: Boolean
         get() = EntitlementManager.canStartTrial(requireContext())
@@ -67,11 +73,7 @@ class SubscriptionFragment : Fragment(), BillingManager.Listener {
 
         if (startTrialMode) bindStartTrialState() else bindChoosePlanState()
 
-        binding.buttonRestore.setOnSingleClickListener {
-            binding.textStatus.visibility = View.VISIBLE
-            binding.textStatus.setText(R.string.sub_loading)
-            billing.refreshPurchases()
-        }
+        binding.buttonRestore.setOnSingleClickListener { restorePurchases() }
         binding.textPrivacy.setOnSingleClickListener { openLink(getString(R.string.privacy_policy_url)) }
         binding.textTerms.setOnSingleClickListener { openLink(getString(R.string.terms_of_use_url)) }
 
@@ -112,6 +114,43 @@ class SubscriptionFragment : Fragment(), BillingManager.Listener {
                 return@setOnSingleClickListener
             }
             billing.launchPurchase(requireActivity(), plan)
+        }
+    }
+
+    /**
+     * "Restore purchases": ask Play whether this Google account already has an active subscription.
+     * Works in both states (start-trial and choose-plan) and always resolves with visible feedback —
+     * a definitive outcome from billing, or a timeout fallback so the status can never hang.
+     */
+    private fun restorePurchases() {
+        if (restoreInProgress) return
+        restoreInProgress = true
+        binding.buttonRestore.isEnabled = false
+        binding.textStatus.visibility = View.VISIBLE
+        binding.textStatus.setText(R.string.sub_restoring)
+        mainHandler.postDelayed(restoreTimeout, RESTORE_TIMEOUT_MS)
+        billing.refreshPurchases { outcome ->
+            if (_binding == null) return@refreshPurchases
+            finishRestore(outcome)
+        }
+    }
+
+    private fun finishRestore(outcome: BillingManager.RestoreOutcome) {
+        if (!restoreInProgress || _binding == null) return
+        restoreInProgress = false
+        mainHandler.removeCallbacks(restoreTimeout)
+        binding.buttonRestore.isEnabled = true
+        when (outcome) {
+            // Entitlement was granted; onEntitlementChanged navigates into the app. Keep status as-is.
+            BillingManager.RestoreOutcome.RESTORED -> Unit
+            BillingManager.RestoreOutcome.NONE -> {
+                binding.textStatus.visibility = View.GONE
+                Toast.makeText(requireContext(), R.string.sub_restore_none, Toast.LENGTH_LONG).show()
+            }
+            BillingManager.RestoreOutcome.UNAVAILABLE -> {
+                binding.textStatus.visibility = View.VISIBLE
+                binding.textStatus.setText(R.string.sub_unavailable)
+            }
         }
     }
 
@@ -199,7 +238,13 @@ class SubscriptionFragment : Fragment(), BillingManager.Listener {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        mainHandler.removeCallbacks(restoreTimeout)
         if (this::billing.isInitialized) billing.destroy()
         _binding = null
+    }
+
+    companion object {
+        /** If Play has not answered a restore request within this window, stop showing progress. */
+        private const val RESTORE_TIMEOUT_MS = 12_000L
     }
 }

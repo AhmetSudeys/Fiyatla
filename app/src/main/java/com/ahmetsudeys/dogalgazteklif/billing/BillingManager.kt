@@ -53,9 +53,24 @@ class BillingManager(
         fun onBillingUnavailable()
     }
 
+    /** Result of an explicit "restore purchases" request (see [refreshPurchases]). */
+    enum class RestoreOutcome {
+        /** Play reported an active subscription; the user is now entitled. */
+        RESTORED,
+        /** Play responded, but there is no active subscription on this account. */
+        NONE,
+        /** Play could not be reached (offline / not signed in / billing unavailable). */
+        UNAVAILABLE
+    }
+
     private val appContext = context.applicationContext
     private val main = Handler(Looper.getMainLooper())
     private var destroyed = false
+
+    // On-demand connection handling. A single connection attempt may have several waiters
+    // (e.g. initial start + a restore tap while still connecting); they are all notified once.
+    private var connecting = false
+    private val pendingConnect = mutableListOf<(ready: Boolean) -> Unit>()
 
     private val purchasesUpdatedListener = PurchasesUpdatedListener { result, purchases ->
         when (result.responseCode) {
@@ -78,46 +93,102 @@ class BillingManager(
 
     /** Connects to Play, then refreshes purchases and loads the plans. */
     fun start() {
-        billingClient.startConnection(object : BillingClientStateListener {
-            override fun onBillingSetupFinished(result: BillingResult) {
-                if (destroyed) return
-                if (result.responseCode == BillingClient.BillingResponseCode.OK) {
-                    queryPurchases()
-                    queryPlans()
-                } else {
-                    post { listener.onBillingUnavailable() }
+        connect { ready ->
+            if (destroyed) return@connect
+            if (ready) {
+                queryPurchases()
+                queryPlans()
+            } else {
+                post { listener.onBillingUnavailable() }
+            }
+        }
+    }
+
+    /**
+     * Explicitly re-checks whether Play reports an active subscription — the "restore purchases"
+     * action. Reconnects first if the client is not ready, so it works even when the initial
+     * connection dropped or never completed. [onResult] is always delivered once, on the main
+     * thread, with a definitive [RestoreOutcome] — it never silently hangs.
+     */
+    fun refreshPurchases(onResult: ((RestoreOutcome) -> Unit)? = null) {
+        connect { ready ->
+            if (destroyed) return@connect
+            if (!ready) {
+                onResult?.let { cb -> post { cb(RestoreOutcome.UNAVAILABLE) } }
+                return@connect
+            }
+            queryPurchases { success, active ->
+                val outcome = when {
+                    !success -> RestoreOutcome.UNAVAILABLE
+                    active -> RestoreOutcome.RESTORED
+                    else -> RestoreOutcome.NONE
                 }
+                onResult?.let { cb -> post { cb(outcome) } }
             }
-
-            override fun onBillingServiceDisconnected() {
-                // Best-effort single reconnect; if it keeps failing the paywall shows an error state.
-                if (!destroyed) runCatching { billingClient.startConnection(this) }
-            }
-        })
+        }
     }
 
-    /** Re-checks whether Play reports an active subscription (used to auto-detect restores). */
-    fun refreshPurchases() {
-        if (billingClient.isReady) queryPurchases()
+    /**
+     * Ensures the billing client is connected, then invokes [onReady] with whether it is usable.
+     * Safe to call repeatedly: concurrent callers share a single in-flight connection attempt.
+     */
+    private fun connect(onReady: (ready: Boolean) -> Unit) {
+        if (destroyed) return
+        if (billingClient.isReady) {
+            onReady(true)
+            return
+        }
+        pendingConnect.add(onReady)
+        if (connecting) return
+        connecting = true
+        runCatching {
+            billingClient.startConnection(object : BillingClientStateListener {
+                override fun onBillingSetupFinished(result: BillingResult) {
+                    connecting = false
+                    if (destroyed) return
+                    flushPending(result.responseCode == BillingClient.BillingResponseCode.OK)
+                }
+
+                override fun onBillingServiceDisconnected() {
+                    // The current attempt ended without a usable client; notify waiters so they
+                    // can surface an error instead of hanging. A later call reconnects on demand.
+                    connecting = false
+                    if (!destroyed) flushPending(false)
+                }
+            })
+        }.onFailure {
+            connecting = false
+            flushPending(false)
+        }
     }
 
-    private fun queryPurchases() {
+    private fun flushPending(ready: Boolean) {
+        val callbacks = pendingConnect.toList()
+        pendingConnect.clear()
+        callbacks.forEach { it(ready) }
+    }
+
+    private fun queryPurchases(onResult: ((success: Boolean, active: Boolean) -> Unit)? = null) {
         val params = QueryPurchasesParams.newBuilder()
             .setProductType(BillingClient.ProductType.SUBS)
             .build()
         billingClient.queryPurchasesAsync(params) { result, purchases ->
             if (destroyed) return@queryPurchasesAsync
             if (result.responseCode == BillingClient.BillingResponseCode.OK) {
-                handlePurchases(purchases, fromPurchaseFlow = false)
+                val active = handlePurchases(purchases, fromPurchaseFlow = false)
+                onResult?.invoke(true, active)
+            } else {
+                onResult?.invoke(false, false)
             }
         }
     }
 
-    private fun handlePurchases(purchases: List<Purchase>, fromPurchaseFlow: Boolean) {
+    private fun handlePurchases(purchases: List<Purchase>, fromPurchaseFlow: Boolean): Boolean {
         val active = purchases.any { it.purchaseState == Purchase.PurchaseState.PURCHASED }
         purchases.forEach { acknowledgeIfNeeded(it) }
         Prefs.setSubscriptionActive(appContext, active)
         post { listener.onEntitlementChanged(active) }
+        return active
     }
 
     private fun acknowledgeIfNeeded(purchase: Purchase) {
