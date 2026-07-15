@@ -1,0 +1,402 @@
+================================================================================
+  DOĞALGAZ TEKLİF FİYATLANDIRMA — iOS / COMPOSE MULTIPLATFORM GEÇİŞ YOL HARİTASI
+================================================================================
+
+Bu dosya, mevcut Android (View/XML tabanlı) uygulamasının BİREBİR AYNISINI ayrı
+bir Compose Multiplatform (CMP) projesinde yeniden oluşturmak ve oradan iOS /
+App Store çıktısı almak için hazırlanmış tam talimat + yol haritasıdır.
+
+Bu dosya, YENİ AÇILAN CMP PROJESİNİN köküne konulmak üzere yazılmıştır. Amaç:
+projeyi devralan kişi (veya AI asistan) bu tek dosyayı okuyarak uygulamanın ne
+olduğunu, hangi ekranlardan/mantıktan oluştuğunu, neyin ortak modüle taşınıp
+neyin sıfırdan yazılacağını ve hangi sırayla ilerleneceğini eksiksiz anlasın.
+
+Son güncelleme: 2026-07-13
+
+
+================================================================================
+0) ÖZET — TEK PARAGRAF
+================================================================================
+
+"Doğalgaz Teklif Fiyatlandırma", doğalgaz tesisat ustaları/firmaları için
+müşteri yönetimi, 7 adımlı teklif hazırlama sihirbazı, malzeme/fiyat listeleri,
+alacak defteri (grafiklerle) ve xlsx yedekleme içeren; verisini tamamen
+cihaz-yerel SharedPreferences JSON olarak tutan (DB YOK), Play'de ücretsiz ama
+7 günlük cihaz-yerel deneme VEYA Google Play aboneliğiyle açılan bir Android
+uygulamasıdır. Bu proje onu CMP'de yeniden yazacak: ortak Kotlin mantık modülü +
+Compose Multiplatform UI + platforma özel katmanlar (depolama, dosya seçici,
+faturalandırma). iOS'ta faturalandırma StoreKit ile SIFIRDAN yazılır.
+
+
+================================================================================
+1) KARAR VE TEMEL İLKELER
+================================================================================
+
+- KARAR (2026-07-13): App Store yayını için AYRI, YENİ bir Compose Multiplatform
+  projesi açılır. Mevcut Android (View/XML) uygulamasına DOKUNULMAZ; Play'de
+  olduğu gibi kalır. Yeni CMP projesi önce iOS'a odaklanır (istenirse ileride
+  Android'i de tek kod tabanına taşıyabilir, ama zorunlu değil).
+
+- NEDEN CMP (SwiftUI değil): Geliştirici yalnızca Kotlin biliyor, iOS bilgisi
+  yok, Windows'ta çalışıyor, Mac'i yok. CMP ile işin ~%80'i Windows'ta Android
+  Studio'da Kotlin ile yapılır. Mac YALNIZCA en sonda (iOS derleme/test/App
+  Store gönderimi) gereklidir — bulut Mac (MacStadium, MacinCloud) veya
+  GitHub Actions macOS runner ile de yürütülebilir.
+
+- BU BİR YENİDEN YAZIMDIR, "dönüştürücü" değil. Otomatik XML→Compose çeviren araç
+  yoktur. Mantık ortak modüle taşınır; UI Compose'da sıfırdan yazılır.
+
+- TEKNİK KİMLİK AYNEN KORUNUR (çok önemli): Görünen ad "Doğalgaz Teklif
+  Fiyatlandırma" olsa da, teknik kimlikler DEĞİŞMEZ:
+    * Abonelik ürün ID:        fiyatla_pro
+    * Aylık base plan:          fiyatla-pro-monthly   (₺149,99 / ay)
+    * Yıllık base plan:         fiyatla-pro-yearly    (₺1.499,99 / yıl)
+    * Yedek dosyası işareti:    FIYATLA_BACKUP  (xlsx "Yedek" sayfası A1 hücresi)
+  Bu ID'ler yedek dosyası uyumluluğu ve mağaza eşleşmesi için birebir kalmalıdır.
+
+- MEVCUT ANDROID KİMLİĞİ (referans):
+    * applicationId / namespace: com.ahmetsudeys.dogalgazteklif
+    * versionName 1.0, versionCode 3, minSdk 24, targetSdk/compileSdk 36
+    * Dil: Türkçe (tüm UI metinleri Türkçe)
+  NOT: Eski Android'in ESKİ paket adı com.ahmetsudeys.rotauygulama idi; mevcut
+  sürüm dogalgazteklif'e taşınmıştır. Yedek dosyalarında geçmiş anahtarlar
+  görülebilir; restore tarafında bunu göz önünde bulundur.
+
+
+================================================================================
+2) UYGULAMA NE YAPAR — İŞLEVSEL KAPSAM
+================================================================================
+
+Kullanıcı = doğalgaz tesisat ustası/firma sahibi. Uygulama onun için:
+
+  1. FİRMA KURULUMU: Firma adı, logo (daire kırpmalı PNG), birim fiyat oranları.
+  2. MÜŞTERİ YÖNETİMI: Müşteri ekle/düzenle/sil; il-ilçe otomatik doldurma.
+  3. TEKLİF SİHİRBAZI (7 adım): Müşteri seç → yapılacak işlemleri seç →
+     malzemeleri seç/düzenle → ekstralar (indirim, anlaşma metni) → özet →
+     çıktı (paylaşılabilir teklif) → onay/durum.
+  4. TEKLİF ARŞİVİ: Geçmiş teklifler listesi, durum (Beklemede/Onaylı/Ret), detay.
+  5. MALZEME & FİYAT LİSTELERİ: Kategorili malzeme listeleri, fiyat override'ları,
+     xlsx fiyat listesi içe aktarma.
+  6. ALACAK DEFTERİ: Müşteri bazında alacak/tahsilat kaydı, ödemeler; sütun ve
+     halka (donut) grafiklerle özet.
+  7. YEDEKLEME/GERİ YÜKLEME: Tüm veriyi tek bir gerçek .xlsx dosyasına aktarma
+     ve geri yükleme (giriş/login ekranından).
+  8. ERİŞİM MODELİ: 7 günlük deneme veya aktif abonelik (bkz. bölüm 7).
+
+
+================================================================================
+3) EKRAN LİSTESİ (19 EKRAN) — CMP'DE HANGİSİ YAZILACAK
+================================================================================
+
+Her biri Compose'da bir @Composable ekran olarak yeniden yazılır. Android
+karşılıkları parantezde referans içindir.
+
+  AÇILIŞ / ERİŞİM AKIŞI:
+   1. Launch          (LaunchFragment)         — splash + ilk açılış disclaimer
+                                                  dialog + entitlement yönlendirme
+   2. Welcome/Login   (WelcomeFragment)        — giriş, yedekle/geri yükle
+                                                  butonları, gizlilik & kullanım
+                                                  koşulları linkleri
+   3. CompanySetup    (CompanySetupFragment)   — firma adı, logo (daire kırpma),
+                                                  birim oranlar; "Kaydet" → gating
+   4. Subscription    (SubscriptionFragment)   — paywall (bkz. bölüm 7)
+
+  ANA KABUK:
+   5. MainShell       (MainShellFragment)      — alt navigasyon barı / kabuk
+   6. Home            (HomeFragment)            — ana ekran, profil avatarı (logo)
+
+  MÜŞTERİLER:
+   7. Customers       (CustomersFragment)      — liste + CustomerFormSheet (ekle/
+                                                  düzenle bottom sheet)
+
+  TEKLİF SİHİRBAZI (7 adım — nav_graph: quote_nav_graph):
+   8. QuoteCustomer          (QuoteCustomerFragment)
+   9. QuoteOperationSelect   (QuoteOperationSelectFragment)
+  10. QuoteMaterials         (QuoteMaterialsFragment + QuoteMaterialsPageFragment,
+                              ViewPager sekmeli)
+  11. QuoteExtras            (QuoteExtrasFragment)  — indirim bottom sheet, anlaşma
+                                                     metni düzenleme dialog
+  12. QuoteSummary           (QuoteSummaryFragment)
+  13. QuoteOutput            (QuoteOutputFragment)  — paylaşım (QuoteShareHelper)
+
+  TEKLİF ARŞİVİ:
+  14. Quotes         (QuotesFragment)          — geçmiş teklifler listesi
+  15. QuoteDetail    (QuoteDetailFragment)      — teklif detayı + durum/onay
+
+  MALZEMELER:
+  16. Materials      (MaterialsFragment + MaterialsPageFragment, ViewPager sekmeli)
+
+  ALACAK DEFTERİ:
+  17. Ledger         (LedgerFragment)           — liste + grafikler (sütun+donut)
+  18. LedgerDetail   (LedgerDetailFragment)      — müşteri detayı + ödemeler
+
+  ÖZEL ÇİZİM / GRAFİK BİLEŞENLERİ (Compose'da yeniden çizilecek):
+   - ColumnChartView, DonutChartView  → Compose Canvas ile
+   - CircleCropView                    → Compose ile daire kırpma (logo)
+
+
+================================================================================
+4) HANGİSİ PAYLAŞILIR / HANGİSİ SIFIRDAN YAZILIR
+================================================================================
+
+ORTAK MODÜLE (commonMain) TAŞINIR — SAF KOTLIN MANTIĞI (17 data dosyası):
+  data/Prefs.kt
+  data/CompanyBrandingStore.kt
+  data/customer/CustomerStorage.kt
+  data/quote/QuoteStorage.kt, QuoteDraftStore.kt, QuoteStatus.kt
+  data/ledger/LedgerStorage.kt, LedgerCalculator.kt
+  data/materials/MaterialListStore.kt
+  data/model/MaterialItem.kt
+  data/price/PriceOverridesStore.kt
+  data/excel/ExcelPriceListRepository.kt, XlsxXmlParser.kt, XlsxZipReader.kt
+  data/backup/BackupManager.kt, XlsxWriter.kt, XlsxReader.kt
+
+  Bunlar Android API'sine bağımlı DEĞİLDİR (veya küçük soyutlamalarla
+  ayrıştırılabilir). Taşımadan önce her dosyada android.* importlarını temizle:
+    - JSON: org.json yerine kotlinx.serialization kullan (multiplatform).
+    - SharedPreferences → expect/actual KeyValueStore soyutlaması (bkz. bölüm 5).
+    - ZIP okuma/yazma (xlsx): Android'in java.util.zip'i JVM'de var ama iOS'ta
+      yok → expect/actual "Zip" soyutlaması veya korrelasyonel bir KMP zip lib
+      (örn. okio tabanlı) kullan.
+
+COMPOSE'DA SIFIRDAN YAZILIR:
+  - 19 ekranın tamamı (bölüm 3) — XML/Fragment yok, hepsi @Composable.
+  - RecyclerView adapter'ları → LazyColumn/LazyRow item composable'ları.
+  - ViewPager2 (Materials, QuoteMaterials) → HorizontalPager + TabRow.
+  - BottomSheet'ler (CustomerFormSheet, indirim, ödeme) → ModalBottomSheet.
+  - Dialog'lar (disclaimer, anlaşma metni, liste adı, malzeme düzenle) → AlertDialog.
+  - Özel View'lar (ColumnChart, DonutChart, CircleCrop) → Compose Canvas.
+  - Navigasyon (3 nav graph) → Compose Navigation veya Voyager/Decompose.
+
+PLATFORMA ÖZEL (expect/actual — androidMain + iosMain):
+  - Kalıcı depolama (KeyValueStore).
+  - Dosya seçici + dosyaya yazma (yedek xlsx export/import).
+  - Görsel seçici + PNG kaydetme (firma logosu).
+  - Paylaşım (teklif çıktısı paylaşımı — Android Intent / iOS UIActivityViewController).
+  - Faturalandırma (Android Play Billing / iOS StoreKit 2). Bkz. bölüm 7.
+
+
+================================================================================
+5) VERİ KATMANI — DEPOLAMA MODELİ
+================================================================================
+
+TEMEL GERÇEK: DB YOK. Tüm veri, SharedPreferences dosyalarında JSON string olarak
+tutulur. CMP'de bunun karşılığı: platforma özel key-value store + JSON serileştirme.
+
+SHAREDPREFERENCES STORE'LARI (adları ve içerikleri — yedek uyumu için önemli):
+  rota_prefs           → firma adı, logo yolu, birim oranlar, çeşitli ayarlar
+  rota_customers       → müşteriler
+  rota_ledger          → alacak defteri (receivables)
+  rota_quotes          → teklifler
+  rota_material_lists  → malzeme listeleri
+  rota_price_overrides → fiyat override'ları
+  (Firma logosu ayrıca dosya olarak: filesDir/company_logo.png)
+
+NOT: Store adları "rota_" ön ekiyle başlar (eski proje adından kalma). Bunları
+DEĞİŞTİRME — yedek dosyaları bu adlarla "store | key | value" satırları tutar.
+
+CMP KARŞILIĞI:
+  - commonMain'de: interface KeyValueStore { getString/putString/remove/getAllKeys... }
+  - androidMain: SharedPreferences ile actual.
+  - iosMain: NSUserDefaults (küçük veri) veya dosya tabanlı JSON store ile actual.
+    (Büyük JSON'lar için NSUserDefaults yerine Documents dizininde dosya önerilir;
+    yine de "store | key | value" mantığını koru ki yedek round-trip'i bozulmasın.)
+  - Logo: iOS'ta Documents/company_logo.png; expect/actual "logo kaydet/oku".
+  - Multiplatform hazır alternatif: "multiplatform-settings" kütüphanesi
+    (com.russhwolf:multiplatform-settings) — SharedPreferences/NSUserDefaults'u
+    tek API altında toplar; başlangıç için en hızlı yol.
+
+
+================================================================================
+6) XLSX YEDEKLEME / GERİ YÜKLEME — EN KRİTİK KALEMLERDEN BİRİ
+================================================================================
+
+Mevcut sistem (BackupManager + XlsxWriter + XlsxReader), Apache POI KULLANMADAN
+elle .xlsx (OpenXML ZIP) üretir/okur. Bu mantık taşınabilir; SADECE ZIP ve
+dosya I/O platforma özeldir.
+
+YEDEK DOSYASI YAPISI (birebir korunacak):
+  - Gerçek .xlsx (ZIP). İnsan-okur sayfalar: Özet, Müşteriler, Teklifler,
+    Alacak Defteri.
+  - Makine sayfası: "Yedek" — her SharedPreferences girdisi bir satır:
+        store | key | Base64(value)
+    A1 hücresinde işaret: FIYATLA_BACKUP
+    Ayrıca "__LOGO__" satırı: Base64(PNG) olarak firma logosu.
+  - Base64 kullanımı, hücre içi XML-escape sorunlarını tamamen ortadan kaldırır.
+
+GERİ YÜKLEME AKIŞI (XlsxReader.readSheet(input, "Yedek")):
+  1. FIYATLA_BACKUP işaretini doğrula (yoksa reddet).
+  2. 6 store'u temizle.
+  3. Anahtarları yeniden yaz.
+  4. Logoyu geri yükle.
+  5. Disclaimer'ı "kabul edildi" olarak işaretle.
+
+CMP'DE YAPILACAK:
+  - XlsxWriter/XlsxReader mantığı commonMain'e taşınır; string/ByteArray üretir.
+  - ZIP paketleme/açma expect/actual (JVM: java.util.zip; iOS: minizip / okio
+    tabanlı KMP zip veya SSZipArchive köprüsü). En az riskli yol: saf-Kotlin bir
+    KMP zip implementasyonu kullanmak.
+  - Dosya seçici / kaydetme: expect/actual.
+      * iOS export: UIDocumentPickerViewController (kaydetme) veya "share sheet".
+      * iOS import: UIDocumentPickerViewController (açma), .xlsx UTI izni.
+  - ROUND-TRIP TESTİ ZORUNLU: Android'deki XlsxRoundTripTest.kt'nin CMP karşılığını
+    commonTest'te yaz — yedek al → geri yükle → veri birebir aynı olmalı.
+
+
+================================================================================
+7) FATURALANDIRMA / ABONELİK — İKİ AYRI İŞ
+================================================================================
+
+ERİŞİM MODELİ (platformdan bağımsız kural — commonMain'de EntitlementManager):
+  - Uygulama mağazada ücretsiz.
+  - Erişim şu ikisinden biriyle açılır:
+      (a) 7 günlük CİHAZ-YEREL deneme (kartsız; başlangıç tarihi Prefs'te; saat
+          geri alma / manipülasyon koruması var), VEYA
+      (b) aktif abonelik (fiyatla_pro).
+  - Backend YOK. (Silip yeniden kurmak denemeyi sıfırlar; kabul edildi çünkü
+    kullanıcı verisi de silinir.) iOS'ta da aynı politika: sunucusuz.
+  - Tek doğruluk kaynağı: EntitlementManager.
+
+AKIŞ:
+  - CompanySetup "Kaydet" → (entitled değilse) Subscription paywall.
+  - Launch, entitlement'a göre yönlendirir.
+  - Welcome, arka planda aboneliği yeniden doğrular (biten abonelik → paywall;
+    çevrimdışıysa kullanıcıyı dışarı atmaz).
+
+PAYWALL EKRANI (SubscriptionFragment karşılığı — iki durum):
+  - State A ("7 gün başlat"): deneme hiç kullanılmadıysa.
+  - State B ("deneme doldu"): deneme bitmişse.
+  - Aylık plan ÜSTTE ve VARSAYILAN seçili; yıllık ALTTA "EN AVANTAJLI" etiketiyle.
+  - Radio ile tıklanır seçim; satın alma seçilen pakete göre.
+
+ANDROID TARAFI (referans — mevcut BillingManager):
+  - Google Play Billing. Ürün: fiyatla_pro; base planlar: fiyatla-pro-monthly,
+    fiyatla-pro-yearly. Play'de ücretsiz deneme "offer"ı YOK (deneme app tarafında).
+
+iOS TARAFI (SIFIRDAN — StoreKit 2):
+  - App Store Connect'te aynı mantıkta ürünler:
+      * Auto-renewable subscription group, iki ürün:
+          - Aylık:  ₺149,99 (product id öner: fiyatla_pro_monthly veya
+                    fiyatla-pro-monthly — App Store ID formatına uydur)
+          - Yıllık: ₺1.499,99
+      * Ücretsiz deneme (introductory offer) EKLEME — deneme uygulama tarafında.
+  - StoreKit 2 (Swift) ile satın alma/restore; Kotlin/Native köprüsü veya
+    expect/actual "BillingClient" arayüzü ile commonMain'e bağla.
+  - "Restore Purchases" butonu App Store için ZORUNLUDUR — ekle.
+  - Apple abonelik inceleme kuralları: fiyat, süre, otomatik yenileme, gizlilik
+    ve kullanım koşulları linkleri paywall'da GÖRÜNÜR olmalı.
+
+ORTAK EntitlementManager: platformdan gelen "aktif abonelik var mı?" sinyalini +
+yerel deneme durumunu birleştirir; UI buna göre gating yapar.
+
+
+================================================================================
+8) MODÜL / PROJE YAPISI (ÖNERİLEN — CMP)
+================================================================================
+
+Yeni CMP projesi (Android Studio → New Project → Kotlin Multiplatform / Compose
+Multiplatform şablonu, veya JetBrains Compose Multiplatform Wizard):
+
+  proje-kök/
+   ├─ shared/                     (Kotlin Multiplatform kütüphane modülü)
+   │   ├─ commonMain/
+   │   │   ├─ data/               ← 17 mantık dosyası (taşınacak, temizlenecek)
+   │   │   ├─ domain/             ← EntitlementManager, hesaplamalar
+   │   │   ├─ ui/                 ← Compose ekranlar (19 ekran) + bileşenler
+   │   │   └─ platform/           ← expect: KeyValueStore, FilePicker, Sharer,
+   │   │                            LogoStore, Zip, BillingClient
+   │   ├─ androidMain/            ← actual: SharedPreferences, Intent, Play Billing
+   │   └─ iosMain/                ← actual: NSUserDefaults/dosya, DocumentPicker,
+   │                                UIActivityViewController, StoreKit köprüsü
+   ├─ androidApp/                 (opsiyonel — CMP Android host; şart değil)
+   └─ iosApp/                     (Xcode projesi — Mac'te; SwiftUI host + StoreKit)
+
+Bağımlılık önerileri:
+  - Compose Multiplatform (UI)
+  - kotlinx.serialization (JSON)
+  - kotlinx.coroutines
+  - Navigation: Compose Navigation Multiplatform veya Decompose/Voyager
+  - multiplatform-settings (KV store) — hızlı başlangıç
+  - Zip: saf-Kotlin KMP zip veya okio tabanlı çözüm
+
+
+================================================================================
+9) AŞAMALAR (M1 → M8) — SIRALI YOL HARİTASI
+================================================================================
+
+M1 — CMP PROJE İSKELETİ  [Windows, Mac'siz]
+  - Compose Multiplatform şablonuyla proje aç; shared modülü kur.
+  - androidMain + iosMain kaynak setleri, temel expect/actual iskeletleri.
+  - "Hello" ekranı Android'de çalışsın (iOS derlemesi M7'de).
+
+M2 — MANTIK TAŞIMA  [Windows, Mac'siz]
+  - 17 data dosyasını commonMain'e taşı; android.* importlarını temizle.
+  - JSON'u kotlinx.serialization'a çevir; KeyValueStore expect/actual yaz.
+  - commonTest: XlsxRoundTripTest karşılığı + hesaplama testleri yeşile geçsin.
+
+M3 — TEMEL AKIŞ + KABUK EKRANLARI  [Windows]
+  - Launch, Welcome, CompanySetup, MainShell, Home ekranları (Compose).
+  - Navigasyon iskeleti; disclaimer dialog; logo (CircleCrop) Compose ile.
+
+M4 — ÇEKİRDEK ÖZELLİK EKRANLARI  [Windows]
+  - Customers (+ form sheet), Materials (pager), Quotes + QuoteDetail.
+  - RecyclerView/adapter mantıkları LazyColumn'a; grafikler Canvas'a.
+
+M5 — TEKLİF SİHİRBAZI (7 ADIM)  [Windows] — EN KARMAŞIK KALEM
+  - QuoteCustomer → OperationSelect → Materials → Extras → Summary → Output.
+  - Draft store, durum makinesi, paylaşım (expect/actual Sharer).
+
+M6 — ALACAK DEFTERİ + YEDEKLEME  [Windows]
+  - Ledger + LedgerDetail; sütun & donut grafik Canvas ile.
+  - xlsx yedek export/import: Zip + FilePicker actual'ları (Android'de test).
+  - EntitlementManager + paywall UI (Android Billing ile uçtan uca).
+
+M7 — iOS DERLEME + PLATFORM ACTUAL'LARI  [Mac GEREKLİ]
+  - iosApp'i Xcode'da aç; iosMain actual'ları tamamla: NSUserDefaults/dosya,
+    DocumentPicker (yedek), logo, share sheet.
+  - StoreKit 2 entegrasyonu + StoreKit test dosyasıyla satın alma/restore testi.
+  - iOS simülatör + gerçek cihazda tüm ekranları test et.
+
+M8 — APP STORE YAYINI  [Mac GEREKLİ]
+  - Apple Developer hesabı (99$/yıl).
+  - App Store Connect: uygulama kaydı, abonelik grubu + iki ürün (aylık/yıllık),
+    fiyatlar, açıklama, ekran görüntüleri, gizlilik (App Privacy) formu,
+    kullanım koşulları/gizlilik URL'leri.
+  - Archive → Upload → TestFlight → App Review → yayın.
+
+MAC İHTİYACI ÖZET: M1–M6 tamamen Windows'ta yapılabilir. Mac YALNIZCA M7–M8 için
+gerekir (bulut Mac / GitHub Actions macOS runner ile de olur).
+
+
+================================================================================
+10) EN RİSKLİ / EN KARMAŞIK KALEMLER (ÖNCE PLANLA)
+================================================================================
+
+  1. 7 adımlı teklif sihirbazı (M5) — durum yönetimi, draft, çok ekranlı akış.
+  2. xlsx yedekleme (M6) — ZIP + platforma özel dosya seçici; round-trip garantisi.
+  3. iOS StoreKit (M7) — Swift köprüsü, App Store inceleme kuralları.
+  4. Grafikler (ColumnChart/DonutChart) — Compose Canvas'a birebir taşıma.
+  5. Logo daire kırpma (CircleCrop) + platforma özel görsel seçici/kaydetme.
+
+
+================================================================================
+11) KABUL KRİTERİ — "BİREBİR AYNI" NE DEMEK
+================================================================================
+
+  - 19 ekranın hepsi, aynı Türkçe metinler ve aynı akışla mevcut.
+  - Aynı veri modeli; Android'de alınan yedek .xlsx dosyası iOS'ta geri yüklenebilir
+    (ve tersi) — FIYATLA_BACKUP uyumu korunur.
+  - 7 günlük deneme + abonelik gating aynı davranır.
+  - Teklif çıktısı ve paylaşım aynı içeriği üretir.
+  - Grafikler, hesaplamalar, il-ilçe otomatik doldurma aynı sonuçları verir.
+
+
+================================================================================
+12) SIRADAKI ADIM
+================================================================================
+
+Onay verildiğinde başlanacak: M1 (CMP proje iskeleti) + M2 (mantık taşıma),
+ikisi de Windows'ta, Mac gerektirmeden. Mevcut Android projesi bu iş boyunca
+Play'de olduğu gibi kalır, dokunulmaz.
+
+================================================================================

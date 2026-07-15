@@ -98,6 +98,19 @@ class QuoteOperationSelectFragment : Fragment() {
             val operations = repo.getAllSheetNames()
             mainHandler.post {
                 if (_binding == null) return@post
+
+                // A saved quote stores its operations trimmed (QuoteRecord.fromJson trims them),
+                // but a few workbook sheets are named with a trailing space ("ALTI HAZIR KOMBİ
+                // MONTAJ "). Without this, editing such a quote showed that operation unchecked and
+                // silently dropped its materials on Devam. Re-map the prefilled selection onto the
+                // sheets' own spelling; names with no matching sheet are left untouched.
+                if (selectedOperations.isNotEmpty()) {
+                    val bySpelling = operations.associateBy { it.trim() }
+                    val remapped = selectedOperations.map { bySpelling[it.trim()] ?: it }
+                    selectedOperations.clear()
+                    selectedOperations.addAll(remapped)
+                }
+
                 val adapter = OperationSelectAdapter(
                     items = operations,
                     selected = selectedOperations,

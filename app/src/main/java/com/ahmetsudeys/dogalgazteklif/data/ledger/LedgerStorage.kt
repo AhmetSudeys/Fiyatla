@@ -71,9 +71,10 @@ object LedgerStorage {
         val dueDateMillis: Long? = null,
         val payments: List<Payment> = emptyList(),
         /**
-         * Sum of payments that were pruned once they aged past the retention window. Detailed
-         * records are dropped to keep the store small, but their total is preserved here so the
-         * collected/remaining figures stay correct forever.
+         * Legacy: sum of payments an older version of the app pruned once they aged past a 3-month
+         * retention window. Payments are now kept for as long as the customer exists, so nothing
+         * ever writes this any more — it is only read, so data saved (or backed up) by those older
+         * versions keeps reporting the correct collected/remaining figures.
          */
         val archivedCollected: Double = 0.0,
         /**
@@ -248,33 +249,5 @@ object LedgerStorage {
     fun deletePayment(context: Context, customerId: Long, paymentId: Long) {
         val current = getAccount(context, customerId) ?: return
         upsertAccount(context, current.copy(payments = current.payments.filterNot { it.id == paymentId }))
-    }
-
-    /**
-     * Drops individual payment records older than [cutoffMillis], folding their sum into
-     * [LedgerAccount.archivedCollected]. Keeps the store bounded (~last 3 months of detail) without
-     * changing any customer's collected/remaining totals. Writes only when something actually moves.
-     *
-     * @return true if any account was modified.
-     */
-    fun pruneOlderThan(context: Context, cutoffMillis: Long): Boolean {
-        val prefs = context.getSharedPreferences(FILE, Context.MODE_PRIVATE)
-        val arr = JSONArray(prefs.getString(KEY_ACCOUNTS, "[]").orEmpty())
-        var changed = false
-        for (i in 0 until arr.length()) {
-            val obj = arr.optJSONObject(i) ?: continue
-            val account = LedgerAccount.fromJson(obj)
-            val old = account.payments.filter { it.dateMillis < cutoffMillis }
-            if (old.isEmpty()) continue
-            val kept = account.payments.filter { it.dateMillis >= cutoffMillis }
-            val pruned = account.copy(
-                payments = kept,
-                archivedCollected = account.archivedCollected + old.sumOf { it.amount }
-            )
-            arr.put(i, pruned.toJson())
-            changed = true
-        }
-        if (changed) prefs.edit().putString(KEY_ACCOUNTS, arr.toString()).apply()
-        return changed
     }
 }

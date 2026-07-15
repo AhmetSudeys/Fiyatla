@@ -242,7 +242,7 @@
     <string name="ledger_clear_date">Tarihi temizle</string>
     <string name="ledger_no_phone">Telefon yok</string>
     <string name="ledger_payments_title">Ödeme Geçmişi</string>
-    <string name="ledger_payments_hint">Son 3 ay gösterilir</string>
+    <string name="ledger_payments_hint">Tüm ödemeler gösterilir</string>
     <string name="ledger_archived_note">Önceki dönem tahsilatı (özet): %1$s</string>
     <string name="ledger_no_payments">Henüz ödeme kaydı yok.</string>
     <string name="ledger_add_payment">Ödeme Ekle</string>
@@ -288,7 +288,7 @@
     <string name="restore_pick_title">Yedek dosyasını seçin</string>
     <string name="backup_in_progress">Yedek hazırlanıyor…</string>
     <string name="backup_failed">Yedek oluşturulamadı. Lütfen tekrar deneyin.</string>
-    <string name="backup_download">Telefona İndir</string>
+    <string name="backup_download">İndir</string>
     <string name="backup_download_success">Verileriniz başarıyla yedeklendi.</string>
     <string name="backup_download_failed">Yedek kaydedilemedi. Lütfen tekrar deneyin.</string>
     <string name="restore_in_progress">Geri yükleniyor…</string>

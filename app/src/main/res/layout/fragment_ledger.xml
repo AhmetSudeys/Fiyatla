@@ -98,9 +98,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/input_search">
 
+        <!-- All three cards stretch to the tallest one (match_parent inside a horizontal
+             LinearLayout), and each amount is pushed to the card's bottom by the Space below its
+             label. Otherwise a label that wraps to two lines ("Toplam Tahsil Edilen") pushes its
+             amount lower than the neighbours' and the row reads as misaligned. -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             app:cardBackgroundColor="@android:color/transparent"
             app:cardCornerRadius="20dp"
@@ -108,7 +112,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:background="@drawable/bg_gradient_blue"
                 android:minHeight="90dp"
                 android:orientation="vertical"
@@ -120,6 +124,11 @@
                     android:text="@string/ledger_total_agreed"
                     android:textColor="@color/white_85"
                     android:textSize="11sp" />
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
 
                 <TextView
                     android:id="@+id/text_total_agreed"
@@ -135,7 +144,7 @@
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginStart="@dimen/space_xs"
             android:layout_weight="1"
             app:cardBackgroundColor="@android:color/transparent"
@@ -144,7 +153,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:background="@drawable/bg_gradient_green"
                 android:minHeight="90dp"
                 android:orientation="vertical"
@@ -156,6 +165,11 @@
                     android:text="@string/ledger_total_collected"
                     android:textColor="@color/white_85"
                     android:textSize="11sp" />
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
 
                 <TextView
                     android:id="@+id/text_total_collected"
@@ -171,7 +185,7 @@
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginStart="@dimen/space_xs"
             android:layout_weight="1"
             app:cardBackgroundColor="@android:color/transparent"
@@ -180,7 +194,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:background="@drawable/bg_gradient_red"
                 android:minHeight="90dp"
                 android:orientation="vertical"
@@ -192,6 +206,11 @@
                     android:text="@string/ledger_total_remaining"
                     android:textColor="@color/white_85"
                     android:textSize="11sp" />
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
 
                 <TextView
                     android:id="@+id/text_total_remaining"

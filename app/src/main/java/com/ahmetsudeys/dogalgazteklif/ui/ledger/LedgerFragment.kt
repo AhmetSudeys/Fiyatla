@@ -126,10 +126,6 @@ class LedgerFragment : Fragment() {
         val token = ++refreshToken
         val appCtx = requireContext().applicationContext
         ioExecutor.execute {
-            // Keep only the last 3 months of detailed payments; older ones are folded into an
-            // archived total so the store stays small and the app stays fast long-term.
-            LedgerStorage.pruneOlderThan(appCtx, LedgerCalculator.retentionCutoffMillis())
-
             val customers = CustomerStorage.getCustomers(appCtx).sortedByDescending { it.createdAtMillis }
             val accounts = LedgerStorage.getAccounts(appCtx)
             val quotes = QuoteStorage.getQuotes(appCtx)

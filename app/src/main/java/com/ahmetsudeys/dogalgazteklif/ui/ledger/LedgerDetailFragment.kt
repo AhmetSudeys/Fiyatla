@@ -46,6 +46,9 @@ class LedgerDetailFragment : Fragment() {
     private var customerId: Long = 0L
     private var currentRow: LedgerCalculator.LedgerRow? = null
 
+    /** Set when the user adds a payment, so the next bind scrolls the list back to the newest row. */
+    private var scrollPaymentsToTop: Boolean = false
+
     private val money: NumberFormat = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("tr-TR")).apply {
         currency = Currency.getInstance("TRY")
         maximumFractionDigits = 0
@@ -172,10 +175,22 @@ class LedgerDetailFragment : Fragment() {
             binding.textArchived.text = ctx.getString(R.string.ledger_archived_note, money.format(archived))
         }
 
-        val payments = row.account?.payments.orEmpty().sortedByDescending { it.dateMillis }
+        // Newest first. The id is the creation timestamp, so it breaks ties between payments that
+        // share a date — without it a payment added today could sort below an older-entered one
+        // with the same date and be missed at the bottom of the list.
+        val payments = row.account?.payments.orEmpty().sortedWith(
+            compareByDescending<LedgerStorage.Payment> { it.dateMillis }.thenByDescending { it.id }
+        )
         binding.textEmptyPayments.isVisible = payments.isEmpty() && archived <= 0.0
         binding.recyclerPayments.isVisible = payments.isNotEmpty()
-        paymentsAdapter.submitList(payments)
+        paymentsAdapter.submitList(payments) {
+            // Bring a just-added payment into view; it is always the topmost row for its date.
+            // The callback lands after diffing, so the view may already be gone.
+            if (scrollPaymentsToTop && _binding != null) {
+                scrollPaymentsToTop = false
+                binding.recyclerPayments.scrollToPosition(0)
+            }
+        }
     }
 
     // --- Add payment ------------------------------------------------------
@@ -229,6 +244,7 @@ class LedgerDetailFragment : Fragment() {
                     if (!isAdded) return@post
                     dialog.dismiss()
                     Toast.makeText(requireContext(), R.string.payment_added, Toast.LENGTH_SHORT).show()
+                    scrollPaymentsToTop = true
                     refresh()
                 }
             }
