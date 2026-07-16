@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/surface_white"
-    android:padding="@dimen/space_m"
+    android:paddingTop="@dimen/space_m"
+    android:paddingBottom="@dimen/space_m"
     tools:context="com.ahmetsudeys.dogalgazteklif.ui.materials.MaterialsPageFragment">
 
     <TextView
@@ -99,10 +100,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/top_row_barrier">
 
+        <!-- Sütun genişlikleri item_material_row ile AYNI olmalı (hizalama). -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/space_m">
+            android:paddingStart="@dimen/material_row_padding_h"
+            android:paddingTop="@dimen/space_m"
+            android:paddingEnd="@dimen/material_row_padding_h"
+            android:paddingBottom="@dimen/space_m">
 
             <TextView
                 android:id="@+id/text_h_name"
@@ -111,51 +116,54 @@
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:text="@string/col_material"
+                android:textSize="12sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toStartOf="@id/text_h_qty"
-                app:layout_constraintHorizontal_weight="0.45"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/text_h_qty"
-                android:layout_width="0dp"
+                android:layout_width="@dimen/material_col_qty"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/material_col_gap"
                 android:ellipsize="end"
                 android:gravity="end"
                 android:maxLines="1"
                 android:text="@string/col_qty"
+                android:textSize="12sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toStartOf="@id/text_h_price"
-                app:layout_constraintHorizontal_weight="0.21"
                 app:layout_constraintStart_toEndOf="@id/text_h_name"
                 app:layout_constraintTop_toTopOf="@id/text_h_name" />
 
             <TextView
                 android:id="@+id/text_h_price"
-                android:layout_width="0dp"
+                android:layout_width="@dimen/material_col_price"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/material_col_gap"
                 android:ellipsize="end"
                 android:gravity="end"
                 android:maxLines="1"
                 android:text="@string/col_price"
+                android:textSize="12sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toStartOf="@id/text_h_total"
-                app:layout_constraintHorizontal_weight="0.17"
                 app:layout_constraintStart_toEndOf="@id/text_h_qty"
                 app:layout_constraintTop_toTopOf="@id/text_h_name" />
 
             <TextView
                 android:id="@+id/text_h_total"
-                android:layout_width="0dp"
+                android:layout_width="@dimen/material_col_total"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/material_col_gap"
                 android:ellipsize="end"
                 android:gravity="end"
                 android:maxLines="1"
                 android:text="@string/col_total"
+                android:textSize="12sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_weight="0.17"
                 app:layout_constraintStart_toEndOf="@id/text_h_price"
                 app:layout_constraintTop_toTopOf="@id/text_h_name" />
         </androidx.constraintlayout.widget.ConstraintLayout>

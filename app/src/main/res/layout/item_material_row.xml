@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    Malzeme satırı. Sayısal sütunlar SABİT genişliktedir: fiyat listesinin ürettiği en uzun tutar
+    ("42.000,00 ₺") tam sığsın diye ölçüldü. Ad sütunu kalan yeri alır ve gerekirse sarar; eskiden
+    oransal weight'ler (0.50/0.15/0.17/0.18) para sütunlarına yer bırakmadığı için tutarlar
+    "500,0…" diye kesiliyordu. Ad 3 satıra kadar sarabilir (listede 48 karaktere varan adlar var).
+    Sütun genişlikleri fragment_materials_page / fragment_quote_materials_page başlık satırlarıyla
+    AYNI olmalı, yoksa başlıklar değerlerle hizasını kaybeder.
+-->
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     style="@style/Widget.Rota.Card"
@@ -12,62 +20,63 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/space_m">
+        android:paddingStart="@dimen/material_row_padding_h"
+        android:paddingTop="@dimen/space_m"
+        android:paddingEnd="@dimen/material_row_padding_h"
+        android:paddingBottom="@dimen/space_m">
 
         <TextView
             android:id="@+id/text_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:maxLines="2"
+            android:ellipsize="end"
+            android:maxLines="3"
             android:textColor="@color/black"
             android:textSize="14sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@id/text_quantity"
-            app:layout_constraintHorizontal_weight="0.50"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/text_quantity"
-            android:layout_width="0dp"
+            android:layout_width="@dimen/material_col_qty"
             android:layout_height="wrap_content"
-            android:layout_marginStart="6dp"
+            android:layout_marginStart="@dimen/material_col_gap"
             android:gravity="end"
+            android:maxLines="1"
             android:textColor="@color/black"
-            android:textSize="14sp"
+            android:textSize="13sp"
             app:layout_constraintEnd_toStartOf="@id/text_price"
-            app:layout_constraintHorizontal_weight="0.15"
             app:layout_constraintStart_toEndOf="@id/text_name"
             app:layout_constraintTop_toTopOf="@id/text_name" />
 
         <TextView
             android:id="@+id/text_price"
-            android:layout_width="0dp"
+            android:layout_width="@dimen/material_col_price"
             android:layout_height="wrap_content"
-            android:layout_marginStart="6dp"
+            android:layout_marginStart="@dimen/material_col_gap"
             android:gravity="end"
+            android:maxLines="1"
             android:textColor="@color/black"
-            android:textSize="14sp"
+            android:textSize="13sp"
             app:layout_constraintEnd_toStartOf="@id/text_total"
-            app:layout_constraintHorizontal_weight="0.17"
             app:layout_constraintStart_toEndOf="@id/text_quantity"
             app:layout_constraintTop_toTopOf="@id/text_name" />
 
         <TextView
             android:id="@+id/text_total"
-            android:layout_width="0dp"
+            android:layout_width="@dimen/material_col_total"
             android:layout_height="wrap_content"
-            android:layout_marginStart="6dp"
+            android:layout_marginStart="@dimen/material_col_gap"
             android:gravity="end"
+            android:maxLines="1"
             android:textColor="@color/brand_red"
-            android:textSize="14sp"
+            android:textSize="13sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_weight="0.18"
             app:layout_constraintStart_toEndOf="@id/text_price"
             app:layout_constraintTop_toTopOf="@id/text_name" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>
-
-

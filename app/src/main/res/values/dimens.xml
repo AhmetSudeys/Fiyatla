@@ -8,6 +8,14 @@
     <dimen name="radius_m">16dp</dimen>
     <dimen name="radius_l">24dp</dimen>
     <dimen name="radius_pill">28dp</dimen>
+
+    <!-- Malzeme tablosu sütunları: item_material_row ile fragment_materials_page /
+         fragment_quote_materials_page başlıklarının hizalı kalması için ortak. -->
+    <dimen name="material_col_qty">40dp</dimen>
+    <dimen name="material_col_price">76dp</dimen>
+    <dimen name="material_col_total">82dp</dimen>
+    <dimen name="material_col_gap">8dp</dimen>
+    <dimen name="material_row_padding_h">12dp</dimen>
 </resources>
 
 
