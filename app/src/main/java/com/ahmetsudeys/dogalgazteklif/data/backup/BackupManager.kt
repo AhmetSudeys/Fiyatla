@@ -31,9 +31,12 @@ import java.util.Locale
  */
 object BackupManager {
 
+    /** The general settings store; the only one holding non-backupable entitlement keys. */
+    private const val PREFS_STORE = "rota_prefs"
+
     /** SharedPreferences files that together hold all user data. */
     private val DATA_STORES = listOf(
-        "rota_prefs",             // company name, logo path, unit rates
+        PREFS_STORE,              // company name, logo path, unit rates
         "rota_customers",         // Müşterilerim
         "rota_ledger",            // Alacak Defteri (receivables)
         "rota_quotes",            // Tekliflerim
@@ -236,6 +239,8 @@ object BackupManager {
         for (store in DATA_STORES) {
             val prefs = context.getSharedPreferences(store, Context.MODE_PRIVATE)
             for ((key, value) in prefs.all) {
+                // Trial/subscription state is device-local and deliberately not backed up.
+                if (store == PREFS_STORE && key in Prefs.ENTITLEMENT_KEYS) continue
                 if (value is String) {
                     rows.add(machineRow(store, key, encode(value.toByteArray(Charsets.UTF_8))))
                 }
@@ -321,10 +326,18 @@ object BackupManager {
                     continue
                 }
                 if (col0 in DATA_STORES) {
+                    // Entitlement keys are never restored from a file (see [entitlementBefore]).
+                    if (col0 == PREFS_STORE && col1 in Prefs.ENTITLEMENT_KEYS) continue
                     val value = String(decode(encoded), Charsets.UTF_8)
                     byStore.getOrPut(col0) { mutableListOf() }.add(col1 to value)
                 }
             }
+
+            // Trial/subscription state must survive the wipe below: it belongs to this device and
+            // its Play account, not to the backed-up business data. Without this, restoring a file
+            // would erase the trial start date and the app would offer the 7-day trial all over
+            // again (and an active subscriber would be bounced to the paywall).
+            val entitlementBefore = Prefs.entitlementSnapshot(context)
 
             // Replace semantics: wipe every managed store, then write the backed-up keys.
             for (store in DATA_STORES) {
@@ -335,6 +348,7 @@ object BackupManager {
                 for ((key, value) in entries) editor.putString(key, value)
                 editor.apply()
             }
+            Prefs.applyEntitlementSnapshot(context, entitlementBefore)
 
             // Restore the logo image (this also fixes the now-stale company_logo_path).
             if (logoBytes != null && logoBytes.isNotEmpty()) {

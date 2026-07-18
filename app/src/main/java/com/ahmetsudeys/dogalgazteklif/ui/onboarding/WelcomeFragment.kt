@@ -44,7 +44,10 @@ class WelcomeFragment : Fragment() {
             if (_binding == null || !isAdded) return
             if (!subscribed && !Prefs.isTrialActive(requireContext())) {
                 findNavController().navigate(R.id.action_welcomeFragment_to_subscriptionFragment)
+                return
             }
+            // Play may have refined what we knew (e.g. purchase date) — refresh the countdown.
+            showEntitlementStatus()
         }
         override fun onPlansLoaded(plans: List<BillingManager.PlanInfo>) {}
         override fun onPurchaseFailed(userCancelled: Boolean, message: String?) {}
@@ -87,11 +90,33 @@ class WelcomeFragment : Fragment() {
             findNavController().navigate(R.id.action_welcomeFragment_to_companySetupFragment)
         }
 
+        showEntitlementStatus()
+
         binding.textPrivacy.setOnSingleClickListener { openUrl(getString(R.string.privacy_policy_url)) }
         binding.textTerms.setOnSingleClickListener { openUrl(getString(R.string.terms_of_use_url)) }
 
         // Re-verify Play subscription in the background; may bounce a lapsed subscriber to the paywall.
         billing = BillingManager(requireContext(), entitlementVerifier).also { it.start() }
+    }
+
+    /**
+     * Shows how much access time is left: the remaining free-trial days, or — for a subscriber —
+     * the days until the next renewal. Falls back to a plain "subscription active" line when the
+     * renewal date is not known locally (e.g. the app was reinstalled on another device).
+     */
+    private fun showEntitlementStatus() {
+        val context = requireContext()
+        val text = when {
+            Prefs.isSubscriptionActive(context) ->
+                Prefs.subscriptionDaysRemaining(context)
+                    ?.let { getString(R.string.welcome_sub_days_left, it) }
+                    ?: getString(R.string.welcome_sub_active)
+            Prefs.isTrialActive(context) ->
+                getString(R.string.welcome_trial_days_left, Prefs.trialDaysRemaining(context))
+            else -> null
+        }
+        binding.textEntitlementStatus.text = text.orEmpty()
+        binding.textEntitlementStatus.visibility = if (text == null) View.GONE else View.VISIBLE
     }
 
     private fun openUrl(url: String) {

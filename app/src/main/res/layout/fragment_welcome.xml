@@ -97,10 +97,28 @@
         android:textColor="@color/brand_blue"
         android:textSize="12sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@id/layout_legal_links"
+        app:layout_constraintBottom_toTopOf="@id/text_entitlement_status"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/button_restore" />
+
+    <!-- Kalan deneme / abonelik süresi. Bilgi yoksa gizlenir. -->
+    <TextView
+        android:id="@+id/text_entitlement_status"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingVertical="4dp"
+        android:textAlignment="center"
+        android:textColor="@color/text_secondary"
+        android:textSize="14sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/layout_legal_links"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_edit_company"
+        tools:text="Ücretsiz denemenize 5 gün kaldı"
+        tools:visibility="visible" />
 
     <TextView
         android:id="@+id/text_footer"
@@ -145,7 +163,7 @@
         app:layout_constraintBottom_toTopOf="@id/text_footer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_edit_company">
+        app:layout_constraintTop_toBottomOf="@id/text_entitlement_status">
 
         <TextView
             android:id="@+id/text_privacy"

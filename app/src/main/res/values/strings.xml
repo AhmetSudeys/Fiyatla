@@ -333,6 +333,11 @@
     <string name="sub_restore">Satın alımı geri yükle</string>
     <string name="sub_trial_days_left">Deneme süresi: %1$d gün kaldı</string>
 
+    <!-- Hoşgeldiniz ekranında gösterilen kalan süre bilgisi -->
+    <string name="welcome_trial_days_left">Ücretsiz denemenize %1$d gün kaldı</string>
+    <string name="welcome_sub_days_left">Aboneliğinize %1$d gün kaldı</string>
+    <string name="welcome_sub_active">Aboneliğiniz aktif</string>
+
     <string name="sub_legal">Abonelik seçtiğiniz döneme göre otomatik olarak yenilenir. Google Play hesabınızdan tahsil edilir. İstediğiniz zaman Google Play &gt; Abonelikler bölümünden iptal edebilirsiniz. Yenilenme tarihinden en az 24 saat önce iptal edilmezse ücret alınır.</string>
     <string name="sub_loading">Planlar yükleniyor…</string>
     <string name="sub_restoring">Satın alımlar kontrol ediliyor…</string>

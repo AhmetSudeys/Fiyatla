@@ -184,9 +184,16 @@ class BillingManager(
     }
 
     private fun handlePurchases(purchases: List<Purchase>, fromPurchaseFlow: Boolean): Boolean {
-        val active = purchases.any { it.purchaseState == Purchase.PurchaseState.PURCHASED }
+        val activePurchase = purchases.firstOrNull { it.purchaseState == Purchase.PurchaseState.PURCHASED }
+        val active = activePurchase != null
         purchases.forEach { acknowledgeIfNeeded(it) }
         Prefs.setSubscriptionActive(appContext, active)
+        // Keep the purchase date so the welcome screen can show days left in the billing period.
+        if (activePurchase != null) {
+            Prefs.setSubscriptionPurchaseTime(appContext, activePurchase.purchaseTime)
+        } else {
+            Prefs.clearSubscriptionDetails(appContext)
+        }
         post { listener.onEntitlementChanged(active) }
         return active
     }
@@ -257,6 +264,8 @@ class BillingManager(
         val flowParams = BillingFlowParams.newBuilder()
             .setProductDetailsParamsList(listOf(productParams))
             .build()
+        // Play's purchase record does not say which base plan was bought, so remember the period now.
+        Prefs.setSubscriptionPeriodIso(appContext, plan.billingPeriodIso)
         billingClient.launchBillingFlow(activity, flowParams)
     }
 

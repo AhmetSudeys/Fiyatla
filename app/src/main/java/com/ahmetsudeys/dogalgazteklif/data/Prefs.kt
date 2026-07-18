@@ -2,6 +2,7 @@ package com.ahmetsudeys.dogalgazteklif.data
 
 import android.content.Context
 import java.io.File
+import java.util.Locale
 
 object Prefs {
     private const val FILE_NAME = "rota_prefs"
@@ -15,6 +16,21 @@ object Prefs {
     private const val KEY_TRIAL_START = "trial_start_millis"
     private const val KEY_TRIAL_LAST_SEEN = "trial_last_seen_millis"
     private const val KEY_SUB_ACTIVE = "subscription_active"
+    private const val KEY_SUB_PURCHASE_MS = "subscription_purchase_millis"
+    private const val KEY_SUB_PERIOD_ISO = "subscription_period_iso"
+
+    /**
+     * Entitlement state belongs to the device/Play account, not to the user's business data. It is
+     * deliberately excluded from backups and preserved across a restore, so restoring a file can
+     * never resurrect a used-up trial nor drop an active subscription.
+     */
+    val ENTITLEMENT_KEYS = setOf(
+        KEY_TRIAL_START,
+        KEY_TRIAL_LAST_SEEN,
+        KEY_SUB_ACTIVE,
+        KEY_SUB_PURCHASE_MS,
+        KEY_SUB_PERIOD_ISO
+    )
 
     /** Length of the free trial. 7 days in milliseconds. */
     const val TRIAL_DURATION_MS = 7L * 24 * 60 * 60 * 1000
@@ -149,6 +165,89 @@ object Prefs {
 
     fun setSubscriptionActive(context: Context, active: Boolean) {
         prefs(context).edit().putBoolean(KEY_SUB_ACTIVE, active).apply()
+    }
+
+    /**
+     * Remembers when the active subscription was purchased, so the welcome screen can show how many
+     * days are left in the current billing period. Cleared when the subscription is gone.
+     */
+    fun setSubscriptionPurchaseTime(context: Context, purchaseTimeMillis: Long) {
+        prefs(context).edit().putLong(KEY_SUB_PURCHASE_MS, purchaseTimeMillis).apply()
+    }
+
+    fun clearSubscriptionDetails(context: Context) {
+        prefs(context).edit().remove(KEY_SUB_PURCHASE_MS).remove(KEY_SUB_PERIOD_ISO).apply()
+    }
+
+    /**
+     * The billing period (ISO-8601, e.g. "P1M" / "P1Y") of the plan the user bought. Play's purchase
+     * record does not carry the base plan, so this is recorded when the purchase flow is launched.
+     */
+    fun setSubscriptionPeriodIso(context: Context, periodIso: String) {
+        prefs(context).edit().putString(KEY_SUB_PERIOD_ISO, periodIso.trim()).apply()
+    }
+
+    /**
+     * Days left until the subscription renews, or null when it cannot be determined (no active
+     * subscription, or the plan/purchase date is unknown — e.g. after reinstalling on a new device).
+     */
+    fun subscriptionDaysRemaining(context: Context): Int? {
+        if (!isSubscriptionActive(context)) return null
+        val p = prefs(context)
+        val purchasedAt = p.getLong(KEY_SUB_PURCHASE_MS, 0L)
+        val period = p.getString(KEY_SUB_PERIOD_ISO, "").orEmpty()
+        if (purchasedAt <= 0L || period.isBlank()) return null
+
+        val now = maxOf(System.currentTimeMillis(), purchasedAt)
+        val renewal = java.util.Calendar.getInstance().apply { timeInMillis = purchasedAt }
+        // Roll the purchase date forward one billing period at a time to the next renewal.
+        var guard = 0
+        while (renewal.timeInMillis <= now) {
+            if (!addPeriod(renewal, period) || guard++ > MAX_PERIOD_ROLLS) return null
+        }
+        val remaining = renewal.timeInMillis - now
+        return Math.ceil(remaining.toDouble() / (24 * 60 * 60 * 1000)).toInt().coerceAtLeast(1)
+    }
+
+    /** Advances [calendar] by one ISO-8601 billing period. Returns false if [periodIso] is unusable. */
+    private fun addPeriod(calendar: java.util.Calendar, periodIso: String): Boolean {
+        val match = ISO_PERIOD.matchEntire(periodIso.trim().uppercase(Locale.US)) ?: return false
+        val (years, months, weeks, days) = match.destructured
+        val y = years.toIntOrNull() ?: 0
+        val mo = months.toIntOrNull() ?: 0
+        val w = weeks.toIntOrNull() ?: 0
+        val d = days.toIntOrNull() ?: 0
+        if (y == 0 && mo == 0 && w == 0 && d == 0) return false
+        calendar.add(java.util.Calendar.YEAR, y)
+        calendar.add(java.util.Calendar.MONTH, mo)
+        calendar.add(java.util.Calendar.DAY_OF_MONTH, w * 7 + d)
+        return true
+    }
+
+    private const val MAX_PERIOD_ROLLS = 600
+    private val ISO_PERIOD =
+        Regex("""P(?:(\d+)Y)?(?:(\d+)M)?(?:(\d+)W)?(?:(\d+)D)?""")
+
+    /** Current entitlement values, for carrying across a backup restore. */
+    fun entitlementSnapshot(context: Context): Map<String, Any> =
+        prefs(context).all
+            .filterKeys { it in ENTITLEMENT_KEYS }
+            .mapNotNull { (k, v) -> v?.let { k to it } }
+            .toMap()
+
+    /** Writes back a snapshot taken with [entitlementSnapshot]. */
+    fun applyEntitlementSnapshot(context: Context, snapshot: Map<String, Any>) {
+        val editor = prefs(context).edit()
+        for ((key, value) in snapshot) {
+            when (value) {
+                is Long -> editor.putLong(key, value)
+                is Boolean -> editor.putBoolean(key, value)
+                is Int -> editor.putInt(key, value)
+                is String -> editor.putString(key, value)
+                else -> Unit
+            }
+        }
+        editor.apply()
     }
 }
 
