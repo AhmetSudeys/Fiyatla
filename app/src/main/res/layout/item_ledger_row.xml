@@ -9,6 +9,7 @@
     android:layout_marginBottom="@dimen/space_s"
     android:clickable="true"
     android:focusable="true"
+    android:theme="@style/ThemeOverlay.Rota.PlainSurface"
     app:cardCornerRadius="18dp"
     app:cardElevation="2dp">
 

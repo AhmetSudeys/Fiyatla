@@ -46,6 +46,13 @@
         <item name="strokeWidth">0dp</item>
     </style>
 
+    <!-- Material3 elevated yüzeyleri elevationOverlayColor (= colorPrimary, brand_red) ile
+         tintler; bu yüzden yükseltilmiş beyaz kartlar hafif kırmızı görünür. Bu overlay
+         tinti kapatır, kart saf beyaz kalır. -->
+    <style name="ThemeOverlay.Rota.PlainSurface" parent="">
+        <item name="elevationOverlayEnabled">false</item>
+    </style>
+
     <style name="Widget.Rota.BottomNav.ActiveIndicator" parent="">
         <item name="android:color">@color/brand_blue_soft</item>
         <item name="android:height">42dp</item>
