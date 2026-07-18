@@ -25,6 +25,10 @@
     <color name="warning_amber">#FFF9A825</color>
     <color name="error_red">#FFD32F2F</color>
 
+    <!-- Kalan deneme / abonelik süresi rozeti -->
+    <color name="entitlement_pill_bg">#FFD6E4F7</color>
+    <color name="entitlement_pill_text">#FF1B3D73</color>
+
     <!-- Soft status backgrounds (used by the editable status chip) -->
     <color name="success_green_soft">#1F2E7D32</color>
     <color name="warning_amber_soft">#26F9A825</color>
