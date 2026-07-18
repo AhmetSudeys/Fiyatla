@@ -95,8 +95,12 @@ class SubscriptionFragment : Fragment(), BillingManager.Listener {
     }
 
     private fun bindChoosePlanState() {
-        binding.textTitle.setText(R.string.sub_expired_title)
-        binding.textSubtitle.setText(R.string.sub_expired_subtitle)
+        // A lapsed subscriber is renewing, not coming off the trial — word it accordingly.
+        val lapsed = Prefs.hasEverSubscribed(requireContext())
+        binding.textTitle.setText(if (lapsed) R.string.sub_lapsed_title else R.string.sub_expired_title)
+        binding.textSubtitle.setText(
+            if (lapsed) R.string.sub_lapsed_subtitle else R.string.sub_expired_subtitle
+        )
         binding.groupPlans.visibility = View.VISIBLE
         binding.textTrialNote.visibility = View.GONE
         binding.buttonPrimary.setText(R.string.sub_subscribe)

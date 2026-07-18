@@ -319,6 +319,8 @@
 
     <string name="sub_expired_title">Deneme süreniz doldu</string>
     <string name="sub_expired_subtitle">Uygulamayı kullanmaya devam etmek için bir abonelik planı seçin.</string>
+    <string name="sub_lapsed_title">Aboneliğiniz sona erdi</string>
+    <string name="sub_lapsed_subtitle">Uygulamayı kullanmaya devam etmek için aboneliğinizi yenileyin.</string>
     <string name="sub_choose_plan">Devam etmek için plan seçin</string>
 
     <string name="sub_plan_monthly_title">Aylık</string>

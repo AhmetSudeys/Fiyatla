@@ -18,6 +18,7 @@ object Prefs {
     private const val KEY_SUB_ACTIVE = "subscription_active"
     private const val KEY_SUB_PURCHASE_MS = "subscription_purchase_millis"
     private const val KEY_SUB_PERIOD_ISO = "subscription_period_iso"
+    private const val KEY_EVER_SUBSCRIBED = "subscription_ever_active"
 
     /**
      * Entitlement state belongs to the device/Play account, not to the user's business data. It is
@@ -29,7 +30,8 @@ object Prefs {
         KEY_TRIAL_LAST_SEEN,
         KEY_SUB_ACTIVE,
         KEY_SUB_PURCHASE_MS,
-        KEY_SUB_PERIOD_ISO
+        KEY_SUB_PERIOD_ISO,
+        KEY_EVER_SUBSCRIBED
     )
 
     /** Length of the free trial. 7 days in milliseconds. */
@@ -164,8 +166,20 @@ object Prefs {
         prefs(context).getBoolean(KEY_SUB_ACTIVE, false)
 
     fun setSubscriptionActive(context: Context, active: Boolean) {
-        prefs(context).edit().putBoolean(KEY_SUB_ACTIVE, active).apply()
+        val editor = prefs(context).edit().putBoolean(KEY_SUB_ACTIVE, active)
+        // Sticky: once someone has paid, the free trial is off the table for good (see
+        // [hasEverSubscribed]). Only ever set, never cleared.
+        if (active) editor.putBoolean(KEY_EVER_SUBSCRIBED, true)
+        editor.apply()
     }
+
+    /**
+     * True if a paid subscription was ever verified on this device. A subscriber who lapses must
+     * renew — they do not fall back into the 7-day free trial. This also covers the user who came in
+     * via "restore purchases" on a fresh install and therefore never started a trial here.
+     */
+    fun hasEverSubscribed(context: Context): Boolean =
+        prefs(context).getBoolean(KEY_EVER_SUBSCRIBED, false)
 
     /**
      * Remembers when the active subscription was purchased, so the welcome screen can show how many

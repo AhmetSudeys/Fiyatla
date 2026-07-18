@@ -18,11 +18,17 @@ object EntitlementManager {
     fun isEntitled(context: Context): Boolean =
         Prefs.isSubscriptionActive(context) || Prefs.isTrialActive(context)
 
-    /** True when the user has never started the trial and is not subscribed (state A on the paywall). */
+    /**
+     * True for a genuinely new user: never started the trial, never paid, not subscribed now
+     * (state A on the paywall). A lapsed subscriber is deliberately excluded — they must renew
+     * rather than getting another free week.
+     */
     fun canStartTrial(context: Context): Boolean =
-        !Prefs.isTrialStarted(context) && !Prefs.isSubscriptionActive(context)
+        !Prefs.isTrialStarted(context) &&
+            !Prefs.hasEverSubscribed(context) &&
+            !Prefs.isSubscriptionActive(context)
 
-    /** True when the trial has been used up and there is no active subscription (state B on the paywall). */
+    /** True when the free access is used up and there is no active subscription (state B on the paywall). */
     fun isTrialExpired(context: Context): Boolean =
-        Prefs.isTrialStarted(context) && !Prefs.isTrialActive(context) && !Prefs.isSubscriptionActive(context)
+        !canStartTrial(context) && !isEntitled(context)
 }
