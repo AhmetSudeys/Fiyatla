@@ -104,10 +104,10 @@
                 android:layout_marginEnd="@dimen/space_s"
                 android:maxLines="1"
                 android:ellipsize="end"
-                android:autoSizeTextType="uniform"
-                android:autoSizeMinTextSize="12sp"
-                android:autoSizeMaxTextSize="16sp"
-                android:autoSizeStepGranularity="1sp" />
+                app:autoSizeTextType="uniform"
+                app:autoSizeMinTextSize="12sp"
+                app:autoSizeMaxTextSize="16sp"
+                app:autoSizeStepGranularity="1sp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/button_view_all"
@@ -127,10 +127,10 @@
                 android:textAllCaps="false"
                 android:textColor="@color/white"
                 android:textSize="12sp"
-                android:autoSizeTextType="uniform"
-                android:autoSizeMinTextSize="10sp"
-                android:autoSizeMaxTextSize="12sp"
-                android:autoSizeStepGranularity="1sp"
+                app:autoSizeTextType="uniform"
+                app:autoSizeMinTextSize="10sp"
+                app:autoSizeMaxTextSize="12sp"
+                app:autoSizeStepGranularity="1sp"
                 app:cornerRadius="@dimen/radius_pill"
                 app:layout_constraintBottom_toTopOf="@+id/divider_header"
                 app:layout_constraintEnd_toEndOf="parent"

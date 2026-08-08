@@ -10,14 +10,14 @@
 
     <TextView
         android:id="@+id/text_title"
+        style="@style/Widget.Rota.AutoSizeTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="@string/quotes_title"
-        android:textAppearance="?attr/textAppearanceTitleLarge"
-        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/card_search"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/card_search"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@id/card_search" />
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/card_search"
@@ -51,7 +51,9 @@
                 android:inputType="text"
                 android:maxLines="1"
                 android:padding="0dp"
-                android:textSize="9sp" />
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textSize="11sp" />
         </com.google.android.material.textfield.TextInputLayout>
     </com.google.android.material.card.MaterialCardView>
 

@@ -37,13 +37,19 @@
             app:layout_constraintStart_toStartOf="@id/text_total_label"
             app:layout_constraintTop_toBottomOf="@id/text_total_label" />
 
+        <!-- Sol taraftaki "Toplam" etiketi ile çakışmasın diye 0dp + autosize: uzun tutarlarda
+             (ör. "1.234.567,00 ₺") sabit punto etiketin üstüne biniyordu. -->
         <TextView
             android:id="@+id/text_total_value"
-            android:layout_width="wrap_content"
+            style="@style/Widget.Rota.AutoSizeAmount"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/space_s"
+            android:gravity="end"
             android:textColor="@color/brand_red"
-            android:textStyle="bold"
-            android:textSize="16sp"
+            app:autoSizeMaxTextSize="16sp"
+            app:autoSizeMinTextSize="11sp"
+            app:layout_constraintStart_toEndOf="@id/text_total_label"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="@id/text_total_hint"
             app:layout_constraintTop_toTopOf="@id/text_total_label"

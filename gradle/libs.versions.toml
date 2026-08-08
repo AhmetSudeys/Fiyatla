@@ -14,7 +14,7 @@ viewpager2 = "1.1.0"
 recyclerview = "1.4.0"
 navigationFragmentKtx = "2.9.6"
 navigationUiKtx = "2.9.6"
-billing = "7.1.1"
+billing = "9.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }

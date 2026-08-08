@@ -43,7 +43,11 @@ class BillingManager(
     )
 
     interface Listener {
-        /** Verified subscription state (from a purchase query or a fresh purchase). */
+        /**
+         * Effective paid-access state after a purchase query or a fresh purchase. This is the value
+         * to route on — it already accounts for the verification grace in [Prefs.onPlayReportsInactive],
+         * so a single unreliable "no subscription" answer from Play does not read as `false` here.
+         */
         fun onEntitlementChanged(subscribed: Boolean)
         /** The monthly/yearly plans are ready to display. */
         fun onPlansLoaded(plans: List<PlanInfo>)
@@ -51,6 +55,12 @@ class BillingManager(
         fun onPurchaseFailed(userCancelled: Boolean, message: String?)
         /** Google Play billing is not available on this device / account. */
         fun onBillingUnavailable()
+        /**
+         * Play is holding a purchase in [Purchase.PurchaseState.PENDING] (a slow payment method).
+         * Access is not granted yet; the user should be told to wait rather than left staring at an
+         * unexplained paywall.
+         */
+        fun onPurchasePending() {}
     }
 
     /** Result of an explicit "restore purchases" request (see [refreshPurchases]). */
@@ -65,7 +75,19 @@ class BillingManager(
 
     private val appContext = context.applicationContext
     private val main = Handler(Looper.getMainLooper())
+    /** Set by [destroy]: stop delivering callbacks to the (gone) owner. */
     private var destroyed = false
+    /** Set once [billingClient] has actually been shut down; no further calls may be issued. */
+    private var connectionClosed = false
+
+    // Purchase tokens with an acknowledgement sequence in flight. Google auto-refunds and revokes any
+    // subscription that is not acknowledged within 3 days, so the connection must outlive the owning
+    // fragment until these drain (see [destroy]). Only touched on the main thread.
+    private val acknowledging = mutableSetOf<String>()
+    private val hardCloseConnection = Runnable {
+        acknowledging.clear()
+        closeConnection()
+    }
 
     // On-demand connection handling. A single connection attempt may have several waiters
     // (e.g. initial start + a restore tap while still connecting); they are all notified once.
@@ -89,6 +111,9 @@ class BillingManager(
         .enablePendingPurchases(
             PendingPurchasesParams.newBuilder().enableOneTimeProducts().build()
         )
+        // Play Billing 8+: the client re-establishes a dropped service connection by itself, so a
+        // query issued right after a disconnect no longer fails outright.
+        .enableAutoServiceReconnection()
         .build()
 
     /** Connects to Play, then refreshes purchases and loads the plans. */
@@ -133,7 +158,7 @@ class BillingManager(
      * Safe to call repeatedly: concurrent callers share a single in-flight connection attempt.
      */
     private fun connect(onReady: (ready: Boolean) -> Unit) {
-        if (destroyed) return
+        if (destroyed || connectionClosed) return
         if (billingClient.isReady) {
             onReady(true)
             return
@@ -183,28 +208,59 @@ class BillingManager(
         }
     }
 
+    /**
+     * Folds a purchase list from Play into the local entitlement cache and returns the resulting
+     * *effective* access (which, on a negative answer, may still be `true` — see
+     * [Prefs.onPlayReportsInactive]).
+     */
     private fun handlePurchases(purchases: List<Purchase>, fromPurchaseFlow: Boolean): Boolean {
         val activePurchase = purchases.firstOrNull { it.purchaseState == Purchase.PurchaseState.PURCHASED }
-        val active = activePurchase != null
-        purchases.forEach { acknowledgeIfNeeded(it) }
-        Prefs.setSubscriptionActive(appContext, active)
-        // Keep the purchase date so the welcome screen can show days left in the billing period.
-        if (activePurchase != null) {
-            Prefs.setSubscriptionPurchaseTime(appContext, activePurchase.purchaseTime)
+        purchases.forEach { p -> main.post { acknowledgeIfNeeded(p) } }
+
+        val entitled = if (activePurchase != null) {
+            Prefs.onPlayReportsActive(appContext, activePurchase.purchaseTime)
+            true
         } else {
-            Prefs.clearSubscriptionDetails(appContext)
+            Prefs.onPlayReportsInactive(appContext)
         }
-        post { listener.onEntitlementChanged(active) }
-        return active
+        post { listener.onEntitlementChanged(entitled) }
+        // Delivered *after* the entitlement callback so the paywall's own status handling cannot
+        // overwrite it: nothing is owned yet, but money is on its way.
+        if (activePurchase == null && purchases.any { it.purchaseState == Purchase.PurchaseState.PENDING }) {
+            post { listener.onPurchasePending() }
+        }
+        return entitled
     }
 
-    private fun acknowledgeIfNeeded(purchase: Purchase) {
+    /**
+     * Acknowledges a purchase, retrying on failure. Google **auto-refunds and revokes** a
+     * subscription that has not been acknowledged within 3 days, so this must not be fire-and-forget:
+     * the result is checked, retried with backoff, and [destroy] holds the connection open until the
+     * sequence finishes. Idempotent per purchase token.
+     */
+    private fun acknowledgeIfNeeded(purchase: Purchase, attempt: Int = 0) {
+        if (connectionClosed) return
         if (purchase.purchaseState != Purchase.PurchaseState.PURCHASED) return
         if (purchase.isAcknowledged) return
+        val token = purchase.purchaseToken
+        if (attempt == 0 && !acknowledging.add(token)) return // already being acknowledged
+
         val params = AcknowledgePurchaseParams.newBuilder()
-            .setPurchaseToken(purchase.purchaseToken)
+            .setPurchaseToken(token)
             .build()
-        billingClient.acknowledgePurchase(params) { /* best-effort; Play retries via re-query */ }
+        billingClient.acknowledgePurchase(params) { result ->
+            main.post {
+                val retriable = result.responseCode != BillingClient.BillingResponseCode.OK &&
+                    attempt + 1 < MAX_ACK_ATTEMPTS &&
+                    !connectionClosed
+                if (retriable) {
+                    main.postDelayed({ acknowledgeIfNeeded(purchase, attempt + 1) }, ACK_RETRY_MS)
+                } else {
+                    acknowledging.remove(token)
+                    closeConnectionIfDrained()
+                }
+            }
+        }
     }
 
     private fun queryPlans() {
@@ -216,13 +272,15 @@ class BillingManager(
             .setProductList(listOf(product))
             .build()
 
-        billingClient.queryProductDetailsAsync(params) { result, productDetailsList ->
+        // Play Billing 8+ hands back a QueryProductDetailsResult (fetched + unfetched products)
+        // instead of a bare list.
+        billingClient.queryProductDetailsAsync(params) { result, queryResult ->
             if (destroyed) return@queryProductDetailsAsync
             if (result.responseCode != BillingClient.BillingResponseCode.OK) {
                 post { listener.onBillingUnavailable() }
                 return@queryProductDetailsAsync
             }
-            val details = productDetailsList.firstOrNull { it.productId == PRODUCT_ID }
+            val details = queryResult.productDetailsList.firstOrNull { it.productId == PRODUCT_ID }
             if (details == null) {
                 post { listener.onPlansLoaded(emptyList()) }
                 return@queryProductDetailsAsync
@@ -253,7 +311,7 @@ class BillingManager(
 
     /** Opens Google Play's purchase sheet for the given plan. */
     fun launchPurchase(activity: Activity, plan: PlanInfo) {
-        if (!billingClient.isReady) {
+        if (connectionClosed || !billingClient.isReady) {
             listener.onPurchaseFailed(userCancelled = false, message = "Billing not ready")
             return
         }
@@ -269,8 +327,31 @@ class BillingManager(
         billingClient.launchBillingFlow(activity, flowParams)
     }
 
+    /**
+     * Detaches the owner (no further [Listener] callbacks) and closes the Play connection.
+     *
+     * The connection is *not* torn down while an acknowledgement is still in flight: ending it there
+     * would cancel the in-flight IPC, and a purchase left unacknowledged for 3 days is automatically
+     * refunded and revoked by Google. [ACK_DRAIN_TIMEOUT_MS] bounds the wait so the client can never
+     * be leaked.
+     */
     fun destroy() {
         destroyed = true
+        if (acknowledging.isEmpty()) {
+            closeConnection()
+        } else {
+            main.postDelayed(hardCloseConnection, ACK_DRAIN_TIMEOUT_MS)
+        }
+    }
+
+    private fun closeConnectionIfDrained() {
+        if (destroyed && acknowledging.isEmpty()) closeConnection()
+    }
+
+    private fun closeConnection() {
+        if (connectionClosed) return
+        connectionClosed = true
+        main.removeCallbacks(hardCloseConnection)
         runCatching { billingClient.endConnection() }
     }
 
@@ -284,5 +365,11 @@ class BillingManager(
         /** Base plan IDs — must match Play Console. */
         const val BASE_PLAN_MONTHLY = "fiyatla-pro-monthly"
         const val BASE_PLAN_YEARLY = "fiyatla-pro-yearly"
+
+        /** Acknowledgement attempts before giving up for this session (the next launch re-queries). */
+        private const val MAX_ACK_ATTEMPTS = 4
+        private const val ACK_RETRY_MS = 2_000L
+        /** Upper bound on how long [destroy] keeps the connection alive to drain acknowledgements. */
+        private const val ACK_DRAIN_TIMEOUT_MS = 20_000L
     }
 }

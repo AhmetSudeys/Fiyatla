@@ -90,6 +90,53 @@
         <item name="android:ellipsize">end</item>
     </style>
 
+    <!--
+        Otomatik küçülen (autosize) yazı stilleri.
+
+        Dar ekranlarda başlıklar ve isimler yan komşuları (arama kutusu, durum rozeti, segment
+        düğmeleri) yüzünden sıkışıp "..." ile kesiliyordu. Bu stiller yazıyı önce kademeli
+        küçültür, ancak min. boyutta bile sığmazsa kesme devreye girer.
+
+        NOT: autoSize* niteliklerinin `app:` (AppCompat) sürümü kullanılır; `android:` sürümü
+        yalnızca API 26+'da çalışır, uygulamanın minSdk'sı 24. Ayrıca autosize'ın çalışması için
+        TextView genişliği 0dp/match_parent olmalıdır (wrap_content'te etkisizdir).
+    -->
+    <!-- Ekran başlığı: "Tekliflerim", "Alacak Defteri", "Malzemeler" -->
+    <style name="Widget.Rota.AutoSizeTitle" parent="">
+        <item name="android:textAppearance">?attr/textAppearanceTitleLarge</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="autoSizeTextType">uniform</item>
+        <item name="autoSizeMinTextSize">14sp</item>
+        <item name="autoSizeMaxTextSize">22sp</item>
+        <item name="autoSizeStepGranularity">1sp</item>
+    </style>
+
+    <!-- Kart/satır başlığı: müşteri adı, malzeme adı -->
+    <style name="Widget.Rota.AutoSizeItemTitle" parent="">
+        <item name="android:textAppearance">?attr/textAppearanceTitleMedium</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="autoSizeTextType">uniform</item>
+        <item name="autoSizeMinTextSize">12sp</item>
+        <item name="autoSizeMaxTextSize">16sp</item>
+        <item name="autoSizeStepGranularity">1sp</item>
+    </style>
+
+    <!-- Rakam/tutar alanları: "₺ 1.250.000" gibi uzun tutarlar kesilmesin -->
+    <style name="Widget.Rota.AutoSizeAmount" parent="">
+        <item name="android:textStyle">bold</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="autoSizeTextType">uniform</item>
+        <item name="autoSizeMinTextSize">11sp</item>
+        <item name="autoSizeMaxTextSize">17sp</item>
+        <item name="autoSizeStepGranularity">1sp</item>
+    </style>
+
     <!-- A single "✓ feature" row on the subscription screen. -->
     <style name="SubFeatureRow">
         <item name="android:layout_width">match_parent</item>

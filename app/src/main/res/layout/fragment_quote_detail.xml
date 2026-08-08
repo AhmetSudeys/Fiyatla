@@ -79,9 +79,10 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="6dp"
+                            android:singleLine="true"
                             android:text="@string/status_pending"
                             android:textColor="@color/warning_amber"
-                            android:textSize="13sp"
+                            android:textSize="12sp"
                             android:textStyle="bold" />
 
                         <ImageView
@@ -94,17 +95,18 @@
                             app:tint="@color/warning_amber" />
                     </LinearLayout>
 
+                    <!-- Durum hapının yanında kaldığı için autosize: uzun müşteri adları
+                         "Müşteri: Ahmet Sud..." diye kesiliyordu. -->
                     <TextView
                         android:id="@+id/text_customer"
+                        style="@style/Widget.Rota.AutoSizeItemTitle"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:textAppearance="?attr/textAppearanceTitleMedium"
-                        android:textStyle="bold"
+                        android:layout_marginEnd="@dimen/space_xs"
                         app:layout_constraintEnd_toStartOf="@id/layout_status"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="@id/layout_status"
                         app:layout_constraintBottom_toBottomOf="@id/layout_status"
-                        android:layout_marginEnd="@dimen/space_s"
                         tools:text="Müşteri: Ahmet Soylu" />
 
                     <TextView
@@ -131,11 +133,16 @@
 
                     <TextView
                         android:id="@+id/text_materials_total_label"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/space_m"
+                        android:layout_marginEnd="@dimen/space_xs"
+                        android:ellipsize="end"
+                        android:maxLines="1"
                         android:text="@string/materials_total"
+                        app:layout_constraintEnd_toStartOf="@id/text_materials_total_value"
                         app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintHorizontal_bias="0"
                         app:layout_constraintTop_toBottomOf="@id/divider" />
 
                     <TextView
@@ -149,11 +156,16 @@
 
                     <TextView
                         android:id="@+id/text_labor_label"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/space_s"
+                        android:layout_marginEnd="@dimen/space_xs"
+                        android:ellipsize="end"
+                        android:maxLines="1"
                         android:text="@string/labor_total"
+                        app:layout_constraintEnd_toStartOf="@id/text_labor_value"
                         app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintHorizontal_bias="0"
                         app:layout_constraintTop_toBottomOf="@id/text_materials_total_label" />
 
                     <TextView
@@ -167,11 +179,16 @@
 
                     <TextView
                         android:id="@+id/text_radiator_label"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/space_s"
+                        android:layout_marginEnd="@dimen/space_xs"
+                        android:ellipsize="end"
+                        android:maxLines="1"
                         android:text="@string/radiator_total"
+                        app:layout_constraintEnd_toStartOf="@id/text_radiator_value"
                         app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintHorizontal_bias="0"
                         app:layout_constraintTop_toBottomOf="@id/text_labor_label" />
 
                     <TextView
@@ -185,11 +202,16 @@
 
                     <TextView
                         android:id="@+id/text_boiler_label"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/space_s"
+                        android:layout_marginEnd="@dimen/space_xs"
+                        android:ellipsize="end"
+                        android:maxLines="1"
                         android:text="@string/boiler_price"
+                        app:layout_constraintEnd_toStartOf="@id/text_boiler_value"
                         app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintHorizontal_bias="0"
                         app:layout_constraintTop_toBottomOf="@id/text_radiator_label" />
 
                     <TextView
@@ -203,11 +225,16 @@
 
                     <TextView
                         android:id="@+id/text_profit_label"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/space_s"
+                        android:layout_marginEnd="@dimen/space_xs"
+                        android:ellipsize="end"
+                        android:maxLines="1"
                         android:text="@string/profit"
+                        app:layout_constraintEnd_toStartOf="@id/text_profit_value"
                         app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintHorizontal_bias="0"
                         app:layout_constraintTop_toBottomOf="@id/text_boiler_label" />
 
                     <TextView
@@ -221,12 +248,17 @@
 
                     <TextView
                         android:id="@+id/text_discount_label"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/space_s"
+                        android:layout_marginEnd="@dimen/space_xs"
+                        android:ellipsize="end"
+                        android:maxLines="1"
                         android:text="@string/discount"
                         android:visibility="gone"
+                        app:layout_constraintEnd_toStartOf="@id/text_discount_value"
                         app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintHorizontal_bias="0"
                         app:layout_constraintTop_toBottomOf="@id/text_profit_label" />
 
                     <TextView
@@ -252,12 +284,17 @@
 
                     <TextView
                         android:id="@+id/text_grand_total_label"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/space_m"
+                        android:layout_marginEnd="@dimen/space_xs"
+                        android:ellipsize="end"
+                        android:maxLines="1"
                         android:text="@string/grand_total"
                         android:textStyle="bold"
+                        app:layout_constraintEnd_toStartOf="@id/text_grand_total_value"
                         app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintHorizontal_bias="0"
                         app:layout_constraintTop_toBottomOf="@id/divider_total" />
 
                     <TextView

@@ -6,6 +6,10 @@
     "500,0…" diye kesiliyordu. Ad 3 satıra kadar sarabilir (listede 48 karaktere varan adlar var).
     Sütun genişlikleri fragment_materials_page / fragment_quote_materials_page başlık satırlarıyla
     AYNI olmalı, yoksa başlıklar değerlerle hizasını kaybeder.
+
+    Genişlikler ve punto'lar dimens.xml'den gelir ve dar cihazlarda (< 400dp) küçülür; ayrıca ad
+    autosize'lıdır, çünkü sabit sütunlar dar ekranda ada çok az yer bırakıp adı "..." ile
+    kesiyordu. Sayı sütunları autosize DEĞİL: satırdan satıra değişen punto tabloyu bozardı.
 -->
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -32,8 +36,12 @@
             android:ellipsize="end"
             android:maxLines="3"
             android:textColor="@color/black"
-            android:textSize="14sp"
+            android:textSize="@dimen/material_name_text"
             android:textStyle="bold"
+            app:autoSizeMaxTextSize="@dimen/material_name_text"
+            app:autoSizeMinTextSize="@dimen/material_name_text_min"
+            app:autoSizeStepGranularity="1sp"
+            app:autoSizeTextType="uniform"
             app:layout_constraintEnd_toStartOf="@id/text_quantity"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -46,7 +54,7 @@
             android:gravity="end"
             android:maxLines="1"
             android:textColor="@color/black"
-            android:textSize="13sp"
+            android:textSize="@dimen/material_col_text"
             app:layout_constraintEnd_toStartOf="@id/text_price"
             app:layout_constraintStart_toEndOf="@id/text_name"
             app:layout_constraintTop_toTopOf="@id/text_name" />
@@ -59,7 +67,7 @@
             android:gravity="end"
             android:maxLines="1"
             android:textColor="@color/black"
-            android:textSize="13sp"
+            android:textSize="@dimen/material_col_text"
             app:layout_constraintEnd_toStartOf="@id/text_total"
             app:layout_constraintStart_toEndOf="@id/text_quantity"
             app:layout_constraintTop_toTopOf="@id/text_name" />
@@ -72,7 +80,7 @@
             android:gravity="end"
             android:maxLines="1"
             android:textColor="@color/brand_red"
-            android:textSize="13sp"
+            android:textSize="@dimen/material_col_text"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/text_price"

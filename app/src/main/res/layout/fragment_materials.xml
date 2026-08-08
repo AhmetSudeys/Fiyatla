@@ -10,11 +10,11 @@
 
     <TextView
         android:id="@+id/text_title"
+        style="@style/Widget.Rota.AutoSizeTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/space_xs"
         android:text="@string/nav_materials"
-        android:textAppearance="?attr/textAppearanceTitleLarge"
-        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@id/button_add_list"
         app:layout_constraintEnd_toStartOf="@id/button_add_list"
         app:layout_constraintStart_toStartOf="parent"

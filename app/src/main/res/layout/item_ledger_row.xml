@@ -28,15 +28,14 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <!-- Sağdaki "Ödendi/Borçlu" rozeti yüzünden ada kalan yer dar; autosize kesilmeyi önler. -->
         <TextView
             android:id="@+id/text_name"
+            style="@style/Widget.Rota.AutoSizeItemTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/space_m"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textAppearance="?attr/textAppearanceTitleMedium"
-            android:textStyle="bold"
+            android:layout_marginEnd="@dimen/space_xs"
             app:layout_constraintEnd_toStartOf="@id/badge_status"
             app:layout_constraintStart_toEndOf="@id/view_accent"
             app:layout_constraintTop_toTopOf="parent"
@@ -104,10 +103,11 @@
 
                 <TextView
                     android:id="@+id/text_agreed"
-                    android:layout_width="wrap_content"
+                    style="@style/Widget.Rota.AutoSizeAmount"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:textSize="14sp"
+                    app:autoSizeMaxTextSize="14sp"
+                    app:autoSizeMinTextSize="10sp"
                     tools:text="₺ 38.700" />
             </LinearLayout>
 
@@ -126,11 +126,12 @@
 
                 <TextView
                     android:id="@+id/text_collected"
-                    android:layout_width="wrap_content"
+                    style="@style/Widget.Rota.AutoSizeAmount"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/accent_green"
-                    android:textStyle="bold"
-                    android:textSize="14sp"
+                    app:autoSizeMaxTextSize="14sp"
+                    app:autoSizeMinTextSize="10sp"
                     tools:text="₺ 20.000" />
             </LinearLayout>
 
@@ -149,11 +150,12 @@
 
                 <TextView
                     android:id="@+id/text_remaining"
-                    android:layout_width="wrap_content"
+                    style="@style/Widget.Rota.AutoSizeAmount"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/accent_red"
-                    android:textStyle="bold"
-                    android:textSize="14sp"
+                    app:autoSizeMaxTextSize="14sp"
+                    app:autoSizeMinTextSize="10sp"
                     tools:text="₺ 18.700" />
             </LinearLayout>
         </LinearLayout>

@@ -13,3 +13,6 @@
 .externalNativeBuild
 .cxx
 local.properties
+# Release imza anahtarı bilgileri — asla depoya girmemeli
+keystore.properties
+*.jks

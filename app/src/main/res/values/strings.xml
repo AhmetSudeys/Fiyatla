@@ -339,6 +339,7 @@
     <string name="welcome_trial_days_left">Ücretsiz denemenize %1$d gün kaldı</string>
     <string name="welcome_sub_days_left">Aboneliğinize %1$d gün kaldı</string>
     <string name="welcome_sub_active">Aboneliğiniz aktif</string>
+    <string name="welcome_sub_unverified">Aboneliğiniz doğrulanamadı. Play Store\'a giriş yaptığınızdan ve internete bağlı olduğunuzdan emin olun.</string>
 
     <string name="sub_legal">Abonelik seçtiğiniz döneme göre otomatik olarak yenilenir. Google Play hesabınızdan tahsil edilir. İstediğiniz zaman Google Play &gt; Abonelikler bölümünden iptal edebilirsiniz. Yenilenme tarihinden en az 24 saat önce iptal edilmezse ücret alınır.</string>
     <string name="sub_loading">Planlar yükleniyor…</string>
@@ -346,6 +347,7 @@
     <string name="sub_restore_none">Bu Google hesabında aktif abonelik bulunamadı.</string>
     <string name="sub_unavailable">Google Play hizmetine ulaşılamadı. Lütfen Play Store\'a giriş yaptığınızdan ve internet bağlantınızdan emin olun.</string>
     <string name="sub_purchase_failed">Satın alma tamamlanamadı. Lütfen tekrar deneyin.</string>
+    <string name="sub_purchase_pending">Ödemeniz onay bekliyor. Onaylandığında aboneliğiniz otomatik olarak açılacak.</string>
     <string name="sub_already_active">Aboneliğiniz aktif. Teşekkürler!</string>
     <string name="sub_terms_of_use">Kullanım Koşulları</string>
 </resources>

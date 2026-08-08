@@ -8,16 +8,30 @@
     android:padding="@dimen/space_m"
     tools:context="com.ahmetsudeys.dogalgazteklif.ui.ledger.LedgerFragment">
 
+    <!--
+        Başlık Toolbar'ın kendi `app:title`'ı değil, autosize'lı bir alt görünüm: Toolbar başlığı
+        küçülemediği için dar cihazlarda "Alacak Defteri" sağdaki Defter/Rapor segmentine
+        çarpıp "Alacak Def..." diye kesiliyordu.
+    -->
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
+        app:contentInsetStartWithNavigation="0dp"
         app:layout_constraintEnd_toStartOf="@id/toggle_group"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:navigationIcon="@drawable/ic_back"
-        app:title="@string/ledger_title" />
+        app:navigationIcon="@drawable/ic_back">
+
+        <TextView
+            android:id="@+id/text_toolbar_title"
+            style="@style/Widget.Rota.AutoSizeTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/space_xs"
+            android:text="@string/ledger_title" />
+    </com.google.android.material.appbar.MaterialToolbar>
 
     <!-- Defter | Rapor segmented switch, top-right -->
     <com.google.android.material.button.MaterialButtonToggleGroup
@@ -38,11 +52,14 @@
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:minWidth="0dp"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:singleLine="true"
             android:text="@string/ledger_tab_book"
             android:textAllCaps="false"
+            android:textSize="12sp"
             app:icon="@drawable/ic_nav_customers"
+            app:iconPadding="4dp"
             app:iconSize="16dp" />
 
         <com.google.android.material.button.MaterialButton
@@ -53,10 +70,13 @@
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:minWidth="0dp"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:singleLine="true"
             android:text="@string/ledger_tab_report"
             android:textAllCaps="false"
+            android:textSize="12sp"
+            app:iconPadding="4dp"
             app:iconSize="16dp" />
     </com.google.android.material.button.MaterialButtonToggleGroup>
 
@@ -132,12 +152,11 @@
 
                 <TextView
                     android:id="@+id/text_total_agreed"
-                    android:layout_width="wrap_content"
+                    style="@style/Widget.Rota.AutoSizeAmount"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
                     android:textColor="@color/white"
-                    android:textStyle="bold"
-                    android:textSize="17sp"
                     tools:text="₺ 120.000" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -173,12 +192,11 @@
 
                 <TextView
                     android:id="@+id/text_total_collected"
-                    android:layout_width="wrap_content"
+                    style="@style/Widget.Rota.AutoSizeAmount"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
                     android:textColor="@color/white"
-                    android:textStyle="bold"
-                    android:textSize="17sp"
                     tools:text="₺ 70.000" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -214,12 +232,11 @@
 
                 <TextView
                     android:id="@+id/text_total_remaining"
-                    android:layout_width="wrap_content"
+                    style="@style/Widget.Rota.AutoSizeAmount"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
                     android:textColor="@color/white"
-                    android:textStyle="bold"
-                    android:textSize="17sp"
                     tools:text="₺ 50.000" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -380,12 +397,13 @@
 
                             <TextView
                                 android:id="@+id/text_month_ciro"
-                                android:layout_width="wrap_content"
+                                style="@style/Widget.Rota.AutoSizeAmount"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
                                 android:textColor="@color/accent_blue"
-                                android:textStyle="bold"
-                                android:textSize="22sp"
+                                app:autoSizeMaxTextSize="22sp"
+                                app:autoSizeMinTextSize="14sp"
                                 tools:text="₺ 42.000" />
 
                             <LinearLayout
@@ -401,9 +419,14 @@
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
                                     android:drawablePadding="4dp"
+                                    android:ellipsize="end"
+                                    android:maxLines="1"
                                     android:textColor="@color/accent_green"
-                                    android:textSize="12sp"
                                     android:textStyle="bold"
+                                    app:autoSizeMaxTextSize="12sp"
+                                    app:autoSizeMinTextSize="9sp"
+                                    app:autoSizeStepGranularity="1sp"
+                                    app:autoSizeTextType="uniform"
                                     app:drawableStartCompat="@drawable/bg_dot"
                                     app:drawableTint="@color/accent_green"
                                     tools:text="Nakit ₺20.000" />
@@ -414,9 +437,14 @@
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
                                     android:drawablePadding="4dp"
+                                    android:ellipsize="end"
+                                    android:maxLines="1"
                                     android:textColor="@color/accent_blue"
-                                    android:textSize="12sp"
                                     android:textStyle="bold"
+                                    app:autoSizeMaxTextSize="12sp"
+                                    app:autoSizeMinTextSize="9sp"
+                                    app:autoSizeStepGranularity="1sp"
+                                    app:autoSizeTextType="uniform"
                                     app:drawableStartCompat="@drawable/bg_dot"
                                     app:drawableTint="@color/accent_blue"
                                     tools:text="Kart ₺15.000" />
@@ -427,9 +455,14 @@
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
                                     android:drawablePadding="4dp"
+                                    android:ellipsize="end"
+                                    android:maxLines="1"
                                     android:textColor="@color/accent_amber"
-                                    android:textSize="12sp"
                                     android:textStyle="bold"
+                                    app:autoSizeMaxTextSize="12sp"
+                                    app:autoSizeMinTextSize="9sp"
+                                    app:autoSizeStepGranularity="1sp"
+                                    app:autoSizeTextType="uniform"
                                     app:drawableStartCompat="@drawable/bg_dot"
                                     app:drawableTint="@color/accent_amber"
                                     tools:text="Havale ₺7.000" />
@@ -565,11 +598,10 @@
 
                                 <TextView
                                     android:id="@+id/text_stat_collected"
-                                    android:layout_width="wrap_content"
+                                    style="@style/Widget.Rota.AutoSizeAmount"
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:textColor="@color/accent_green"
-                                    android:textStyle="bold"
-                                    android:textSize="17sp"
                                     tools:text="₺ 42.000" />
 
                                 <TextView
@@ -651,11 +683,10 @@
 
                                 <TextView
                                     android:id="@+id/text_stat_avg"
-                                    android:layout_width="wrap_content"
+                                    style="@style/Widget.Rota.AutoSizeAmount"
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:textColor="@color/accent_purple"
-                                    android:textStyle="bold"
-                                    android:textSize="17sp"
                                     tools:text="₺ 5.250" />
 
                                 <TextView

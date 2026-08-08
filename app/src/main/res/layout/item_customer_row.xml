@@ -112,14 +112,23 @@
             android:paddingEnd="8dp"
             android:paddingTop="6dp"
             android:paddingBottom="6dp"
+            app:layout_constrainedWidth="true"
             app:layout_constraintStart_toStartOf="@id/text_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0"
             app:layout_constraintTop_toBottomOf="@id/text_phone"
             app:layout_constraintBottom_toTopOf="@id/button_directions">
 
+            <!-- Hap kartın sağ kenarını aşmasın diye üst LinearLayout constrainedWidth; etiket de
+                 weight ile daralabilsin ki ok simgesi hiçbir zaman kırpılmasın. Uzun metinler
+                 ("Kolon boya durumu: Boyasız") dar cihazlarda taşıyordu. -->
             <TextView
                 android:id="@+id/text_paint_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:maxLines="1"
                 android:textColor="@color/brand_red"
                 android:textSize="12sp"
                 android:textStyle="bold"

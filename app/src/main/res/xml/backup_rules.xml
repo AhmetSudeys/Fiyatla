@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-   Sample backup rules file; uncomment and customize as necessary.
-   See https://developer.android.com/guide/topics/data/autobackup
-   for details.
-   Note: This file is ignored for devices older than API 31
-   See https://developer.android.com/about/versions/12/backup-restore
+   Auto Backup rules for API 30 and below (android:fullBackupContent).
+   API 31+ uses data_extraction_rules.xml instead — keep the two in sync.
+
+   Everything the app stores is included on purpose. The important part is the SharedPreferences
+   domain: it holds the gating clock ("rota_prefs" → trial_start_millis / subscription_*), so a user
+   who uninstalls the app mid-trial and reinstalls it gets the SAME trial back instead of a fresh
+   7 days. Business data (customers/quotes/ledger) riding along is a bonus, not the goal.
 -->
 <full-backup-content>
-    <!--
-   <include domain="sharedpref" path="."/>
-   <exclude domain="sharedpref" path="device.xml"/>
--->
+    <include domain="sharedpref" path="." />
+    <include domain="file" path="." />
 </full-backup-content>

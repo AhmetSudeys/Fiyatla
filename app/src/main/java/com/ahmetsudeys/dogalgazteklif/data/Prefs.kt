@@ -19,6 +19,7 @@ object Prefs {
     private const val KEY_SUB_PURCHASE_MS = "subscription_purchase_millis"
     private const val KEY_SUB_PERIOD_ISO = "subscription_period_iso"
     private const val KEY_EVER_SUBSCRIBED = "subscription_ever_active"
+    private const val KEY_SUB_NEGATIVE_SINCE = "subscription_negative_since_millis"
 
     /**
      * Entitlement state belongs to the device/Play account, not to the user's business data. It is
@@ -31,11 +32,25 @@ object Prefs {
         KEY_SUB_ACTIVE,
         KEY_SUB_PURCHASE_MS,
         KEY_SUB_PERIOD_ISO,
-        KEY_EVER_SUBSCRIBED
+        KEY_EVER_SUBSCRIBED,
+        KEY_SUB_NEGATIVE_SINCE
     )
 
     /** Length of the free trial. 7 days in milliseconds. */
     const val TRIAL_DURATION_MS = 7L * 24 * 60 * 60 * 1000
+
+    /**
+     * How long an already-verified subscriber keeps access after Google Play *starts* saying "no
+     * active subscription".
+     *
+     * `queryPurchasesAsync` answers from the Play Store app's local cache without forcing a network
+     * request, so it can legitimately come back empty while the subscription is very much alive:
+     * right after a reinstall or a device-to-device restore, while the Play Store is updating, after
+     * its data was cleared, or when the device account list is momentarily in flux. Revoking on the
+     * first such answer throws paying users onto the paywall. Instead the negative must persist for
+     * this long before access is cut.
+     */
+    const val VERIFY_GRACE_MS = 72L * 60 * 60 * 1000
 
     const val DEFAULT_LABOR_RATE = "400"
     const val DEFAULT_RADIATOR_RATE = "2600"
@@ -165,12 +180,97 @@ object Prefs {
     fun isSubscriptionActive(context: Context): Boolean =
         prefs(context).getBoolean(KEY_SUB_ACTIVE, false)
 
-    fun setSubscriptionActive(context: Context, active: Boolean) {
-        val editor = prefs(context).edit().putBoolean(KEY_SUB_ACTIVE, active)
-        // Sticky: once someone has paid, the free trial is off the table for good (see
-        // [hasEverSubscribed]). Only ever set, never cleared.
-        if (active) editor.putBoolean(KEY_EVER_SUBSCRIBED, true)
-        editor.apply()
+    /**
+     * Google Play confirmed an active purchase. Clears any running verification grace and records
+     * the purchase date so the welcome screen can show days-until-renewal.
+     */
+    fun onPlayReportsActive(context: Context, purchaseTimeMillis: Long) {
+        prefs(context).edit()
+            .putBoolean(KEY_SUB_ACTIVE, true)
+            // Sticky: once someone has paid, the free trial is off the table for good (see
+            // [hasEverSubscribed]). Only ever set, never cleared.
+            .putBoolean(KEY_EVER_SUBSCRIBED, true)
+            .putLong(KEY_SUB_PURCHASE_MS, purchaseTimeMillis)
+            .remove(KEY_SUB_NEGATIVE_SINCE)
+            .apply()
+    }
+
+    /**
+     * Google Play answered without an active purchase. Returns whether the user still keeps paid
+     * access.
+     *
+     * A previously verified subscriber is NOT cut off on the first negative — see [VERIFY_GRACE_MS]
+     * for why that answer cannot be trusted on its own. Access ends only once the negative has been
+     * repeated across [VERIFY_GRACE_MS] of wall-clock time. Someone who never had a subscription is
+     * simply left as-is (there is nothing to protect).
+     */
+    fun onPlayReportsInactive(context: Context): Boolean {
+        val p = prefs(context)
+        // Uses the same monotonic high-water clock as the trial, so winding the device clock forward
+        // cannot shorten the grace and winding it back cannot extend it.
+        val now = monotonicNow(context)
+        val outcome = negativeOutcome(
+            wasActive = p.getBoolean(KEY_SUB_ACTIVE, false),
+            negativeSince = p.getLong(KEY_SUB_NEGATIVE_SINCE, 0L),
+            now = now
+        )
+        return when (outcome) {
+            NegativeOutcome.NOTHING_TO_LOSE, NegativeOutcome.REVOKE -> {
+                revokeSubscription(context)
+                false
+            }
+            NegativeOutcome.START_GRACE -> {
+                p.edit().putLong(KEY_SUB_NEGATIVE_SINCE, now).apply()
+                true
+            }
+            NegativeOutcome.IN_GRACE -> true
+        }
+    }
+
+    /** What a negative answer from Play means for a given cached state. See [negativeOutcome]. */
+    enum class NegativeOutcome {
+        /** Never verified (or already revoked) — there is no paid access to protect. */
+        NOTHING_TO_LOSE,
+        /** First negative for a verified subscriber: start the clock, keep access. */
+        START_GRACE,
+        /** The negative is not old enough to be believed yet: keep access. */
+        IN_GRACE,
+        /** The negative has persisted past [VERIFY_GRACE_MS]: cut access. */
+        REVOKE
+    }
+
+    /**
+     * The pure decision behind [onPlayReportsInactive], kept separate so the rule that decides
+     * whether a paying user is thrown onto the paywall can be tested directly.
+     *
+     * [negativeSince] > [now] means the stored marker is in the future (a clock that jumped back);
+     * it is restarted rather than trusted, so the grace can be neither skipped nor extended by it.
+     */
+    fun negativeOutcome(wasActive: Boolean, negativeSince: Long, now: Long): NegativeOutcome = when {
+        !wasActive -> NegativeOutcome.NOTHING_TO_LOSE
+        negativeSince <= 0L || negativeSince > now -> NegativeOutcome.START_GRACE
+        now - negativeSince < VERIFY_GRACE_MS -> NegativeOutcome.IN_GRACE
+        else -> NegativeOutcome.REVOKE
+    }
+
+    /** Drops the cached paid access. [KEY_EVER_SUBSCRIBED] stays set — a lapsed payer gets no trial. */
+    private fun revokeSubscription(context: Context) {
+        prefs(context).edit()
+            .putBoolean(KEY_SUB_ACTIVE, false)
+            .remove(KEY_SUB_NEGATIVE_SINCE)
+            .remove(KEY_SUB_PURCHASE_MS)
+            .remove(KEY_SUB_PERIOD_ISO)
+            .apply()
+    }
+
+    /**
+     * True while access is only being held open by the verification grace — Play last answered "no
+     * subscription" but not for long enough to be believed yet. The welcome screen surfaces this so
+     * the user can react (re-open Play Store / restore) before access actually stops.
+     */
+    fun isSubscriptionUnverified(context: Context): Boolean {
+        val p = prefs(context)
+        return p.getBoolean(KEY_SUB_ACTIVE, false) && p.getLong(KEY_SUB_NEGATIVE_SINCE, 0L) > 0L
     }
 
     /**
@@ -180,18 +280,6 @@ object Prefs {
      */
     fun hasEverSubscribed(context: Context): Boolean =
         prefs(context).getBoolean(KEY_EVER_SUBSCRIBED, false)
-
-    /**
-     * Remembers when the active subscription was purchased, so the welcome screen can show how many
-     * days are left in the current billing period. Cleared when the subscription is gone.
-     */
-    fun setSubscriptionPurchaseTime(context: Context, purchaseTimeMillis: Long) {
-        prefs(context).edit().putLong(KEY_SUB_PURCHASE_MS, purchaseTimeMillis).apply()
-    }
-
-    fun clearSubscriptionDetails(context: Context) {
-        prefs(context).edit().remove(KEY_SUB_PURCHASE_MS).remove(KEY_SUB_PERIOD_ISO).apply()
-    }
 
     /**
      * The billing period (ISO-8601, e.g. "P1M" / "P1Y") of the plan the user bought. Play's purchase

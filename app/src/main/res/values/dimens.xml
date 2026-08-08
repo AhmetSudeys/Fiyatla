@@ -9,13 +9,28 @@
     <dimen name="radius_l">24dp</dimen>
     <dimen name="radius_pill">28dp</dimen>
 
-    <!-- Malzeme tablosu sütunları: item_material_row ile fragment_materials_page /
-         fragment_quote_materials_page başlıklarının hizalı kalması için ortak. -->
-    <dimen name="material_col_qty">40dp</dimen>
-    <dimen name="material_col_price">76dp</dimen>
-    <dimen name="material_col_total">82dp</dimen>
-    <dimen name="material_col_gap">8dp</dimen>
-    <dimen name="material_row_padding_h">12dp</dimen>
+    <!--
+        Malzeme tablosu sütunları: item_material_row ile fragment_materials_page /
+        fragment_quote_materials_page başlıklarının hizalı kalması için ortak.
+
+        BURADAKİ DEĞERLER DAR CİHAZLAR İÇİNDİR (< 400dp genişlik). Sabit genişlikli üç sayı
+        sütunu, satırın çoğunu yiyip malzeme adına çok az yer bıraktığı için adlar "..." ile
+        kesiliyordu; dar ekranda sütunlar ve sayı punto'su küçültülür. Geniş cihazlardaki ferah
+        değerler values-w400dp/dimens.xml içindedir.
+
+        material_col_price, seçilen punto'da en uzun tutarı ("42.000,00 ₺") tam alacak şekilde
+        ölçülmüştür; punto ile genişliği birlikte değiştirin.
+    -->
+    <dimen name="material_col_qty">34dp</dimen>
+    <dimen name="material_col_price">64dp</dimen>
+    <dimen name="material_col_total">70dp</dimen>
+    <dimen name="material_col_gap">6dp</dimen>
+    <dimen name="material_row_padding_h">10dp</dimen>
+    <!-- Sayı sütunlarının punto'su: satırdan satıra değişmesin diye autosize değil, sabit. -->
+    <dimen name="material_col_text">11sp</dimen>
+    <!-- Malzeme adının en büyük punto'su; sığmazsa autosize ile material_name_text_min'e iner. -->
+    <dimen name="material_name_text">13sp</dimen>
+    <dimen name="material_name_text_min">10sp</dimen>
 </resources>
 
 

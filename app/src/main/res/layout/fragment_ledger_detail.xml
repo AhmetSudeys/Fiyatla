@@ -37,12 +37,10 @@
 
             <TextView
                 android:id="@+id/text_name"
+                style="@style/Widget.Rota.AutoSizeTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:textAppearance="?attr/textAppearanceTitleLarge"
-                android:textStyle="bold"
+                android:layout_marginEnd="@dimen/space_xs"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/badge_status"
                 app:layout_constraintTop_toTopOf="parent"
@@ -140,10 +138,11 @@
 
                     <TextView
                         android:id="@+id/text_agreed"
-                        android:layout_width="wrap_content"
+                        style="@style/Widget.Rota.AutoSizeAmount"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textStyle="bold"
-                        android:textSize="15sp"
+                        app:autoSizeMaxTextSize="15sp"
+                        app:autoSizeMinTextSize="10sp"
                         tools:text="₺ 38.700" />
                 </LinearLayout>
 
@@ -162,11 +161,12 @@
 
                     <TextView
                         android:id="@+id/text_collected"
-                        android:layout_width="wrap_content"
+                        style="@style/Widget.Rota.AutoSizeAmount"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/success_green"
-                        android:textStyle="bold"
-                        android:textSize="15sp"
+                        app:autoSizeMaxTextSize="15sp"
+                        app:autoSizeMinTextSize="10sp"
                         tools:text="₺ 20.000" />
                 </LinearLayout>
 
@@ -185,11 +185,12 @@
 
                     <TextView
                         android:id="@+id/text_remaining"
-                        android:layout_width="wrap_content"
+                        style="@style/Widget.Rota.AutoSizeAmount"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/error_red"
-                        android:textStyle="bold"
-                        android:textSize="15sp"
+                        app:autoSizeMaxTextSize="15sp"
+                        app:autoSizeMinTextSize="10sp"
                         tools:text="₺ 18.700" />
                 </LinearLayout>
             </LinearLayout>

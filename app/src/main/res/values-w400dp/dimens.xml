@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        Geniş cihazlar (>= 400dp kullanılabilir genişlik) için malzeme tablosu ölçüleri.
+        Varsayılan (dar) değerler ve neden iki takım olduğu için values/dimens.xml'e bakın.
+    -->
+    <dimen name="material_col_qty">40dp</dimen>
+    <dimen name="material_col_price">76dp</dimen>
+    <dimen name="material_col_total">82dp</dimen>
+    <dimen name="material_col_gap">8dp</dimen>
+    <dimen name="material_row_padding_h">12dp</dimen>
+    <dimen name="material_col_text">13sp</dimen>
+    <dimen name="material_name_text">14sp</dimen>
+    <dimen name="material_name_text_min">11sp</dimen>
+</resources>

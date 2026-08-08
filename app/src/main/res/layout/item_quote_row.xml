@@ -43,8 +43,8 @@
             android:focusable="true"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingStart="10dp"
-            android:paddingEnd="6dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="5dp"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -62,10 +62,11 @@
                 android:id="@+id/text_status_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
+                android:layout_marginStart="4dp"
+                android:singleLine="true"
                 android:text="@string/status_pending"
                 android:textColor="@color/warning_amber"
-                android:textSize="12sp"
+                android:textSize="11sp"
                 android:textStyle="bold" />
 
             <ImageView
@@ -89,19 +90,30 @@
             android:layout_marginTop="10dp"
             app:srcCompat="@drawable/ic_trash" />
 
+        <!--
+            Sağdaki durum hapı (Beklemede/Onaylandı/Reddedildi + ok) sabit genişlikte olduğu için
+            müşteri adına kalan yer dar kalıyor ve uzun adlar "..." ile kesiliyordu. Autosize ile
+            ad önce 12sp'ye kadar küçülür, ancak o zaman da sığmazsa kesilir.
+        -->
         <TextView
             android:id="@+id/text_customer"
+            style="@style/Widget.Rota.AutoSizeItemTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textAppearance="?attr/textAppearanceTitleMedium"
-            android:textStyle="bold"
+            android:layout_marginStart="@dimen/space_s"
+            android:layout_marginEnd="@dimen/space_xs"
             app:layout_constraintEnd_toStartOf="@id/layout_status"
             app:layout_constraintStart_toEndOf="@id/image_eye"
-            app:layout_constraintTop_toTopOf="@id/image_eye"
-            android:layout_marginEnd="@dimen/space_s"
-            android:layout_marginStart="@dimen/space_s"
-            android:maxLines="1"
-            android:ellipsize="end" />
+            app:layout_constraintTop_toTopOf="@id/image_eye" />
+
+        <!-- Ad satırı ile durum hapının altındaki ilk serbest y: işlem listesi kartın tam
+             genişliğini kullanabilsin diye (hap yalnızca ilk satırı daraltmalı). -->
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="text_customer,layout_status" />
 
         <TextView
             android:id="@+id/text_operations"
@@ -110,10 +122,9 @@
             android:layout_marginTop="4dp"
             android:textAppearance="?attr/textAppearanceBodyMedium"
             android:alpha="0.75"
-            app:layout_constraintEnd_toStartOf="@id/layout_status"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/text_customer"
-            app:layout_constraintTop_toBottomOf="@id/text_customer"
-            android:layout_marginEnd="@dimen/space_s"
+            app:layout_constraintTop_toBottomOf="@id/barrier_header"
             android:maxLines="2"
             android:ellipsize="end" />
 

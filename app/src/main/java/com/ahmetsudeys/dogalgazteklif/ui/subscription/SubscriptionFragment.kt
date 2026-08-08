@@ -220,6 +220,14 @@ class SubscriptionFragment : Fragment(), BillingManager.Listener {
         }
     }
 
+    override fun onPurchasePending() {
+        if (_binding == null) return
+        // Money is on its way but Play has not cleared it yet — explain the wait instead of leaving
+        // the user on a paywall that looks like the purchase simply failed.
+        binding.textStatus.visibility = View.VISIBLE
+        binding.textStatus.setText(R.string.sub_purchase_pending)
+    }
+
     override fun onBillingUnavailable() {
         if (_binding == null) return
         // Does not block the free trial (state A); only the paid flow (state B) needs Play.

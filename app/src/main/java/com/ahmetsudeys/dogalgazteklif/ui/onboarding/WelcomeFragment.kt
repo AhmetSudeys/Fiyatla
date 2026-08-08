@@ -34,9 +34,12 @@ class WelcomeFragment : Fragment() {
     /**
      * Background re-verification of Play subscription state. Every launch of an entitled user passes
      * through this screen, so it is the natural place to catch a subscription that has lapsed since
-     * the cached flag was written. It never locks out a user when Play is simply unreachable
-     * (offline / billing unavailable) — only a definitive "no active subscription" from Play, with
-     * no running trial, sends the user back to the paywall.
+     * the cached flag was written.
+     *
+     * It never locks out a user when Play is simply unreachable (offline / billing unavailable), and
+     * — because [BillingManager] reports the *effective* entitlement — not on a one-off "no
+     * subscription" answer either: that only ejects once it has persisted past
+     * [Prefs.VERIFY_GRACE_MS]. Until then the user is warned but keeps working.
      */
     private var billing: BillingManager? = null
     private val entitlementVerifier = object : BillingManager.Listener {
@@ -107,6 +110,9 @@ class WelcomeFragment : Fragment() {
     private fun showEntitlementStatus() {
         val context = requireContext()
         val text = when {
+            // Access is only being held open by the verification grace — tell the user, so they can
+            // fix it (Play Store login / connection) before the grace runs out.
+            Prefs.isSubscriptionUnverified(context) -> getString(R.string.welcome_sub_unverified)
             Prefs.isSubscriptionActive(context) ->
                 Prefs.subscriptionDaysRemaining(context)
                     ?.let { getString(R.string.welcome_sub_days_left, it) }
