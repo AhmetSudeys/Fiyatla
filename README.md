@@ -1,4 +1,4 @@
-# 🚀 DOĞALGAZ TEKLİF FİYATLANDIRMA (Yeni adıyla çok yakında YAYINDA!)  
+# 🚀 DOĞALGAZ TEKLİF FİYATLANDIRMA - (Yeni adıyla çok yakında YAYINDA!)  
 
 ## Doğalgaz Saha ve Teklif Yönetimi Sistemi
 
