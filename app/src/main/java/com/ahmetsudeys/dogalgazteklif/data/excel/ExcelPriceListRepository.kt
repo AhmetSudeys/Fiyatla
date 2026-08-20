@@ -11,7 +11,9 @@ class ExcelPriceListRepository(
 ) {
     fun getMaterials(operationName: String): List<MaterialItem> {
         // User-managed lists (custom lists + edited Excel lists) win over the built-in workbook.
-        MaterialListStore.getStoredList(appContext, operationName)?.let { return it.items }
+        MaterialListStore.getStoredList(appContext, operationName)?.let { stored ->
+            return if (stored.custom) stored.items else stored.items.adoptBuiltInNames(operationName)
+        }
 
         val workbook = getOrLoadWorkbook()
         val sheetName = workbook.findSheetName(operationName) ?: return emptyList()
@@ -80,6 +82,27 @@ class ExcelPriceListRepository(
         MaterialListStore.saveItems(appContext, listName, listName, items)
     }
 
+    /**
+     * Ayrıştırıcı çalışma kitabının ayrıntı sütununu ada katmaya BAŞLAMADAN önce kalıcılaştırılmış
+     * (kullanıcı tarafından düzenlenmiş) bir Excel listesini güncel adlara taşır; böylece orada da
+     * beş ayırt edilemez "PATENT DİRSEK" yerine "PATENT DİRSEK 1 1/4"" görünür.
+     *
+     * Bilerek dar tutuldu: yalnız satır sayıları hâlâ örtüşüyorsa çalışır ve yalnız gömülü adın
+     * *uzattığı* bir adı değiştirir — yani tam olarak bu değişikliğin eklediği son eki. Miktar ve
+     * fiyat (kullanıcının kendi düzenlemeleri) hiç ellenmez; kullanıcının kendi yazdığı bir ad ön
+     * ek testini geçemeyeceği için olduğu gibi kalır. Adlar bir kez eşleşince işlem etkisizdir.
+     */
+    private fun List<MaterialItem>.adoptBuiltInNames(listName: String): List<MaterialItem> {
+        val workbook = getOrLoadWorkbook()
+        val sheetName = workbook.findSheetName(listName) ?: return this
+        val builtIn = workbook.materialsBySheet[sheetName] ?: return this
+        if (builtIn.size != size) return this
+        return mapIndexed { index, item ->
+            val fresh = builtIn[index].name
+            if (fresh != item.name && fresh.startsWith("${item.name} ")) item.copy(name = fresh) else item
+        }
+    }
+
     private fun applyOverrides(sheetName: String, base: List<MaterialItem>): List<MaterialItem> {
         if (base.isEmpty()) return emptyList()
         return base.map { item ->
@@ -138,22 +161,107 @@ class ExcelPriceListRepository(
                 excludedCols = setOfNotNull(qtyCol, priceCol, totalCol)
             )
 
+        val detailCols = detailColumns(headerCells, nameCol, qtyCol, priceCol, totalCol)
+
         val rows = cellsByRow
             .filterKeys { it > headerRowIndex }
             .toSortedMap()
 
         val items = ArrayList<MaterialItem>()
         for ((_, rowCells) in rows) {
-            val name = rowCells[nameCol].orEmpty().trim()
-            if (name.isBlank()) break
-            if (shouldSkipSummaryRow(name)) break
+            val baseName = rowCells[nameCol].orEmpty().trim()
+            if (baseName.isBlank()) break
+            if (shouldSkipSummaryRow(baseName)) break
 
+            val name = appendDetails(baseName, detailCols.map { rowCells[it].orEmpty().trim() })
             val quantity = rowCells[qtyCol].toDoubleOrZero()
             val price = rowCells[priceCol].toDoubleOrZero()
             items.add(MaterialItem(name = name, quantity = quantity, price = price))
         }
-        return items
+        return items.withUniqueNames()
     }
+
+    /**
+     * Ad ile miktar sütunlarının ARASINDA kalan, bilinen sayısal sütunlardan olmayan sütunlar.
+     * Satıra özel, adın tek başına taşımadığı bir ayrıntı tutarlar.
+     *
+     * `FiyatListesi.xlsx`'te böyle bir sütunu olan tek sayfa "Kolon": başlığı "AÇIKLAMA" ve boru
+     * çapı orada duruyor (`1"`, `1 1/4"`, `2"` …). Yok sayılınca sayfada beş satır birden
+     * "PATENT DİRSEK" adıyla, farklı fiyatlarla görünüyordu — kullanıcı ayırt edemiyordu, teklif
+     * akışı da satır düzenlemelerini malzeme ADINA göre sakladığı için birini değiştirmek
+     * hepsini değiştiriyordu. Diğer bütün sayfalarda ad ve miktar sütunları yan yana, dolayısıyla
+     * burası boş liste döndürür ve o sayfaların adları hiç değişmez.
+     *
+     * Yalnız miktardan ÖNCEKİ sütunlara bakılır: adın solundaki bir sütun açıklamadan çok satır
+     * numarası olma ihtimali taşır.
+     */
+    private fun detailColumns(
+        headerCells: Map<String, String>,
+        nameCol: String,
+        qtyCol: String,
+        priceCol: String,
+        totalCol: String?
+    ): List<String> {
+        val reserved = setOfNotNull(nameCol, qtyCol, priceCol, totalCol)
+        val from = columnIndex(nameCol)
+        val until = columnIndex(qtyCol)
+        if (until - from <= 1) return emptyList()
+        return headerCells.keys
+            .filter { it !in reserved && columnIndex(it) in (from + 1) until until }
+            .sortedBy { columnIndex(it) }
+    }
+
+    /**
+     * Ayrıntıları ada ekler; boşları ve adın zaten söylediklerini atlar — "1 1/4\" SİYAH DİRSEK 90"
+     * çapını kendi taşıyor, AÇIKLAMA hücresini eklemek onu tekrar ederdi.
+     */
+    private fun appendDetails(baseName: String, details: List<String>): String {
+        if (details.isEmpty()) return baseName
+        var name = baseName
+        for (detail in details) {
+            if (detail.isBlank()) continue
+            if (name.squeeze().contains(detail.squeeze())) continue
+            name = "$name $detail"
+        }
+        return name
+    }
+
+    /**
+     * Bir liste içinde adların benzersiz olmasını garanti eder; uygulamanın geri kalanı buna
+     * dayanıyor (teklifteki miktar/fiyat düzenlemeleri malzeme adına göre saklanıyor, malzeme
+     * listesi de satırları adla eşliyor).
+     *
+     * [appendDetails] sonrasında pakete gömülü çalışma kitabında geriye yalnız "Kolon" sayfasının
+     * sonundaki beş boş "PATENT TE" satırı kalıyor — ne çap, ne miktar, ne fiyat; sayfada onları
+     * ayıracak hiçbir şey yok. "PATENT TE (2)" … "PATENT TE (5)" olurlar; ilk geçen ad olduğu gibi
+     * kalır, böylece mevcut veriler onunla eşleşmeye devam eder.
+     */
+    private fun List<MaterialItem>.withUniqueNames(): List<MaterialItem> {
+        val used = HashSet<String>(size)
+        return map { item ->
+            var candidate = item.name
+            var n = 1
+            while (!used.add(candidate.normalizeTrLower())) {
+                n++
+                candidate = "${item.name} ($n)"
+            }
+            if (candidate == item.name) item else item.copy(name = candidate)
+        }
+    }
+
+    /** Sütun harflerini 1 tabanlı indekse çevirir; böylece "Z", "AA"dan önce sıralanır. */
+    private fun columnIndex(letters: String): Int {
+        var index = 0
+        for (ch in letters) {
+            val upper = ch.uppercaseChar()
+            if (upper !in 'A'..'Z') continue
+            index = index * 26 + (upper - 'A' + 1)
+        }
+        return index
+    }
+
+    /** "Ad bunu zaten söylüyor mu?" karşılaştırmaları için normalize + boşlukları sadeleştirilmiş. */
+    private fun String.squeeze(): String = normalizeTrLower().replace(WHITESPACE, " ")
 
     private fun shouldSkipSummaryRow(name: String): Boolean {
         val n = name.normalizeTrLower()
@@ -251,6 +359,8 @@ class ExcelPriceListRepository(
         private val workbookLock = Any()
         @Volatile
         private var cachedWorkbook: WorkbookCache? = null
+
+        val WHITESPACE = Regex("\\s+")
 
         val NAME_KEYWORDS = listOf("malzeme", "aciklama", "urun")
         val QTY_KEYWORDS = listOf("miktar", "adet")
