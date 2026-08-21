@@ -8,12 +8,12 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
 import com.ahmetsudeys.dogalgazteklif.R
 import com.ahmetsudeys.dogalgazteklif.billing.BillingManager
 import com.ahmetsudeys.dogalgazteklif.billing.EntitlementManager
 import com.ahmetsudeys.dogalgazteklif.data.Prefs
 import com.ahmetsudeys.dogalgazteklif.databinding.FragmentSubscriptionBinding
+import com.ahmetsudeys.dogalgazteklif.ui.util.navigateOnceFrom
 import com.ahmetsudeys.dogalgazteklif.ui.util.setOnSingleClickListener
 import com.google.android.material.card.MaterialCardView
 
@@ -186,10 +186,11 @@ class SubscriptionFragment : Fragment(), BillingManager.Listener {
         if (subscribed) {
             Toast.makeText(requireContext(), R.string.sub_already_active, Toast.LENGTH_SHORT).show()
             proceedIntoApp()
-        } else if (!startTrialMode) {
-            // A restore attempt that found nothing.
-            binding.textStatus.visibility = View.GONE
         }
+        // A negative answer deliberately does NOT touch the status line: the purchase query and the
+        // plan query race each other, and clearing it here could wipe the "Play unreachable" message
+        // that explains why the subscribe button is disabled. The states that own the status line
+        // clear it themselves ([onPlansLoaded], [finishRestore]).
     }
 
     override fun onPlansLoaded(plans: List<BillingManager.PlanInfo>) {
@@ -238,8 +239,9 @@ class SubscriptionFragment : Fragment(), BillingManager.Listener {
     }
 
     private fun proceedIntoApp() {
-        if (!isAdded) return
-        findNavController().navigate(R.id.action_subscriptionFragment_to_welcomeFragment)
+        // A purchase result and a restore result can both land in the same main-loop pass; only the
+        // first one may navigate (see [navigateOnceFrom]).
+        navigateOnceFrom(R.id.subscriptionFragment, R.id.action_subscriptionFragment_to_welcomeFragment)
     }
 
     private fun openLink(url: String) {

@@ -10,12 +10,12 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
 import com.ahmetsudeys.dogalgazteklif.R
 import com.ahmetsudeys.dogalgazteklif.billing.BillingManager
 import com.ahmetsudeys.dogalgazteklif.data.Prefs
 import com.ahmetsudeys.dogalgazteklif.data.backup.BackupManager
 import com.ahmetsudeys.dogalgazteklif.databinding.FragmentWelcomeBinding
+import com.ahmetsudeys.dogalgazteklif.ui.util.navigateOnceFrom
 import com.ahmetsudeys.dogalgazteklif.ui.util.setOnSingleClickListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.util.concurrent.ExecutorService
@@ -46,7 +46,12 @@ class WelcomeFragment : Fragment() {
         override fun onEntitlementChanged(subscribed: Boolean) {
             if (_binding == null || !isAdded) return
             if (!subscribed && !Prefs.isTrialActive(requireContext())) {
-                findNavController().navigate(R.id.action_welcomeFragment_to_subscriptionFragment)
+                // Guarded: this can land in the same main-loop pass as the user tapping "Giriş",
+                // where a plain navigate would resolve against the new destination and crash.
+                navigateOnceFrom(
+                    R.id.welcomeFragment,
+                    R.id.action_welcomeFragment_to_subscriptionFragment
+                )
                 return
             }
             // Play may have refined what we knew (e.g. purchase date) — refresh the countdown.
@@ -79,8 +84,8 @@ class WelcomeFragment : Fragment() {
             binding.imageLogo.setImageURI(Uri.fromFile(file))
         }
 
-        binding.buttonLogin.setOnClickListener {
-            findNavController().navigate(R.id.action_welcomeFragment_to_mainShellFragment)
+        binding.buttonLogin.setOnSingleClickListener {
+            navigateOnceFrom(R.id.welcomeFragment, R.id.action_welcomeFragment_to_mainShellFragment)
         }
 
         binding.buttonBackup.setOnSingleClickListener { startBackup() }
@@ -90,7 +95,7 @@ class WelcomeFragment : Fragment() {
         }
 
         binding.textEditCompany.setOnSingleClickListener {
-            findNavController().navigate(R.id.action_welcomeFragment_to_companySetupFragment)
+            navigateOnceFrom(R.id.welcomeFragment, R.id.action_welcomeFragment_to_companySetupFragment)
         }
 
         showEntitlementStatus()
