@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.getSystemService
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.ahmetsudeys.dogalgazteklif.data.excel.ExcelPriceListRepository
 import com.ahmetsudeys.dogalgazteklif.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -20,6 +21,15 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // Paketteki fiyat listesi (.xlsx) süreç başına bir kez ayrıştırılıyor. Bunu açılışta arka
+        // planda yapıyoruz; aksi halde ilk kez Malzemeler sekmesine girildiğinde ekran önce boş
+        // açılıp sekmeler ve liste sonradan düşüyor, takılıyormuş gibi görünüyordu.
+        val appCtx = applicationContext
+        Thread({ ExcelPriceListRepository(appCtx).warmUp() }, "price-list-warmup").apply {
+            priority = Thread.MIN_PRIORITY
+            start()
+        }
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {

@@ -51,8 +51,14 @@ class MaterialsFragment : Fragment() {
     }
 
     private fun buildTabs(selectName: String?) {
-        // Reading sheet names may parse the .xlsx on first use — do it off the main thread so the
-        // Materials tab opens without a freeze.
+        // Çalışma kitabı zaten ayrıştırılmışsa (MainActivity açılışta önden yüklüyor) sekmeleri
+        // DOĞRUDAN kur: arka plana atlayıp geri dönmek bir-iki kare sürüyor ve ekran o sırada boş
+        // açılıp sekmeler sonradan düşüyordu.
+        if (repo.isWorkbookReady()) {
+            applyTabs(repo.getAllSheetNames(), selectName)
+            return
+        }
+        // İlk kullanımda .xlsx ayrıştırılacak: ana iş parçacığını dondurmamak için arka planda.
         ioExecutor.execute {
             val names = repo.getAllSheetNames()
             mainHandler.post {

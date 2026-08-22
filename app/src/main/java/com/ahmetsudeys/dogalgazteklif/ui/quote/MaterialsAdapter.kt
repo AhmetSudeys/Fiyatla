@@ -48,7 +48,7 @@ class MaterialsAdapter(
 
     fun setTotal(total: Double) {
         totalAmount = total
-        notifyItemChanged(items.size) // footer
+        if (items.isNotEmpty()) notifyItemChanged(items.size) // footer
     }
 
     fun submitList(newItems: List<MaterialItem>) {
@@ -66,10 +66,19 @@ class MaterialsAdapter(
                 return old[oldItemPosition] == newItems[newItemPosition]
             }
         })
+        val hadFooter = old.isNotEmpty()
         items.clear()
         items.addAll(newItems)
         diff.dispatchUpdatesTo(this)
-        notifyItemChanged(items.size) // footer
+        // Footer, satırlarla BİRLİKTE gelir/gider. Aksi halde liste yüklenirken ekranda bir an
+        // yapayalnız bir "Toplam" kartı beliriyor, sonra satırlar üstüne düşüyordu; açılış
+        // takılıyormuş gibi görünüyordu.
+        val hasFooter = items.isNotEmpty()
+        when {
+            !hadFooter && hasFooter -> notifyItemInserted(items.size)
+            hadFooter && !hasFooter -> notifyItemRemoved(0)
+            hasFooter -> notifyItemChanged(items.size)
+        }
         if (old.isEmpty() && newItems.isNotEmpty()) scrollToTop()
     }
 
@@ -111,7 +120,8 @@ class MaterialsAdapter(
         }
     }
 
-    override fun getItemCount(): Int = items.size + 1
+    // Liste boşken hiçbir şey gösterilmez: tek başına duran "Toplam" kartı yok.
+    override fun getItemCount(): Int = if (items.isEmpty()) 0 else items.size + 1
 
     override fun getItemViewType(position: Int): Int {
         return if (position == items.size) VIEW_TYPE_FOOTER else VIEW_TYPE_ROW

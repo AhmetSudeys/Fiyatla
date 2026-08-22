@@ -87,7 +87,8 @@ class QuoteMaterialsPageFragment : Fragment() {
                         QuoteDraftStore.materialsTotalByOperation[operation] = opTotal
                         QuoteDraftStore.materialsTotalCached = QuoteDraftStore.currentMaterialsTotal()
                         adapter.setTotal(opTotal)
-                        scheduleFilter(binding.editSearch.text?.toString().orEmpty())
+                        // Veri geldiği anda göster; gecikmeli filtre yalnız kullanıcı yazarken.
+                        applyFilterNow(binding.editSearch.text?.toString().orEmpty())
                     }
                 }
 
@@ -113,6 +114,8 @@ class QuoteMaterialsPageFragment : Fragment() {
     }
 
     private fun applyFilterNow(query: String) {
+        filterRunnable?.let { filterHandler.removeCallbacks(it) }
+        filterRunnable = null
         val q = query.trim()
         val filtered = if (q.isBlank()) {
             allItems

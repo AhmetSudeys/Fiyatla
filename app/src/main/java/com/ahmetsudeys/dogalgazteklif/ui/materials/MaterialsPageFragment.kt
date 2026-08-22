@@ -80,7 +80,10 @@ class MaterialsPageFragment : Fragment() {
                     // Both built-in ("hazır") and custom lists can be renamed/deleted.
                     binding.buttonListMenu.visibility = View.VISIBLE
                     adapter.setTotal(fullList.sumOf { it.total })
-                    scheduleFilter(binding.editSearch.text?.toString().orEmpty())
+                    // Veri geldiği anda göster: gecikmeli filtre yalnız KULLANICI yazarken
+                    // anlamlı. Burada da 140 ms beklenince liste açılışta boş kalıp sonradan
+                    // "düşüyor", ekran takılıyormuş gibi görünüyordu.
+                    applyFilterNow(binding.editSearch.text?.toString().orEmpty())
                 }
                 else -> Unit
             }
@@ -117,6 +120,9 @@ class MaterialsPageFragment : Fragment() {
 
     private fun applyFilterNow(query: String) {
         if (_binding == null) return
+        // Bekleyen gecikmeli filtre varsa iptal: aynı sonucu iki kez uygulamayalım.
+        filterRunnable?.let { filterHandler.removeCallbacks(it) }
+        filterRunnable = null
         val q = query.trim().lowercase()
         val filtered = if (q.isBlank()) {
             fullList

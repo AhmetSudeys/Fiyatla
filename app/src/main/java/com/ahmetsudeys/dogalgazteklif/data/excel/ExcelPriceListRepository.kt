@@ -21,6 +21,22 @@ class ExcelPriceListRepository(
         return applyOverrides(sheetName, base)
     }
 
+    /**
+     * Paketteki .xlsx zaten ayrıştırılmış mı? Ayrıştırma süreç ömrü boyunca bir kez yapılır ve
+     * sonuç paylaşılır; hazırsa Malzemeler ekranı sekmelerini arka plana atlamadan, doğrudan
+     * kurabilir ve ekran boş açılıp sonradan dolmaz.
+     */
+    fun isWorkbookReady(): Boolean = cachedWorkbook != null
+
+    /**
+     * Çalışma kitabını ve liste tercihlerini önden okur. ARKA PLAN İŞ PARÇACIĞINDAN çağrılmalı;
+     * uygulama açılışında bir kez tetiklenir ki Malzemeler sekmesine ilk girişte ayrıştırma
+     * beklenmesin.
+     */
+    fun warmUp() {
+        runCatching { getAllSheetNames() }
+    }
+
     /** Built-in Excel sheets first, then user-created custom lists. Deleted built-ins are hidden. */
     fun getAllSheetNames(): List<String> {
         val builtIns = getOrLoadWorkbook().sheetNames
