@@ -1,5 +1,16 @@
 <resources>
+    <!--
+        Uygulamanın tam adı. Ayarlar > Uygulamalar, izin diyalogları ve "Paylaş" listesi gibi
+        yerlerde bu görünür. Play Store başlığı buradan DEĞİL, Play Console'dan gelir.
+    -->
     <string name="app_name">Doğalgaz Teklif Fiyatlandırma</string>
+    <!--
+        Ana ekran / uygulama çekmecesindeki simgenin altında yazan ad. Launcher bu yazıyı 1-2
+        satırda kesiyor; tam ad (29 karakter) çoğu telefonda "Doğalgaz Tek..." diye yarım
+        kalıyordu. MainActivity'nin android:label'ı buna bağlı, bu yüzden yalnız simge etiketi
+        kısalır; uygulamanın adı hiçbir yerde değişmez.
+    -->
+    <string name="app_name_launcher">Doğalgaz Teklif</string>
 
     <string name="nav_home">Anasayfa</string>
     <string name="nav_materials">Malzemeler</string>
