@@ -1,13 +1,12 @@
 package com.ahmetsudeys.dogalgazteklif.ui.customers
 
-import android.view.WindowManager
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import com.ahmetsudeys.dogalgazteklif.R
 import com.ahmetsudeys.dogalgazteklif.data.customer.CustomerStorage
 import com.ahmetsudeys.dogalgazteklif.databinding.BottomsheetCustomerFormBinding
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.ahmetsudeys.dogalgazteklif.ui.util.FormSheet
 
 /**
  * Lightweight, reusable customer form dialog (name, phone, TC no, address, ...).
@@ -25,10 +24,10 @@ object CustomerFormSheet {
         onSaved: (CustomerStorage.CustomerRecord) -> Unit
     ) {
         val ctx = fragment.requireContext()
-        val dialog = MaterialAlertDialogBuilder(ctx).create()
         val sheet = BottomsheetCustomerFormBinding.inflate(fragment.layoutInflater)
-        dialog.setView(sheet.root)
-        dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+        val dialog = FormSheet.create(ctx, sheet.root)
+        // Başlığa, etiketlere ya da alanlar arası boşluğa dokununca klavye kapansın.
+        FormSheet.dismissKeyboardOnTap(sheet.sheetRoot, sheet.scrollForm)
 
         sheet.textTitle.text = ctx.getString(titleRes)
         sheet.buttonDelete.isVisible = false
@@ -111,6 +110,7 @@ object CustomerFormSheet {
         }
 
         fun save() {
+            FormSheet.hideKeyboard(sheet.sheetRoot)
             dialog.dismiss()
             onSaved(buildRecord())
         }

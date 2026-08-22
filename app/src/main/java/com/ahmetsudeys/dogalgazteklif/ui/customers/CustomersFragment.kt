@@ -14,7 +14,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import android.view.WindowManager
 import android.os.Handler
 import android.os.Looper
 import androidx.activity.result.contract.ActivityResultContracts
@@ -29,6 +28,7 @@ import com.ahmetsudeys.dogalgazteklif.data.customer.CustomerStorage
 import com.ahmetsudeys.dogalgazteklif.data.ledger.LedgerStorage
 import com.ahmetsudeys.dogalgazteklif.databinding.BottomsheetCustomerFormBinding
 import com.ahmetsudeys.dogalgazteklif.databinding.FragmentCustomersBinding
+import com.ahmetsudeys.dogalgazteklif.ui.util.FormSheet
 import com.ahmetsudeys.dogalgazteklif.ui.util.setOnSingleClickListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.text.NumberFormat
@@ -247,10 +247,10 @@ class CustomersFragment : Fragment() {
     }
 
     private fun showCustomerSheet(existing: CustomerStorage.CustomerRecord?) {
-        val dialog = MaterialAlertDialogBuilder(requireContext()).create()
         val sheet = BottomsheetCustomerFormBinding.inflate(layoutInflater)
-        dialog.setView(sheet.root)
-        dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+        val dialog = FormSheet.create(requireContext(), sheet.root)
+        // Başlığa, etiketlere ya da alanlar arası boşluğa dokununca klavye kapansın.
+        FormSheet.dismissKeyboardOnTap(sheet.sheetRoot, sheet.scrollForm)
 
         val isEdit = existing != null
         sheet.textTitle.text = getString(if (isEdit) R.string.edit_customer else R.string.add_customer)
@@ -315,9 +315,12 @@ class CustomersFragment : Fragment() {
         }
 
         sheet.buttonSave.setOnSingleClickListener {
+            FormSheet.hideKeyboard(sheet.sheetRoot)
             val name = sheet.editName.text?.toString().orEmpty().trim()
             if (name.isBlank()) {
                 sheet.inputName.error = getString(R.string.error_customer_required)
+                // Ad alanı formun en üstünde: hata mesajı görünsün diye başa sar.
+                sheet.scrollForm.smoothScrollTo(0, 0)
                 return@setOnSingleClickListener
             }
             sheet.inputName.error = null
@@ -357,6 +360,7 @@ class CustomersFragment : Fragment() {
                     mainHandler.post {
                         if (!isAdded) return@post
                         sheet.inputName.error = getString(R.string.error_customer_duplicate_name)
+                        sheet.scrollForm.smoothScrollTo(0, 0)
                     }
                     return@execute
                 }
@@ -372,6 +376,7 @@ class CustomersFragment : Fragment() {
 
         sheet.buttonDelete.setOnSingleClickListener {
             if (existing == null) return@setOnSingleClickListener
+            FormSheet.hideKeyboard(sheet.sheetRoot)
             dialog.dismiss()
             confirmDelete(existing)
         }

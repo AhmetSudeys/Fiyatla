@@ -2,14 +2,19 @@
 <!--
     Ödeme ekleme sayfası.
 
-    Klavye açıldığında pencere küçülüyor (ADJUST_RESIZE) ve tek parça NestedScrollView olan
-    eski düzende sayfanın tamamı avuç içi kadar kalıyor, "Kaydet" klavyenin altında kayboluyordu.
-    Yeni düzen üç parça:
-      * Üst blok (tutamaç + başlık)  : sabit
-      * Orta blok (form)             : height=wrap_content + weight=1 -> yer daralınca SADECE
-                                       burası kısalır ve kendi içinde kayar
-      * Alt blok (Kaydet)            : sabit, her zaman klavyenin ÜSTÜNDE kalır
-    Boşluğa dokununca klavye kapanır (root clickable; LedgerDetailFragment bağlar).
+    Tam açılmış bir BottomSheet olarak gösterilir (bkz. ui/util/FormSheet). Eski AlertDialog
+    düzeninde klavye açılınca sayfa avuç içi kadar kalıyordu; artık klavyenin üstündeki alanın
+    tamamını kaplar.
+
+    Düzen iki parça:
+      * Tutamaç : sabit
+      * Form    : height=wrap_content + weight=1 -> klavye açılıp yer daralınca SADECE burası
+                  kısalır ve kendi içinde kayar. Başlık, alanlar ve "Kaydet" hep bu kaydırma
+                  alanının içindedir; klavye kapalıyken hepsi görünür, açıkken Kaydet'e aşağı
+                  kaydırarak ulaşılır.
+
+    Kök clickable + focusableInTouchMode + beforeDescendants: boşluğa dokununca klavyenin
+    kapanması buna dayanır (FormSheet.dismissKeyboardOnTap).
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -34,59 +39,6 @@
         android:layout_marginBottom="@dimen/space_m"
         android:background="@drawable/bg_pill_track" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:baselineAligned="false"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            app:cardBackgroundColor="@android:color/transparent"
-            app:cardCornerRadius="14dp"
-            app:cardElevation="0dp">
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/bg_gradient_green">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_gravity="center"
-                    android:contentDescription="@null"
-                    app:srcCompat="@drawable/ic_wallet"
-                    app:tint="@color/white" />
-            </FrameLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/space_s"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/text_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/payment_title"
-                android:textAppearance="?attr/textAppearanceTitleLarge"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:alpha="0.6"
-                android:text="@string/payment_subtitle"
-                android:textSize="12sp" />
-        </LinearLayout>
-    </LinearLayout>
-
     <!--
         wrap_content + weight=1: normalde içeriği kadar yer kaplar, klavye açılıp yer daralınca
         eksik yükseklik yalnızca buradan kısılır ve içerik kaydırılabilir olur.
@@ -104,6 +56,59 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:baselineAligned="false"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    app:cardBackgroundColor="@android:color/transparent"
+                    app:cardCornerRadius="14dp"
+                    app:cardElevation="0dp">
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/bg_gradient_green">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_gravity="center"
+                            android:contentDescription="@null"
+                            app:srcCompat="@drawable/ic_wallet"
+                            app:tint="@color/white" />
+                    </FrameLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/space_s"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/text_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/payment_title"
+                        android:textAppearance="?attr/textAppearanceTitleLarge"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:alpha="0.6"
+                        android:text="@string/payment_subtitle"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
 
             <!-- Amount -->
             <TextView
@@ -236,20 +241,18 @@
                     android:maxLines="2" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_save"
+                style="@style/Widget.Rota.Button.Primary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_m"
+                android:text="@string/payment_save"
+                app:icon="@drawable/ic_plus"
+                app:iconGravity="textStart"
+                app:iconTint="@color/white" />
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
-
-    <!-- Klavye açıkken bile görünür kalır: scroll alanının DIŞINDA. -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/button_save"
-        style="@style/Widget.Rota.Button.Primary"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/space_m"
-        android:minHeight="52dp"
-        android:text="@string/payment_save"
-        app:icon="@drawable/ic_plus"
-        app:iconGravity="textStart"
-        app:iconTint="@color/white" />
 
 </LinearLayout>
