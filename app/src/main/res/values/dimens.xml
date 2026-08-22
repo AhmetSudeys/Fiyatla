@@ -21,16 +21,22 @@
         material_col_price, seçilen punto'da en uzun tutarı ("42.000,00 ₺") tam alacak şekilde
         ölçülmüştür; punto ile genişliği birlikte değiştirin.
     -->
-    <dimen name="material_col_qty">34dp</dimen>
+    <dimen name="material_col_qty">38dp</dimen>
     <dimen name="material_col_price">64dp</dimen>
     <dimen name="material_col_total">70dp</dimen>
     <dimen name="material_col_gap">6dp</dimen>
     <dimen name="material_row_padding_h">10dp</dimen>
-    <!-- Sayı sütunlarının punto'su: satırdan satıra değişmesin diye autosize değil, sabit. -->
+    <!-- Sayı sütunlarının normal punto'su; yalnızca sütuna sığmayan çok büyük tutarlarda
+         autosize ile küçülür (bkz. item_material_row), böylece hiçbir değer kesilmez. -->
     <dimen name="material_col_text">11sp</dimen>
-    <!-- Malzeme adının en büyük punto'su; sığmazsa autosize ile material_name_text_min'e iner. -->
+    <!-- Malzeme adının punto'su; ad autosize değil, gerekirse alt satıra sarar. -->
     <dimen name="material_name_text">13sp</dimen>
-    <dimen name="material_name_text_min">10sp</dimen>
+    <!--
+        Tablo başlıkları ("Malzeme / Miktar / Fiyat / Tutar"). Sabit 12sp iken dar cihazlarda
+        "Miktar" 34dp'lik sütuna sığmayıp "Mikt..." diye kesiliyordu; başlıklar artık
+        ellipsize edilmez, autosize ile 8sp'ye kadar küçülüp HER ZAMAN tam görünür.
+    -->
+    <dimen name="material_header_text">12sp</dimen>
 </resources>
 
 

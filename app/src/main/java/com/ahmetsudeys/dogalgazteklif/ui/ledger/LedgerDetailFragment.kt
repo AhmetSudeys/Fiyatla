@@ -5,11 +5,17 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
+import android.view.ViewConfiguration
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -22,6 +28,8 @@ import com.ahmetsudeys.dogalgazteklif.data.quote.QuoteStorage
 import com.ahmetsudeys.dogalgazteklif.databinding.BottomsheetPaymentBinding
 import com.ahmetsudeys.dogalgazteklif.databinding.DialogEditAgreementBinding
 import com.ahmetsudeys.dogalgazteklif.databinding.FragmentLedgerDetailBinding
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -31,6 +39,7 @@ import java.util.Date
 import java.util.Locale
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import kotlin.math.abs
 
 class LedgerDetailFragment : Fragment() {
 
@@ -195,11 +204,64 @@ class LedgerDetailFragment : Fragment() {
 
     // --- Add payment ------------------------------------------------------
 
+    @android.annotation.SuppressLint("ClickableViewAccessibility")
     private fun showPaymentSheet() {
-        val dialog = MaterialAlertDialogBuilder(requireContext()).create()
+        // Eskiden bir AlertDialog idi: klavye açılınca pencere avuç içi kadar kalıyor ve
+        // "Kaydet" klavyenin altında kayboluyordu. Artık tam açılmış bir BottomSheet;
+        // ADJUST_RESIZE ile yalnızca ortadaki form alanı kısalır, Kaydet hep üstte kalır.
+        val dialog = BottomSheetDialog(requireContext())
         val sheet = BottomsheetPaymentBinding.inflate(layoutInflater)
-        dialog.setView(sheet.root)
+        dialog.setContentView(sheet.root)
         dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+        dialog.behavior.apply {
+            state = BottomSheetBehavior.STATE_EXPANDED
+            skipCollapsed = true
+            isFitToContents = true
+        }
+
+        // Boşluğa dokununca klavye kapansın: hem sabit üst/alt bloklarda (sheetRoot) hem de
+        // formun boş yerlerinde (scrollForm). OnClickListener DEĞİL, çünkü kök
+        // focusableInTouchMode olduğundan ilk dokunuşta ACTION_DOWN odağı alır ve View o
+        // dokunuş için performClick()'i atlar; asıl önemli olan ilk dokunuş hiç tıklama
+        // üretmezdi. Dokunma dinleyicisi false döner: kaydırma ve tıklama davranışı bozulmaz.
+        val touchSlop = ViewConfiguration.get(requireContext()).scaledTouchSlop
+        var downX = 0f
+        var downY = 0f
+        val dismissKeyboardOnTap = View.OnTouchListener { _, event ->
+            when (event.actionMasked) {
+                MotionEvent.ACTION_DOWN -> {
+                    downX = event.x
+                    downY = event.y
+                }
+                MotionEvent.ACTION_UP -> {
+                    // Kaydırma jesti değil, gerçek bir dokunuş olsun.
+                    if (abs(event.x - downX) < touchSlop && abs(event.y - downY) < touchSlop) {
+                        hideKeyboard(sheet.sheetRoot)
+                    }
+                }
+            }
+            false
+        }
+        sheet.sheetRoot.setOnTouchListener(dismissKeyboardOnTap)
+        sheet.scrollForm.setOnTouchListener(dismissKeyboardOnTap)
+
+        // Tutar zaten ilk yazılacak alan: baştan odaklanıp klavyeyi açıyoruz, böylece sayfa
+        // kullanıcı yazmaya başlayınca aniden yeniden boyutlanmıyor.
+        sheet.editAmount.requestFocus()
+        sheet.editAmount.post {
+            if (!isAdded) return@post
+            val imm = ContextCompat.getSystemService(requireContext(), InputMethodManager::class.java)
+            imm?.showSoftInput(sheet.editAmount, InputMethodManager.SHOW_IMPLICIT)
+        }
+
+        sheet.editNote.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                hideKeyboard(sheet.sheetRoot)
+                true
+            } else {
+                false
+            }
+        }
 
         // Default to today (normalised to noon so the picker and display always agree).
         var selectedDate = todayNoonMillis()
@@ -216,9 +278,11 @@ class LedgerDetailFragment : Fragment() {
         }
 
         sheet.buttonSave.setOnClickListener {
+            hideKeyboard(sheet.sheetRoot)
             val amount = parseAmount(sheet.editAmount.text?.toString())
             if (amount == null || amount <= 0.0) {
                 sheet.inputAmount.error = getString(R.string.error_payment_amount_required)
+                sheet.scrollForm.smoothScrollTo(0, 0)
                 return@setOnClickListener
             }
             sheet.inputAmount.error = null
@@ -251,6 +315,23 @@ class LedgerDetailFragment : Fragment() {
         }
 
         dialog.show()
+    }
+
+    /**
+     * Klavyeyi kapatır. [root], odaklanabilir kök görünüm olmalıdır (layout'ta
+     * focusableInTouchMode + descendantFocusability="beforeDescendants"): odağı önce ona almak
+     * şart, çünkü EditText üzerinde doğrudan clearFocus() çağırmak odağı bir SONRAKİ EditText'e
+     * taşıyıp klavyeyi anında yeniden açıyor. Gizleme, post ile odak değişiminin ARDINDAN
+     * çalışır; aynı karede yapılırsa yeni odak için başlatılan input oturumu klavyeyi geri
+     * getiriyor.
+     */
+    private fun hideKeyboard(root: View) {
+        root.requestFocus()
+        root.post {
+            ViewCompat.getWindowInsetsController(root)?.hide(WindowInsetsCompat.Type.ime())
+            val imm = ContextCompat.getSystemService(root.context, InputMethodManager::class.java)
+            imm?.hideSoftInputFromWindow(root.windowToken, 0)
+        }
     }
 
     private fun confirmDeletePayment(payment: LedgerStorage.Payment) {

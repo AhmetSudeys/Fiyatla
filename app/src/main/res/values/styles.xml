@@ -114,16 +114,14 @@
         <item name="autoSizeStepGranularity">1sp</item>
     </style>
 
-    <!-- Kart/satır başlığı: müşteri adı, malzeme adı -->
-    <style name="Widget.Rota.AutoSizeItemTitle" parent="">
+    <!--
+        Kart/satır başlığı (müşteri adı, kayıt adı): HİÇBİR koşulda kesilmez. maxLines ve
+        ellipsize yoktur, uzun adlar alt satıra sarar. Önceki autosize'lı stil uzun adları
+        yine "..." ile kesiyordu; adın tam görünmesi gereken her yerde bu stil kullanılır.
+    -->
+    <style name="Widget.Rota.WrapItemTitle" parent="">
         <item name="android:textAppearance">?attr/textAppearanceTitleMedium</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:maxLines">1</item>
-        <item name="android:ellipsize">end</item>
-        <item name="autoSizeTextType">uniform</item>
-        <item name="autoSizeMinTextSize">12sp</item>
-        <item name="autoSizeMaxTextSize">16sp</item>
-        <item name="autoSizeStepGranularity">1sp</item>
     </style>
 
     <!-- Rakam/tutar alanları: "₺ 1.250.000" gibi uzun tutarlar kesilmesin -->

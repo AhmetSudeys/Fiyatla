@@ -241,9 +241,11 @@ class LedgerFragment : Fragment() {
 
         // Monthly ciro detail row
         binding.textMonthCiro.text = money.format(ciro)
-        binding.textMonthCash.text = "${getString(R.string.payment_method_cash)} ${money.format(breakdown.cash)}"
-        binding.textMonthCard.text = "${getString(R.string.payment_method_card)} ${money.format(breakdown.card)}"
-        binding.textMonthTransfer.text = "${getString(R.string.payment_method_transfer)} ${money.format(breakdown.transfer)}"
+        // Etiketler ("Nakit"/"Kredi Kartı"/"Havale") artık layout'ta sabit; burada yalnızca tutar
+        // yazılır, böylece uzun rakamlar etiketin üstüne binmez.
+        binding.textMonthCash.text = money.format(breakdown.cash)
+        binding.textMonthCard.text = money.format(breakdown.card)
+        binding.textMonthTransfer.text = money.format(breakdown.transfer)
 
         // Method distribution donut + legend (selected month)
         binding.chartMethods.setSlices(
@@ -290,6 +292,11 @@ class LedgerFragment : Fragment() {
             text = money.format(amount)
             textSize = 13f
             setTypeface(typeface, android.graphics.Typeface.BOLD)
+            // Etiket ile tutar dar ekranda dibine giriyordu ("Kredi Kartı₺9.876.543").
+            layoutParams = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply { marginStart = dp(8) }
         }
         row.addView(dot)
         row.addView(labelView)

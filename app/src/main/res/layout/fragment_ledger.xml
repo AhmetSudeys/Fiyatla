@@ -406,66 +406,128 @@
                                 app:autoSizeMinTextSize="14sp"
                                 tools:text="₺ 42.000" />
 
+                            <!--
+                                Nakit / Kredi Kartı / Havale eskiden tek satırda 3 eşit sütundu;
+                                rakamlar büyüdükçe etiketlerle iç içe giriyor ve kesiliyordu.
+                                Artık ALT ALTA: solda sabit etiket, sağda tutar (autosize).
+                                Hangi rakam yazarsa yazsın taşma/çakışma olmaz.
+                            -->
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="@dimen/space_s"
-                                android:orientation="horizontal"
-                                android:weightSum="3">
+                                android:baselineAligned="false"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <!-- bg_dot'un <size>'i yok; TextView bilesik cizimi olarak 0x0 ciziliyordu,
+                                     bu yuzden nokta ayri bir View olarak veriliyor. -->
+                                <View
+                                    android:layout_width="8dp"
+                                    android:layout_height="8dp"
+                                    android:background="@drawable/bg_dot"
+                                    android:backgroundTint="@color/accent_green" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="6dp"
+                                    android:text="@string/payment_method_cash"
+                                    android:textColor="@color/accent_green"
+                                    android:textSize="13sp" />
 
                                 <TextView
                                     android:id="@+id/text_month_cash"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
+                                    android:layout_marginStart="@dimen/space_s"
                                     android:layout_weight="1"
-                                    android:drawablePadding="4dp"
-                                    android:ellipsize="end"
+                                    android:gravity="end"
                                     android:maxLines="1"
                                     android:textColor="@color/accent_green"
                                     android:textStyle="bold"
-                                    app:autoSizeMaxTextSize="12sp"
-                                    app:autoSizeMinTextSize="9sp"
+                                    app:autoSizeMaxTextSize="15sp"
+                                    app:autoSizeMinTextSize="10sp"
                                     app:autoSizeStepGranularity="1sp"
-                                    app:autoSizeTextType="uniform"
-                                    app:drawableStartCompat="@drawable/bg_dot"
-                                    app:drawableTint="@color/accent_green"
-                                    tools:text="Nakit ₺20.000" />
+                                    app:autoSizeTextType="uniform" />
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/space_xs"
+                                android:baselineAligned="false"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <!-- bg_dot'un <size>'i yok; TextView bilesik cizimi olarak 0x0 ciziliyordu,
+                                     bu yuzden nokta ayri bir View olarak veriliyor. -->
+                                <View
+                                    android:layout_width="8dp"
+                                    android:layout_height="8dp"
+                                    android:background="@drawable/bg_dot"
+                                    android:backgroundTint="@color/accent_blue" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="6dp"
+                                    android:text="@string/payment_method_card"
+                                    android:textColor="@color/accent_blue"
+                                    android:textSize="13sp" />
 
                                 <TextView
                                     android:id="@+id/text_month_card"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
+                                    android:layout_marginStart="@dimen/space_s"
                                     android:layout_weight="1"
-                                    android:drawablePadding="4dp"
-                                    android:ellipsize="end"
+                                    android:gravity="end"
                                     android:maxLines="1"
                                     android:textColor="@color/accent_blue"
                                     android:textStyle="bold"
-                                    app:autoSizeMaxTextSize="12sp"
-                                    app:autoSizeMinTextSize="9sp"
+                                    app:autoSizeMaxTextSize="15sp"
+                                    app:autoSizeMinTextSize="10sp"
                                     app:autoSizeStepGranularity="1sp"
-                                    app:autoSizeTextType="uniform"
-                                    app:drawableStartCompat="@drawable/bg_dot"
-                                    app:drawableTint="@color/accent_blue"
-                                    tools:text="Kart ₺15.000" />
+                                    app:autoSizeTextType="uniform" />
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/space_xs"
+                                android:baselineAligned="false"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <!-- bg_dot'un <size>'i yok; TextView bilesik cizimi olarak 0x0 ciziliyordu,
+                                     bu yuzden nokta ayri bir View olarak veriliyor. -->
+                                <View
+                                    android:layout_width="8dp"
+                                    android:layout_height="8dp"
+                                    android:background="@drawable/bg_dot"
+                                    android:backgroundTint="@color/accent_amber" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="6dp"
+                                    android:text="@string/payment_method_transfer"
+                                    android:textColor="@color/accent_amber"
+                                    android:textSize="13sp" />
 
                                 <TextView
                                     android:id="@+id/text_month_transfer"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
+                                    android:layout_marginStart="@dimen/space_s"
                                     android:layout_weight="1"
-                                    android:drawablePadding="4dp"
-                                    android:ellipsize="end"
+                                    android:gravity="end"
                                     android:maxLines="1"
                                     android:textColor="@color/accent_amber"
                                     android:textStyle="bold"
-                                    app:autoSizeMaxTextSize="12sp"
-                                    app:autoSizeMinTextSize="9sp"
+                                    app:autoSizeMaxTextSize="15sp"
+                                    app:autoSizeMinTextSize="10sp"
                                     app:autoSizeStepGranularity="1sp"
-                                    app:autoSizeTextType="uniform"
-                                    app:drawableStartCompat="@drawable/bg_dot"
-                                    app:drawableTint="@color/accent_amber"
-                                    tools:text="Havale ₺7.000" />
+                                    app:autoSizeTextType="uniform" />
                             </LinearLayout>
                         </LinearLayout>
                     </LinearLayout>

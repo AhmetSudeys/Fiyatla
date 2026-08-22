@@ -31,7 +31,7 @@
         <!-- Sağdaki "Ödendi/Borçlu" rozeti yüzünden ada kalan yer dar; autosize kesilmeyi önler. -->
         <TextView
             android:id="@+id/text_name"
-            style="@style/Widget.Rota.AutoSizeItemTitle"
+            style="@style/Widget.Rota.WrapItemTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/space_m"

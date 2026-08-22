@@ -3,6 +3,7 @@ package com.ahmetsudeys.dogalgazteklif.ui.quote
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ahmetsudeys.dogalgazteklif.data.model.MaterialItem
 import com.ahmetsudeys.dogalgazteklif.databinding.ItemMaterialTotalBinding
@@ -24,7 +25,26 @@ class MaterialsAdapter(
     }
     private var totalAmount: Double = 0.0
 
+    /**
+     * Listeler ilk açılışta "Toplam" satırında başlıyordu: adapter boşken tek eleman footer
+     * olduğu için RecyclerView'in tutunduğu (anchor) satır footer oluyor, malzemeler footer'ın
+     * ÜSTÜNE eklenince liste footer'da, yani en altta kalıyordu. Boş listeden dolu listeye
+     * geçişte başa sarıyoruz; böylece her liste en baştan başlar ve toplam aşağı kaydırılınca
+     * görünür.
+     */
+    private var recyclerView: RecyclerView? = null
+
     var onItemClick: ((position: Int, item: MaterialItem) -> Unit)? = null
+
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        this.recyclerView = recyclerView
+    }
+
+    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView)
+        if (this.recyclerView === recyclerView) this.recyclerView = null
+    }
 
     fun setTotal(total: Double) {
         totalAmount = total
@@ -50,6 +70,17 @@ class MaterialsAdapter(
         items.addAll(newItems)
         diff.dispatchUpdatesTo(this)
         notifyItemChanged(items.size) // footer
+        if (old.isEmpty() && newItems.isNotEmpty()) scrollToTop()
+    }
+
+    private fun scrollToTop() {
+        val rv = recyclerView ?: return
+        rv.post {
+            if (rv.isAttachedToWindow) {
+                (rv.layoutManager as? LinearLayoutManager)?.scrollToPositionWithOffset(0, 0)
+                    ?: rv.scrollToPosition(0)
+            }
+        }
     }
 
     fun updateItem(position: Int, newItem: MaterialItem) {

@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    Teklif satırı (Anasayfa "Son 5 teklif" + Tekliflerim).
+
+    Müşteri adı ARTIK KESİLMEZ: durum hapı ("Beklemede/Onaylandı/Reddedildi") ad satırından
+    alınıp kartın alt satırına (tutarın soluna) taşındı. Böylece ad kartın tam genişliğini
+    kullanır, uzun adlarda alt satıra sarar ve maxLines/ellipsize verilmediği için her zaman
+    tam görünür. Tek kısıtlayıcı, yalnızca "Tekliflerim" ekranında görünen 24dp'lik çöp
+    kutusu ikonudur; o da gizliyken goneMarginEnd ile yer kaplamaz.
+-->
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -26,17 +35,77 @@
             android:id="@+id/image_eye"
             android:layout_width="20dp"
             android:layout_height="20dp"
+            android:layout_marginStart="@dimen/space_s"
             android:contentDescription="@null"
             app:layout_constraintStart_toEndOf="@id/view_status_bar"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginStart="@dimen/space_s"
+            app:layout_constraintTop_toTopOf="@id/text_customer"
             app:srcCompat="@drawable/ic_eye" />
 
-        <!-- Editable status chip (tap to change) -->
+        <ImageView
+            android:id="@+id/image_delete"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:contentDescription="@null"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/text_customer"
+            app:srcCompat="@drawable/ic_trash"
+            tools:visibility="visible" />
+
+        <!-- Ad: sınırsız satır, ellipsize yok -> her uzunlukta tam görünür. -->
+        <TextView
+            android:id="@+id/text_customer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/space_s"
+            android:layout_marginEnd="@dimen/space_xs"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@id/image_delete"
+            app:layout_constraintStart_toEndOf="@id/image_eye"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_goneMarginEnd="0dp"
+            tools:text="Ahmet Mehmet Çok Uzun Müşteri Adı Soyadı" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="text_customer,image_eye,image_delete" />
+
+        <TextView
+            android:id="@+id/text_operations"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:alpha="0.75"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/text_customer"
+            app:layout_constraintTop_toBottomOf="@id/barrier_header"
+            tools:text="Kazan Full, Gaz Tesisatı" />
+
+        <TextView
+            android:id="@+id/text_note"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:alpha="0.8"
+            android:textAppearance="?attr/textAppearanceBodySmall"
+            android:textColor="@color/brand_blue"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/text_operations"
+            app:layout_constraintTop_toBottomOf="@id/text_operations"
+            tools:text="Not: Pazartesi aranacak" />
+
+        <!-- Alt satır: durum hapı (solda) + tutar (sağda). -->
         <LinearLayout
             android:id="@+id/layout_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_xs"
             android:background="@drawable/bg_status_pill"
             android:backgroundTint="@color/warning_amber_soft"
             android:clickable="true"
@@ -44,11 +113,11 @@
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingStart="8dp"
-            android:paddingEnd="5dp"
             android:paddingTop="5dp"
+            android:paddingEnd="5dp"
             android:paddingBottom="5dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintStart_toStartOf="@id/text_operations"
+            app:layout_constraintTop_toBottomOf="@id/text_note">
 
             <ImageView
                 android:id="@+id/image_status"
@@ -79,82 +148,21 @@
                 app:tint="@color/warning_amber" />
         </LinearLayout>
 
-        <ImageView
-            android:id="@+id/image_delete"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:contentDescription="@null"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/layout_status"
-            android:layout_marginTop="10dp"
-            app:srcCompat="@drawable/ic_trash" />
-
-        <!--
-            Sağdaki durum hapı (Beklemede/Onaylandı/Reddedildi + ok) sabit genişlikte olduğu için
-            müşteri adına kalan yer dar kalıyor ve uzun adlar "..." ile kesiliyordu. Autosize ile
-            ad önce 12sp'ye kadar küçülür, ancak o zaman da sığmazsa kesilir.
-        -->
-        <TextView
-            android:id="@+id/text_customer"
-            style="@style/Widget.Rota.AutoSizeItemTitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/space_s"
-            android:layout_marginEnd="@dimen/space_xs"
-            app:layout_constraintEnd_toStartOf="@id/layout_status"
-            app:layout_constraintStart_toEndOf="@id/image_eye"
-            app:layout_constraintTop_toTopOf="@id/image_eye" />
-
-        <!-- Ad satırı ile durum hapının altındaki ilk serbest y: işlem listesi kartın tam
-             genişliğini kullanabilsin diye (hap yalnızca ilk satırı daraltmalı). -->
-        <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/barrier_header"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:barrierDirection="bottom"
-            app:constraint_referenced_ids="text_customer,layout_status" />
-
-        <TextView
-            android:id="@+id/text_operations"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textAppearance="?attr/textAppearanceBodyMedium"
-            android:alpha="0.75"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/text_customer"
-            app:layout_constraintTop_toBottomOf="@id/barrier_header"
-            android:maxLines="2"
-            android:ellipsize="end" />
-
-        <TextView
-            android:id="@+id/text_note"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:alpha="0.8"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:textAppearance="?attr/textAppearanceBodySmall"
-            android:textColor="@color/brand_blue"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/text_operations"
-            app:layout_constraintTop_toBottomOf="@id/text_operations"
-            android:layout_marginEnd="@dimen/space_s" />
-
         <TextView
             android:id="@+id/text_total"
+            style="@style/Widget.Rota.AutoSizeAmount"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:textAppearance="?attr/textAppearanceBodyMedium"
-            android:textStyle="bold"
+            android:layout_height="0dp"
+            android:layout_marginStart="@dimen/space_s"
+            android:gravity="end|center_vertical"
             android:textColor="@color/brand_red"
+            app:autoSizeMaxTextSize="16sp"
+            app:autoSizeMinTextSize="11sp"
+            app:layout_constraintBottom_toBottomOf="@id/layout_status"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/text_operations"
-            app:layout_constraintTop_toBottomOf="@id/text_note" />
+            app:layout_constraintStart_toEndOf="@id/layout_status"
+            app:layout_constraintTop_toTopOf="@id/layout_status"
+            tools:text="₺ 38.700,00" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

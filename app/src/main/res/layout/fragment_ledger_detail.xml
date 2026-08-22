@@ -37,7 +37,7 @@
 
             <TextView
                 android:id="@+id/text_name"
-                style="@style/Widget.Rota.AutoSizeTitle"
+                style="@style/Widget.Rota.WrapItemTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/space_xs"

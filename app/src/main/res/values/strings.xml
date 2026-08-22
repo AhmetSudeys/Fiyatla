@@ -100,7 +100,7 @@
     <string name="col_total">Tutar</string>
     <string name="total">Toplam</string>
     <string name="total_hint">Bu sayfanın toplamı</string>
-    <string name="search_material">Malzeme ara...</string>
+    <string name="search_material">Ara...</string>
     <string name="search_customer">Müşteri ara...</string>
     <string name="search_quote">Teklif ara...</string>
     <string name="use_current_location">Şu anki konumu kullan..</string>

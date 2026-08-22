@@ -3,13 +3,13 @@
     Malzeme satırı. Sayısal sütunlar SABİT genişliktedir: fiyat listesinin ürettiği en uzun tutar
     ("42.000,00 ₺") tam sığsın diye ölçüldü. Ad sütunu kalan yeri alır ve gerekirse sarar; eskiden
     oransal weight'ler (0.50/0.15/0.17/0.18) para sütunlarına yer bırakmadığı için tutarlar
-    "500,0…" diye kesiliyordu. Ad 3 satıra kadar sarabilir (listede 48 karaktere varan adlar var).
+    "500,0…" diye kesiliyordu. Ad SINIRSIZ sarar (maxLines/ellipsize yok): 48 karaktere varan adlar da tam gorunur.
     Sütun genişlikleri fragment_materials_page / fragment_quote_materials_page başlık satırlarıyla
     AYNI olmalı, yoksa başlıklar değerlerle hizasını kaybeder.
 
-    Genişlikler ve punto'lar dimens.xml'den gelir ve dar cihazlarda (< 400dp) küçülür; ayrıca ad
-    autosize'lıdır, çünkü sabit sütunlar dar ekranda ada çok az yer bırakıp adı "..." ile
-    kesiyordu. Sayı sütunları autosize DEĞİL: satırdan satıra değişen punto tabloyu bozardı.
+    Genişlikler ve punto'lar dimens.xml'den gelir ve dar cihazlarda (< 400dp) küçülür. Sayı
+    sütunları da autosize'lıdır: normalde tam punto kullanılır, yalnızca sütuna sığmayan çok
+    büyük tutarlarda küçülür; böylece hiçbir cihazda "500,0..." gibi kesik değer kalmaz.
 -->
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -33,15 +33,9 @@
             android:id="@+id/text_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="3"
             android:textColor="@color/black"
             android:textSize="@dimen/material_name_text"
             android:textStyle="bold"
-            app:autoSizeMaxTextSize="@dimen/material_name_text"
-            app:autoSizeMinTextSize="@dimen/material_name_text_min"
-            app:autoSizeStepGranularity="1sp"
-            app:autoSizeTextType="uniform"
             app:layout_constraintEnd_toStartOf="@id/text_quantity"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -53,6 +47,10 @@
             android:layout_marginStart="@dimen/material_col_gap"
             android:gravity="end"
             android:maxLines="1"
+            app:autoSizeMaxTextSize="@dimen/material_col_text"
+            app:autoSizeMinTextSize="8sp"
+            app:autoSizeStepGranularity="1sp"
+            app:autoSizeTextType="uniform"
             android:textColor="@color/black"
             android:textSize="@dimen/material_col_text"
             app:layout_constraintEnd_toStartOf="@id/text_price"
@@ -66,6 +64,10 @@
             android:layout_marginStart="@dimen/material_col_gap"
             android:gravity="end"
             android:maxLines="1"
+            app:autoSizeMaxTextSize="@dimen/material_col_text"
+            app:autoSizeMinTextSize="8sp"
+            app:autoSizeStepGranularity="1sp"
+            app:autoSizeTextType="uniform"
             android:textColor="@color/black"
             android:textSize="@dimen/material_col_text"
             app:layout_constraintEnd_toStartOf="@id/text_total"
@@ -79,6 +81,10 @@
             android:layout_marginStart="@dimen/material_col_gap"
             android:gravity="end"
             android:maxLines="1"
+            app:autoSizeMaxTextSize="@dimen/material_col_text"
+            app:autoSizeMinTextSize="8sp"
+            app:autoSizeStepGranularity="1sp"
+            app:autoSizeTextType="uniform"
             android:textColor="@color/brand_red"
             android:textSize="@dimen/material_col_text"
             android:textStyle="bold"
