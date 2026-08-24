@@ -144,6 +144,25 @@ object Prefs {
         if (p.getLong(KEY_TRIAL_START, 0L) > 0L) return
         val now = System.currentTimeMillis()
         p.edit().putLong(KEY_TRIAL_START, now).putLong(KEY_TRIAL_LAST_SEEN, now).apply()
+        requestBackup(context)
+    }
+
+    /**
+     * Asks the framework to back the gating clock up soon.
+     *
+     * Auto Backup is what carries [KEY_TRIAL_START] across an uninstall (see `backup_rules.xml`), but
+     * it only runs on its own schedule — roughly daily, while the device is idle and charging. Until
+     * it has run at least once *after* the trial started, the restored preferences carry no start
+     * date and the reinstall hands out a fresh 7 days. Signalling here queues the app for the next
+     * backup pass instead of waiting for the daily sweep to notice.
+     *
+     * Best effort by design: the pass still runs on the framework's terms, and a device with backup
+     * switched off never runs one at all. Cheap enough to be worth doing anyway.
+     */
+    private fun requestBackup(context: Context) {
+        runCatching {
+            android.app.backup.BackupManager(context.applicationContext).dataChanged()
+        }
     }
 
     /**
@@ -154,22 +173,39 @@ object Prefs {
         val p = prefs(context)
         val realNow = System.currentTimeMillis()
         val lastSeen = p.getLong(KEY_TRIAL_LAST_SEEN, realNow)
-        val effective = maxOf(realNow, lastSeen)
+        val effective = monotonicOf(realNow = realNow, lastSeen = lastSeen)
         if (effective != lastSeen) p.edit().putLong(KEY_TRIAL_LAST_SEEN, effective).apply()
         return effective
     }
 
+    /**
+     * The pure rule behind [monotonicNow], kept separate so it can be tested directly (same reason
+     * as [negativeOutcome]): the gating clock only ever moves forward.
+     */
+    fun monotonicOf(realNow: Long, lastSeen: Long): Long = maxOf(realNow, lastSeen)
+
     /** Milliseconds left in the trial (0 if not started or already expired). */
-    fun trialMillisRemaining(context: Context): Long {
-        val start = prefs(context).getLong(KEY_TRIAL_START, 0L)
-        if (start <= 0L) return 0L
-        val elapsed = monotonicNow(context) - start
-        return (TRIAL_DURATION_MS - elapsed).coerceAtLeast(0L)
+    fun trialMillisRemaining(context: Context): Long =
+        trialRemaining(
+            startMillis = prefs(context).getLong(KEY_TRIAL_START, 0L),
+            now = monotonicNow(context)
+        )
+
+    /**
+     * The pure rule behind [trialMillisRemaining], kept testable for the same reason as
+     * [negativeOutcome]. A [startMillis] of 0 means "never started", which is not the same as
+     * "started at the epoch" and must not be handed a full week.
+     */
+    fun trialRemaining(startMillis: Long, now: Long): Long {
+        if (startMillis <= 0L) return 0L
+        return (TRIAL_DURATION_MS - (now - startMillis)).coerceAtLeast(0L)
     }
 
     /** Whole days left in the trial, rounded up (so the last partial day still shows as "1"). */
-    fun trialDaysRemaining(context: Context): Int {
-        val remaining = trialMillisRemaining(context)
+    fun trialDaysRemaining(context: Context): Int = trialDaysOf(trialMillisRemaining(context))
+
+    /** The pure rule behind [trialDaysRemaining]. */
+    fun trialDaysOf(remaining: Long): Int {
         if (remaining <= 0L) return 0
         return Math.ceil(remaining.toDouble() / (24 * 60 * 60 * 1000)).toInt()
     }
@@ -193,6 +229,9 @@ object Prefs {
             .putLong(KEY_SUB_PURCHASE_MS, purchaseTimeMillis)
             .remove(KEY_SUB_NEGATIVE_SINCE)
             .apply()
+        // [KEY_EVER_SUBSCRIBED] is the record that keeps a lapsed payer out of a second free week;
+        // it is only worth anything if it survives a reinstall.
+        requestBackup(context)
     }
 
     /**

@@ -24,9 +24,21 @@ object EntitlementManager {
      * rather than getting another free week.
      */
     fun canStartTrial(context: Context): Boolean =
-        !Prefs.isTrialStarted(context) &&
-            !Prefs.hasEverSubscribed(context) &&
-            !Prefs.isSubscriptionActive(context)
+        canStartTrial(
+            trialStarted = Prefs.isTrialStarted(context),
+            everSubscribed = Prefs.hasEverSubscribed(context),
+            subscribed = Prefs.isSubscriptionActive(context)
+        )
+
+    /**
+     * The pure rule behind [canStartTrial], kept separate so the "one free week, ever" guarantee can
+     * be tested directly (same reason as [Prefs.negativeOutcome]).
+     *
+     * [trialStarted] is the load-bearing term: after an uninstall it comes back from the Auto Backup
+     * copy of `rota_prefs`, which is what stops delete → reinstall from minting a second trial.
+     */
+    fun canStartTrial(trialStarted: Boolean, everSubscribed: Boolean, subscribed: Boolean): Boolean =
+        !trialStarted && !everSubscribed && !subscribed
 
     /** True when the free access is used up and there is no active subscription (state B on the paywall). */
     fun isTrialExpired(context: Context): Boolean =
