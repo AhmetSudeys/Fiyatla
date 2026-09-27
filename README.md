@@ -1,10 +1,9 @@
 <!-- ======================= HERO/BAŞLIK ======================= -->
 <div align="center">
 
-<img src="https://github.com/user-attachments/assets/cdb5b1b4-7b7b-402a-9f4a-71408ccb43c6" alt="Doğalgaz Usta" width="110" style="border-radius:22px;" />
+<img src="https://github.com/user-attachments/assets/13ddccac-9b04-4eb8-b889-d6f857a9d8b6" alt="Doğalgaz Teklif Fiyatlandırma" width="110" style="border-radius:22px;" />
 
 # 🔥 Doğalgaz Teklif Fiyatlandırma
-### *(Yeni Adıyla Çok Yakında Yayında!)*
 ### Profesyonel Saha ve Teklif Yönetimi Sistemi
 
 Kağıt, kalem ve hesap makinesiyle fiyat verme devrini kapatın. 
@@ -13,19 +12,19 @@ Sahada yapılan karmaşık hesaplamaları saniyelere indirin, kurumsal teklifini
 <br/>
 
 <!-- ======================= MAĞAZA ROZETLERİ ======================= -->
-<a href="#" target="_blank">
+<a href="https://play.google.com/store/apps/details?id=com.ahmetsudeys.dogalgazteklif" target="_blank">
   <img src="https://play.google.com/intl/en_us/badges/static/images/badges/tr_badge_web_generic.png"
        alt="Google Play'den İndirin" height="65" />
 </a>
 &nbsp;&nbsp;&nbsp;
-<a href="#" target="_blank">
+<a href="https://apps.apple.com/tr/app/do%C4%9Falgaz-teklif-fiyatland%C4%B1rma/id6803060688?l=tr" target="_blank">
   <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg"
        alt="App Store'dan İndirin" height="45" style="margin-bottom: 10px;" />
 </a>
 
 <br/> 
 
-### 👉 **[Çok Yakında Mağazalarda!]** 👈
+### 👉 **Uygulamayı Hemen İndirin ve Kullanmaya Başlayın** 👈
 
 <br/>
 
@@ -69,8 +68,7 @@ Sahada yapılan karmaşık hesaplamaları saniyelere indirin, kurumsal teklifini
 
 <div align="center">
 
-*(Tanıtım videosu çok yakında eklenecektir)*
-<!-- https://github.com/user-attachments/assets/sizin-video-linkiniz.mp4 -->
+https://github.com/user-attachments/assets/d89d013a-c07e-4f4b-8fb0-a46bf85d1f3a
 
 </div>
 
@@ -112,7 +110,7 @@ Uygulama bu saha gerçeğini üç aşamalı bir mimari ile çözer:
 
 ## 🧭 Uygulama Yapısı & Akışlar
 
-Doğalgaz Usta, sahada hızlı kullanım gözetilerek tasarlanmış **4 temel sayfadan** oluşur:
+Uygulama, sahada hızlı kullanım gözetilerek tasarlanmış **4 temel sayfadan** oluşur:
 
 ### 🏠 Anasayfa – Teklifin Başladığı Yer
 Tüm sürecin merkezidir. **“Yeni Teklif Oluştur”** butonu ile akış tek dokunuşla başlatılır. İşlem türü seçilir, malzemeler otomatik gelir. İstenirse indirim uygulanıp tek tıkla müşteriye WhatsApp üzerinden teklif atılabilir. Son 5 teklif anasayfada anlık görüntülenir.
@@ -149,12 +147,12 @@ Uygulama, veri güvenliği ve hızlı saha operasyonları için modern Android t
 
 ### Sahada **Hız**, Ofiste **Kontrol** Sağlayın.
 
-<a href="#" target="_blank">
+<a href="https://play.google.com/store/apps/details?id=com.ahmetsudeys.dogalgazteklif" target="_blank">
   <img src="https://play.google.com/intl/en_us/badges/static/images/badges/tr_badge_web_generic.png"
        alt="Google Play'den İndirin" height="60" />
 </a>
 &nbsp;&nbsp;
-<a href="#" target="_blank">
+<a href="https://apps.apple.com/tr/app/do%C4%9Falgaz-teklif-fiyatland%C4%B1rma/id6803060688?l=tr" target="_blank">
   <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg"
        alt="App Store'dan İndirin" height="42" style="margin-bottom: 8px;" />
 </a>
