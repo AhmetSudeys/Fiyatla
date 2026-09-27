@@ -1,132 +1,164 @@
-# 🚀 DOĞALGAZ TEKLİF FİYATLANDIRMA - (Yeni adıyla çok yakında YAYINDAA!)  
+<!-- ======================= HERO/BAŞLIK ======================= -->
+<div align="center">
 
-## Doğalgaz Saha ve Teklif Yönetimi Sistemi
+<img src="https://github.com/user-attachments/assets/cdb5b1b4-7b7b-402a-9f4a-71408ccb43c6" alt="Doğalgaz Usta" width="110" style="border-radius:22px;" />
 
-**Doğalgaz Usta**, doğalgaz mühendislik firmalarının saha süreçlerini hızlandırmak, standartlaştırmak ve hatasız hale getirmek için geliştirilmiş profesyonel bir **Android uygulamasıdır**.
-Sahada yapılan karmaşık hesaplamaları saniyelere indirir, teklif oluşturma sürecini tek akışta toplar ve tüm operasyonu dijital bir yapıya taşır.
+# 🔥 Doğalgaz Teklif Fiyatlandırma
+### *(Yeni Adıyla Çok Yakında Yayında!)*
+### Profesyonel Saha ve Teklif Yönetimi Sistemi
+
+Kağıt, kalem ve hesap makinesiyle fiyat verme devrini kapatın. 
+Sahada yapılan karmaşık hesaplamaları saniyelere indirin, kurumsal teklifinizi tek akışta oluşturun ve tüm operasyonunuzu dijitalleştirin.
+
+<br/>
+
+<!-- ======================= MAĞAZA ROZETLERİ ======================= -->
+<a href="#" target="_blank">
+  <img src="https://play.google.com/intl/en_us/badges/static/images/badges/tr_badge_web_generic.png"
+       alt="Google Play'den İndirin" height="65" />
+</a>
+&nbsp;&nbsp;&nbsp;
+<a href="#" target="_blank">
+  <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg"
+       alt="App Store'dan İndirin" height="45" style="margin-bottom: 10px;" />
+</a>
+
+<br/> 
+
+### 👉 **[Çok Yakında Mağazalarda!]** 👈
+
+<br/>
+
+<!-- ======================= TEKNOLOJİ ROZETLERİ ======================= -->
+<img src="https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white" alt="Android" />
+<img src="https://img.shields.io/badge/Kotlin-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white" alt="Kotlin" />
+<img src="https://img.shields.io/badge/Room%20DB-003B57?style=for-the-badge&logo=sqlite&logoColor=white" alt="Room" />
+<img src="https://img.shields.io/badge/PDF_Generator-E32212?style=for-the-badge&logo=adobeacrobatreader&logoColor=white" alt="PDF Output" />
+<img src="https://img.shields.io/badge/GPS_Location-4285F4?style=for-the-badge&logo=googlemaps&logoColor=white" alt="GPS" />
+
+</div>
+
+<br/>
+
+<!-- ======================= EKRAN GÖRÜNTÜLERİ ======================= -->
+<h2 align="center">📱 Ekran Görüntüleri</h2>
+
+<p align="center">
+  <img src="screenshots/girisEkrani.jpeg" width="23%" />
+  <img src="screenshots/karsilamaEkrani.jpeg" width="23%" />
+  <img src="screenshots/anasayfa.jpeg" width="23%" />
+  <img src="screenshots/teklifOlusturma1.jpeg" width="23%" />
+</p>
+
+<p align="center">
+  <img src="screenshots/teklifOlusturma2.jpeg" width="23%" />
+  <img src="screenshots/teklifOlusturma3.jpeg" width="23%" />
+  <img src="screenshots/teklifOlusturma4.jpeg" width="23%" />
+  <img src="screenshots/teklifOlusturma5.jpeg" width="23%" />
+</p>
+
+<p align="center">
+  <img src="screenshots/malzemeler.jpeg" width="30%" />
+  <img src="screenshots/tekliflerim.jpeg" width="30%" />
+  <img src="screenshots/musteriler.jpeg" width="30%" />
+</p>
+<br/>
+
+<!-- ======================= TANITIM VİDEOSU ======================= -->
+<h2 align="center">🎬 Uygulama Tanıtım Videosu</h2>
+
+<div align="center">
+
+*(Tanıtım videosu çok yakında eklenecektir)*
+<!-- https://github.com/user-attachments/assets/sizin-video-linkiniz.mp4 -->
+
+</div>
+
+<br/>
 
 ---
 
-## 📸 Uygulama İçi Görseller
+## ✨ Kağıt Kalemle Fiyatlandırma Devrini Kapatın
 
-Aşağıda uygulamanın temel ekranlarına ait görseller yer almaktadır.
-Bu bölümde uygulamanın kullanım yapısı, ekran akışları ve temel fonksiyonları net şekilde görülebilir.
+Saha ekipleri çoğu zaman müşteriye anında fiyat vermek zorunda kalır. Kağıt, defter, hesap makinesi veya ezbere dayalı fiyatlandırmalar hem zaman kaybettirir hem de ciddi maddi hatalara yol açar. 
 
-### Giriş ve Karşılama
+**Doğalgaz Teklif Fiyatlandırma**, bu süreci sadeleştirerek mühendislik disiplinine uygun, tutarlı ve güvenilir teklifler oluşturmanızı sağlar. Firma adınızı ve logonuzu sisteme bir kez yükleyin; oluşturduğunuz tüm teklifler saniyeler içinde **kurumsal bir PDF belgesi** olarak müşterinizin WhatsApp'ında olsun.
 
-<p align="center">
-  <img src="screenshots/girisEkrani.jpeg" width="260">
-  <img src="screenshots/karsilamaEkrani.jpeg" width="260">
-</p>
+<br/>
 
-### Anasayfa
+## 🧠 Temel Felsefe — Hız, Kurumsallık, Kontrol
 
-<p align="center">
-  <img src="screenshots/anasayfa.jpeg" width="280">
-</p>
+> Sahada müşteriyi bekletmeden verilen **doğru ve kurumsal** bir teklif, işi alma ihtimalini %80 artırır.
 
-### Teklif Oluşturma Akışı
+Uygulama bu saha gerçeğini üç aşamalı bir mimari ile çözer:
 
-<p align="center">
-  <img src="screenshots/teklifOlusturma1.jpeg" width="200">
-  <img src="screenshots/teklifOlusturma2.jpeg" width="200">
-  <img src="screenshots/teklifOlusturma3.jpeg" width="200">
-  <img src="screenshots/teklifOlusturma4.jpeg" width="200">
-  <img src="screenshots/teklifOlusturma5.jpeg" width="200">
-</p>
+|   | Aşama | Ne yapar? |
+| :---: | :--- | :--- |
+| ⚡ | **Hız** | İş türünü seçtiğiniz an gerekli tüm malzemeler otomatik listelenir. Sadece farklılıkları düzenler, saniyeler içinde fiyatı çıkarırsınız. |
+| 🏢 | **Kurumsallık** | Hesaplanan fiyatı kağıda yazmak yerine, logonuzun ve firma bilgilerinizin olduğu profesyonel bir PDF'e dönüştürür. |
+| 📊 | **Kontrol** | Geçmiş teklifler (Onaylandı/Reddedildi), müşteri GPS konumları ve boru boya işlemleri tek merkezden takip edilir. |
 
-### Malzemeler
+<br/>
 
-<p align="center">
-  <img src="screenshots/malzemeler.jpeg" width="260">
-</p>
+## 🚀 Öne Çıkan Özellikler
 
-### Tekliflerim
+- **📄 Kurumsal PDF Çıktıları** — Müşteriye sunulan her belge firmanızın profesyonel duruşunu net ve tutarlı şekilde yansıtır.
+- **🧰 Otomatik Malzeme Yapısı** — Yapılacak işin türüne (Kombi montajı, tesisat çekimi vb.) göre güncel malzemeler ve fiyatlar anında ekrana gelir.
+- **📍 GPS Destekli Müşteri Kaydı** — "Şu anki konumu kullan" özelliği sayesinde müşteri adres bilgileri GPS üzerinden otomatik doldurulur.
+- **🎨 Boya ve Süreç Takibi** — Doğalgaz tesisatlarında zorunlu olan *boru boya* işlemleri için özel takip alanı bulunur.
+- **📴 Çevrimdışı/Merkezi Arşiv** — Tamamlanan tüm teklifler otomatik arşive kaydedilir, internet olmasa bile geçmiş fiyatlandırmalara ulaşılır.
 
-<p align="center">
-  <img src="screenshots/tekliflerim.jpeg" width="260">
-</p>
+<br/>
 
-### Müşteriler
+## 🧭 Uygulama Yapısı & Akışlar
 
-<p align="center">
-  <img src="screenshots/musteriler.jpeg" width="260">
-</p>
-
----
-
-## 🎯 Neden Doğalgaz Usta!
-
-Saha ekipleri çoğu zaman müşteriye anında fiyat vermek zorunda kalır. Kağıt, defter, hesap makinesi veya ezbere dayalı fiyatlandırmalar hem zaman kaybettirir hem de ciddi hatalara yol açar.
-**Doğalgaz Usta**, bu süreci sadeleştirerek mühendislik disiplinine uygun, tutarlı ve güvenilir teklifler oluşturmanızı sağlar. Aynı zamanda tüm müşteri ve teklif kayıtlarını merkezi bir yapıda saklayarak güçlü bir kurumsal hafıza oluşturur.
-
----
-
-## 🏗️ Kurumsal Kimliğiniz Sahada
-
-Uygulama ilk kurulumda firma adı ve logo yüklenerek kullanıma hazır hale gelir.
-Oluşturulan tüm teklifler bu bilgilerle otomatik olarak hazırlanır. Müşteriye sunulan her belge, firmanızın kurumsal duruşunu net ve tutarlı şekilde yansıtır.
-
----
-
-## 🧭 Uygulama Yapısı
-
-Doğalgaz Usta, sahada hızlı ve pratik kullanım gözetilerek tasarlanmış **4 temel sayfadan** oluşur. Her sayfa, sürecin belirli bir ihtiyacını karşılayacak şekilde sade ve odaklıdır.
-
----
+Doğalgaz Usta, sahada hızlı kullanım gözetilerek tasarlanmış **4 temel sayfadan** oluşur:
 
 ### 🏠 Anasayfa – Teklifin Başladığı Yer
-
-Anasayfa, tüm sürecin merkezidir.
-**“Yeni Teklif Oluştur”** butonu ile teklif akışı tek dokunuşla başlatılır. Aynı ekranda son 5 teklif görüntülenebilir, **“Tümünü Gör”** ile teklif arşivine geçilebilir.
-
-Teklif oluşturma sırasında önce işlem türü seçilir. Bu seçime göre, **Malzemeler** adımında o işe uygun malzemeler otomatik olarak hazır gelir. Eve veya işe özel bir durum varsa, malzemeye dokunarak miktar ve fiyat anında düzenlenebilir.
-
-Akışın sonunda özet ekranında malzeme, işçilik ve diğer kalemlerin toplamları net şekilde görüntülenir.
-İstenirse indirim uygulanır ve **tek tıkla profesyonel PDF teklif** oluşturulur. Teklif, WhatsApp dahil istenilen platformdan anında müşteriye paylaşılabilir. Tamamlanan her teklif otomatik olarak arşive kaydedilir.
-
----
+Tüm sürecin merkezidir. **“Yeni Teklif Oluştur”** butonu ile akış tek dokunuşla başlatılır. İşlem türü seçilir, malzemeler otomatik gelir. İstenirse indirim uygulanıp tek tıkla müşteriye WhatsApp üzerinden teklif atılabilir. Son 5 teklif anasayfada anlık görüntülenir.
 
 ### 🧰 Malzemeler – Güncel Fiyat, Doğru Hesap
+Fiyatlandırmanın temeli buradadır. Malzeme fiyatlarında yaşanan değişiklikler buradan güncellenir ve sonraki tüm tekliflere otomatik yansır. Sahada her zaman **en güncel maliyetlerle** teklif verilir.
 
-Bu sayfa fiyatlandırmanın temelini oluşturur.
-Her iş türüne ait malzemeler düzenli şekilde listelenir. Fiyat değişiklikleri buradan güncellenir ve yapılan güncellemeler sonraki tüm tekliflere otomatik olarak yansır. Böylece sahada her zaman **güncel ve tutarlı** fiyatlar kullanılır.
+### 📄 Tekliflerim – Süreç Takibi
+İş takibini netleştirir. Oluşturulan teklifler **Bekliyor, Onaylandı, Reddedildi** durumlarına göre saniyeler içinde filtrelenir. Saha ve ofis arasındaki kopukluğu tamamen ortadan kaldırır.
 
----
+### 👥 Müşteriler – Rehber ve Operasyon
+Çalışılan müşterilerin iletişim bilgileri, otomatik GPS konumları ve operasyonel verileri (zorunlu boru boya işlemleri vb.) burada düzenli şekilde tutulur.
 
-### 📄 Tekliflerim – Süreç Takibi ve Kontrol
+<br/>
 
-Oluşturulan tüm teklifler bu bölümde listelenir.
-Tekliflerin durumu **bekliyor**, **onaylandı** veya **reddedildi** olarak değiştirilebilir. Filtreleme sayesinde yalnızca istenilen durumdaki teklifler saniyeler içinde görüntülenir. Bu yapı, saha ve ofis arasındaki iş takibini netleştirir.
+## 🏗️ Teknik Altyapı ve Mimari
 
----
+Uygulama, veri güvenliği ve hızlı saha operasyonları için modern Android teknolojileri ile inşa edilmiştir:
 
-### 👥 Müşteriler – Kayıt, Konum ve Boya Takibi
+| Bileşen | Teknoloji & Kütüphane |
+| :--- | :--- |
+| **Geliştirme Dili** | Kotlin |
+| **Arayüz (UI)** | XML / Native View System |
+| **Veritabanı** | Room (SQLite) *(Hızlı ve Yerel Veri Saklama)* |
+| **Belge Üretimi** | Native PDF Generation API |
+| **Konum Servisleri** | Google Location Services *(Otomatik Adres Tespiti)* |
+| **Mimari Yaklaşım** | MVC / MVVM Standartları |
 
-Bu sayfada çalışılan tüm müşterilerin telefon, adres ve diğer bilgileri saklanır.
-Doğalgaz tesisatlarında zorunlu olan **boru boya işlemleri** için özel takip alanı bulunur. Hangi boruların boyandığı veya boyanması gerektiği düzenli şekilde izlenebilir.
-
-**“Şu anki konumu kullan”** özelliği sayesinde adres bilgileri GPS üzerinden otomatik doldurulur ve müşteri kaydı saniyeler içinde tamamlanır.
-
----
-
-## 📊 Teklif ve İş Süreçlerinde Netlik
-
-Tüm teklifler merkezi bir arşivde tutulur.
-Geçmiş teklifler görüntülenebilir, düzenlenebilir ve iş durumlarına göre takip edilebilir. Bu yapı operasyonel şeffaflık sağlar ve sürecin her aşamasını kontrol altında tutmanıza imkan verir.
+<br/>
 
 ---
 
-## 📱 Kısaca Doğalgaz Usta!
+<div align="center">
 
-* Sahada saniyeler içinde net teklif
-* İş türüne göre otomatik malzeme ve fiyat yapısı
-* Kurumsal kimlikli PDF teklif çıktıları
-* Müşteri, teklif ve boya kayıtlarının tek merkezden yönetimi
-* Sade, hızlı ve profesyonel kullanım
+### Sahada **Hız**, Ofiste **Kontrol** Sağlayın.
 
-**Doğalgaz Usta**, firma adınızı ve logonuzu yükleyerek hemen kullanmaya başlayabileceğiniz; sahada hız, ofiste kontrol sağlayan güçlü bir doğalgaz saha yönetim çözümüdür.
+<a href="#" target="_blank">
+  <img src="https://play.google.com/intl/en_us/badges/static/images/badges/tr_badge_web_generic.png"
+       alt="Google Play'den İndirin" height="60" />
+</a>
+&nbsp;&nbsp;
+<a href="#" target="_blank">
+  <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg"
+       alt="App Store'dan İndirin" height="42" style="margin-bottom: 8px;" />
+</a>
 
----
+<sub>© 2026 Doğalgaz Teklif Fiyatlandırma Sistemi · ❤️ ile geliştirildi.</sub>
 
-
+</div>
