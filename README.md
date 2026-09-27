@@ -1,28 +1,32 @@
 <!-- ======================= HERO/BAŞLIK ======================= -->
 <div align="center">
 
-<img src="https://github.com/user-attachments/assets/13ddccac-9b04-4eb8-b889-d6f857a9d8b6" alt="Doğalgaz Teklif Fiyatlandırma" width="110" style="border-radius:22px;" />
+<img src="https://github.com/user-attachments/assets/13ddccac-9b04-4eb8-b889-d6f857a9d8b6" alt="Doğalgaz Teklif Fiyatlandırma Logo" width="120" style="border-radius: 25px; box-shadow: 0px 4px 15px rgba(0,0,0,0.2); margin-bottom: 15px;" />
 
 # 🔥 Doğalgaz Teklif Fiyatlandırma
-### Profesyonel Saha ve Teklif Yönetimi Sistemi
 
-Kağıt, kalem ve hesap makinesiyle fiyat verme devrini kapatın. 
-Sahada yapılan karmaşık hesaplamaları saniyelere indirin, kurumsal teklifinizi tek akışta oluşturun ve tüm operasyonunuzu dijitalleştirin.
+<!-- Animasyonlu Alt Başlık -->
+<a href="https://github.com/ahmetsudeys">
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=22&pause=1500&color=F78166&center=true&vCenter=true&width=650&lines=Profesyonel+Saha+ve+Teklif+Y%C3%B6netimi;Ka%C4%9F%C4%B1t+Kalemle+Fiyatland%C4%B1rma+Devrini+Kapat%C4%B1n;Saniyeler+%C4%B0%C3%A7inde+Kurumsal+PDF+Olu%C5%9Fturun;Sahada+H%C4%B1z%2C+Ofiste+Kontrol+Sa%C4%9Flay%C4%B1n!" alt="Typing Animation" />
+</a>
+
+<p align="center" style="font-size: 16px; color: #555;">
+  Sahada yapılan karmaşık hesaplamaları saniyelere indirin, kurumsal teklifinizi tek akışta oluşturun ve tüm operasyonunuzu tamamen dijitalleştirin.
+</p>
 
 <br/>
 
-<!-- ======================= MAĞAZA ROZETLERİ ======================= -->
-<a href="https://play.google.com/store/apps/details?id=com.ahmetsudeys.dogalgazteklif" target="_blank">
-  <img src="https://play.google.com/intl/en_us/badges/static/images/badges/tr_badge_web_generic.png"
-       alt="Google Play'den İndirin" height="65" />
-</a>
-&nbsp;&nbsp;&nbsp;
-<a href="https://apps.apple.com/tr/app/do%C4%9Falgaz-teklif-fiyatland%C4%B1rma/id6803060688?l=tr" target="_blank">
-  <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg"
-       alt="App Store'dan İndirin" height="45" style="margin-bottom: 10px;" />
-</a>
-
-<br/> 
+<!-- ======================= MAĞAZA ROZETLERİ (Hizalanmış & Dengeli) ======================= -->
+<p align="center">
+  <a href="https://play.google.com/store/apps/details?id=com.ahmetsudeys.dogalgazteklif" target="_blank">
+    <img src="https://play.google.com/intl/en_us/badges/static/images/badges/tr_badge_web_generic.png"
+         alt="Google Play'den İndirin" height="65" style="vertical-align: middle; margin-right: 15px;" />
+  </a>
+  <a href="https://apps.apple.com/tr/app/do%C4%9Falgaz-teklif-fiyatland%C4%B1rma/id6803060688?l=tr" target="_blank">
+    <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg"
+         alt="App Store'dan İndirin" height="45" style="vertical-align: middle;" />
+  </a>
+</p>
 
 ### 👉 **Uygulamayı Hemen İndirin ve Kullanmaya Başlayın** 👈
 
@@ -42,32 +46,37 @@ Sahada yapılan karmaşık hesaplamaları saniyelere indirin, kurumsal teklifini
 <!-- ======================= EKRAN GÖRÜNTÜLERİ ======================= -->
 <h2 align="center">📱 Ekran Görüntüleri</h2>
 
+<!-- 1. Satır: Temel Ekranlar (4'lü) -->
 <p align="center">
-  <img src="screenshots/girisEkrani.jpeg" width="23%" />
-  <img src="screenshots/karsilamaEkrani.jpeg" width="23%" />
-  <img src="screenshots/anasayfa.jpeg" width="23%" />
-  <img src="screenshots/teklifOlusturma1.jpeg" width="23%" />
+  <img src="screenshots/girisEkrani.jpeg" width="23%" style="border-radius: 12px; margin: 3px;" />
+  <img src="screenshots/karsilamaEkrani.jpeg" width="23%" style="border-radius: 12px; margin: 3px;" />
+  <img src="screenshots/anasayfa.jpeg" width="23%" style="border-radius: 12px; margin: 3px;" />
+  <img src="screenshots/malzemeler.jpeg" width="23%" style="border-radius: 12px; margin: 3px;" />
 </p>
 
+<!-- 2. Satır: Teklif Akışı (4'lü) -->
 <p align="center">
-  <img src="screenshots/teklifOlusturma2.jpeg" width="23%" />
-  <img src="screenshots/teklifOlusturma3.jpeg" width="23%" />
-  <img src="screenshots/teklifOlusturma4.jpeg" width="23%" />
-  <img src="screenshots/teklifOlusturma5.jpeg" width="23%" />
+  <img src="screenshots/teklifOlusturma1.jpeg" width="23%" style="border-radius: 12px; margin: 3px;" />
+  <img src="screenshots/teklifOlusturma2.jpeg" width="23%" style="border-radius: 12px; margin: 3px;" />
+  <img src="screenshots/teklifOlusturma3.jpeg" width="23%" style="border-radius: 12px; margin: 3px;" />
+  <img src="screenshots/teklifOlusturma4.jpeg" width="23%" style="border-radius: 12px; margin: 3px;" />
 </p>
 
+<!-- 3. Satır: Sonuç, Yönetim ve Yeni Görsel (4'lü) -->
 <p align="center">
-  <img src="screenshots/malzemeler.jpeg" width="30%" />
-  <img src="screenshots/tekliflerim.jpeg" width="30%" />
-  <img src="screenshots/musteriler.jpeg" width="30%" />
+  <img src="screenshots/teklifOlusturma5.jpeg" width="23%" style="border-radius: 12px; margin: 3px;" />
+  <img src="https://github.com/user-attachments/assets/a1f68f6d-a92d-4ea5-a13d-769d9e8a1d14" width="23%" style="border-radius: 12px; margin: 3px;" />
+  <img src="screenshots/tekliflerim.jpeg" width="23%" style="border-radius: 12px; margin: 3px;" />
+  <img src="screenshots/musteriler.jpeg" width="23%" style="border-radius: 12px; margin: 3px;" />
 </p>
+
 <br/>
 
 <!-- ======================= TANITIM VİDEOSU ======================= -->
 <h2 align="center">🎬 Uygulama Tanıtım Videosu</h2>
 
 <div align="center">
-
+  
 https://github.com/user-attachments/assets/d89d013a-c07e-4f4b-8fb0-a46bf85d1f3a
 
 </div>
@@ -147,15 +156,16 @@ Uygulama, veri güvenliği ve hızlı saha operasyonları için modern Android t
 
 ### Sahada **Hız**, Ofiste **Kontrol** Sağlayın.
 
-<a href="https://play.google.com/store/apps/details?id=com.ahmetsudeys.dogalgazteklif" target="_blank">
-  <img src="https://play.google.com/intl/en_us/badges/static/images/badges/tr_badge_web_generic.png"
-       alt="Google Play'den İndirin" height="60" />
-</a>
-&nbsp;&nbsp;
-<a href="https://apps.apple.com/tr/app/do%C4%9Falgaz-teklif-fiyatland%C4%B1rma/id6803060688?l=tr" target="_blank">
-  <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg"
-       alt="App Store'dan İndirin" height="42" style="margin-bottom: 8px;" />
-</a>
+<p align="center">
+  <a href="https://play.google.com/store/apps/details?id=com.ahmetsudeys.dogalgazteklif" target="_blank">
+    <img src="https://play.google.com/intl/en_us/badges/static/images/badges/tr_badge_web_generic.png"
+         alt="Google Play'den İndirin" height="60" style="vertical-align: middle; margin-right: 15px;" />
+  </a>
+  <a href="https://apps.apple.com/tr/app/do%C4%9Falgaz-teklif-fiyatland%C4%B1rma/id6803060688?l=tr" target="_blank">
+    <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg"
+         alt="App Store'dan İndirin" height="42" style="vertical-align: middle;" />
+  </a>
+</p>
 
 <sub>© 2026 Doğalgaz Teklif Fiyatlandırma Sistemi · ❤️ ile geliştirildi.</sub>
 
